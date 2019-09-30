@@ -1,0 +1,23 @@
+{
+  "name": "FootStone.TankShared",
+  "references": [
+    "Unity.Entities",
+    "Unity.Entities.Hybrid",
+    "Unity.Entities.Properties",
+    "Unity.Entities.StaticTypeRegistry",
+
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Mathematics",
+    "Unity.Mathematics.Extensions",
+    "Unity.Physics",
+    "Unity.Physics.Hybrid",
+    "Unity.Transforms",
+    "Unity.Transforms.Hybrid",
+    "FootStone.KcpTransport"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true
+}

@@ -1,0 +1,22 @@
+{
+  "name": "com.footstone.tankshared",
+  "displayName": "Tank Shared",
+  "version": "0.0.1",
+  "unity": "2019.1",
+  "unityRelease": "0f1",
+  "dependencies": {
+    "com.unity.burst": "1.1.2",
+    "com.unity.collections": "0.1.1-preview",
+    "com.unity.entities": "0.1.1-preview",
+    "com.unity.jobs": "0.1.1-preview",
+    "com.unity.package-manager-ui": "2.2.0",
+    "com.unity.physics": "0.2.0-preview",
+    "com.unity.rendering.hybrid": "0.1.1-preview"
+  },
+  "description": "The Entities package provides a modern Entity Component System (ECS) implementation with a basic set of systems and components made for Unity.",
+  "keywords": [
+    "tank",
+    "shared",
+    "unity"
+  ]
+}
