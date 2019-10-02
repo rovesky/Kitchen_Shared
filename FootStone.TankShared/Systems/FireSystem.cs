@@ -39,7 +39,7 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.SetComponent(e, position);
                         PostUpdateCommands.SetComponent(e, rotation);
 
-                        PostUpdateCommands.AddComponent(e, new Rocket() { Type = RocketType.Player });
+                        PostUpdateCommands.AddComponent(e, new Rocket() { id = e.Index ,Type = RocketType.Player });
                         PostUpdateCommands.AddComponent(e, new Health(){Value = 1});
                         PostUpdateCommands.AddComponent(e, new Damage() );
                         PostUpdateCommands.AddComponent(e, new Attack() {Power = 20});
@@ -98,7 +98,7 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.SetComponent(e, rotation);
 
                       
-                        PostUpdateCommands.AddComponent(e, new Rocket() {Type = RocketType.Enemy});
+                        PostUpdateCommands.AddComponent(e, new Rocket() { id = e.Index, Type = RocketType.Enemy});
                   
                         PostUpdateCommands.AddComponent(e, new Attack() {Power = 1});
                         PostUpdateCommands.AddComponent(e, new Health() { Value = 1 });

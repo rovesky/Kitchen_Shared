@@ -45,35 +45,30 @@ namespace Assets.Scripts.ECS
                    Rotation rotation = new Rotation() { Value = Quaternion.identity };
 
             //       Debug.Log($"Spawn enemy on position:[{position.Value.x},{position.Value.y},{position.Value.z}]");
-
-
+            
                    PostUpdateCommands.SetComponent(e, position);
                    PostUpdateCommands.SetComponent(e, rotation);
-
                 
-                   PostUpdateCommands.AddComponent(e, new Enemy());
+                   PostUpdateCommands.AddComponent(e, new Enemy() {type = spawn.enemyType,id = e.Index } );
                    PostUpdateCommands.AddComponent(e, new Damage());
                    PostUpdateCommands.AddComponent(e, new Attack() { Power = 1 });
                    PostUpdateCommands.AddComponent(e, new Explosion());
-                   //   PostUpdateCommands.AddComponent(e, new KillOutofRender() { IsVisible = true });
-
+             
                    if (spawn.enemyType == EnemyType.Normal)
                    {
-                       PostUpdateCommands.AddComponent(e, new Health() { Value = 100 });
-                       PostUpdateCommands.AddComponent(e, new MoveSin());
+                       PostUpdateCommands.AddComponent(e, new Health() { Value = 100 });                     
                        PostUpdateCommands.AddComponent(e, new MoveTranslation() { Speed = 1f, Direction = Direction.Down });
-
+                       PostUpdateCommands.AddComponent(e, new MoveSin());
                    }
                    else if (spawn.enemyType == EnemyType.Super)
-                   {
-                       PostUpdateCommands.AddComponent(e, new MoveTranslation() { Speed = 0.5f, Direction = Direction.Down });
-
+                   {                    
                        PostUpdateCommands.AddComponent(e, new Health() { Value = 500 });
+                       PostUpdateCommands.AddComponent(e, new MoveTranslation() { Speed = 0.5f, Direction = Direction.Down });
                        PostUpdateCommands.AddComponent(e, new FireRocket()
                        {
                            Rocket = rocket,
                            FireCooldown = 2f,
-                           RocketTimer = 0,
+                           RocketTimer = 4f,
                        });
                    }
                });

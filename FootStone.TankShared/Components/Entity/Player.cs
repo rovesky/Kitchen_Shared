@@ -5,6 +5,10 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
     [Serializable]
-    public struct Player : IComponentData { }
+    public struct Player : IComponentData
+    {
+        public int playerId;
+        public int id;
+    }
 }
 

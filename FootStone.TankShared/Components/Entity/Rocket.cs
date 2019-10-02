@@ -16,6 +16,7 @@ namespace Assets.Scripts.ECS
     [Serializable]
     public struct Rocket : IComponentData
     {
+        public int id;
         public RocketType Type;
     }
 }
