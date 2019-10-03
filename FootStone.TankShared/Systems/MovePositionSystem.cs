@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.ECS
 {
-    [UpdateInGroup(typeof(TransformSystemGroup))]
+    [DisableAutoCreation]
     public class MovePositionSystem : ComponentSystem
     {
         protected override void OnUpdate()

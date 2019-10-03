@@ -23,7 +23,7 @@ namespace Assets.Scripts.ECS
         AtomicSafetyHandle m_Safety;
 
        // [NativeSetClassTypeToNullOnSchedule]
-      //  DisposeSentinel m_DisposeSentinel;
+       // DisposeSentinel m_DisposeSentinel;
 #endif
 
         public NativeStream(int foreachCount, Allocator allocator)
@@ -32,20 +32,20 @@ namespace Assets.Scripts.ECS
             AllocateForEach(foreachCount);
         }
 
-        //public static JobHandle ScheduleConstruct<T>(out NativeStream stream, NativeList<T> forEachCountFromList, JobHandle dependency, Allocator allocator = Allocator.TempJob)
-        //    where T : struct
-        //{
-        //    AllocateBlock(out stream, allocator);
-        //    var jobData = new ConstructJobList<T> { List = forEachCountFromList, Container = stream };
-        //    return jobData.Schedule(dependency);
-        //}
+        public static JobHandle ScheduleConstruct<T>(out NativeStream stream, NativeList<T> forEachCountFromList, JobHandle dependency, Allocator allocator = Allocator.TempJob)
+            where T : struct
+        {
+            AllocateBlock(out stream, allocator);
+            var jobData = new ConstructJobList<T> { List = forEachCountFromList, Container = stream };
+            return jobData.Schedule(dependency);
+        }
 
-        //public static JobHandle ScheduleConstruct(out NativeStream stream, NativeArray<int> lengthFromIndex0, JobHandle dependency, Allocator allocator = Allocator.TempJob)
-        //{
-        //    AllocateBlock(out stream, allocator);
-        //    var jobData = new ConstructJob { Length = lengthFromIndex0, Container = stream };
-        //    return jobData.Schedule(dependency);
-        //}
+        public static JobHandle ScheduleConstruct(out NativeStream stream, NativeArray<int> lengthFromIndex0, JobHandle dependency, Allocator allocator = Allocator.TempJob)
+        {
+            AllocateBlock(out stream, allocator);
+            var jobData = new ConstructJob { Length = lengthFromIndex0, Container = stream };
+            return jobData.Schedule(dependency);
+        }
 
         private static void AllocateBlock(out NativeStream stream, Allocator allocator)
         {
@@ -78,6 +78,8 @@ namespace Assets.Scripts.ECS
 
             DisposeSentinel disposeSentinel;
             DisposeSentinel.Create(out stream.m_Safety, out disposeSentinel, 0, allocator);
+
+            // DisposeSentinel.Create(out stream.m_Safety, out disposeSentinel, 0, allocator);
 #endif
         }
 

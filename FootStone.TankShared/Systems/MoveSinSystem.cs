@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
 
-    [UpdateInGroup(typeof(TransformSystemGroup))]
+    [DisableAutoCreation]
     public class MoveSinSystem : ComponentSystem
     {
         protected override void OnUpdate()

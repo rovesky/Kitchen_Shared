@@ -11,8 +11,8 @@ using UnityEngine;
 
 namespace Assets.Scripts.ECS
 {
-    
-    [UpdateInGroup(typeof(TransformSystemGroup))]
+
+    [DisableAutoCreation]
     public class MoveTargetSystem : ComponentSystem
     {
         public EntityQuery PlayerGroup;
