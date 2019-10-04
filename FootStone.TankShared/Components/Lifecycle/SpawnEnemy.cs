@@ -9,11 +9,11 @@ namespace Assets.Scripts.ECS
         Normal,
         Super
     }
+  
 
     [Serializable]
     public struct SpawnEnemy : IComponentData
-    {
-     //   public Entity entity;
+    { 
 
         public EnemyType enemyType;
 

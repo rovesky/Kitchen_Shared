@@ -4,8 +4,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 namespace Assets.Scripts.ECS
-{
-    // [UpdateInGroup(typeof(InitializationSystemGroup))]
+{  
     [DisableAutoCreation]
     public class SpawnPlayerSystem : ComponentSystem
     {
@@ -23,9 +22,9 @@ namespace Assets.Scripts.ECS
             Entities.ForEach(
                (Entity entity,ref LocalToWorld gunTransform, ref Rotation gunRotation, ref SpawnPlayer spawn) =>
                {                
-                   if (spawn.spawned)
+                   if (spawn.spawn)
                    {
-                       var buffer = EntityManager.GetBuffer<PlayerId>(entity);
+                       var buffer = EntityManager.GetBuffer<PlayerBuffer>(entity);
                        foreach (var playerId in buffer)
                        {
                            //创建Player

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
     [InternalBufferCapacity(10)]
-    public struct PlayerId : IBufferElementData
+    public struct PlayerBuffer : IBufferElementData
     {
         public int playerId;
     }
@@ -16,7 +16,7 @@ namespace Assets.Scripts.ECS
     public struct SpawnPlayer : IComponentData
     {
         public Entity entity;
-        public bool spawned;
+        public bool spawn;
     }
 
 }

@@ -16,7 +16,7 @@ namespace Assets.Scripts.ECS
             dstManager.AddComponentData(entity, new SpawnPlayer()
             {
                 entity = conversionSystem.GetPrimaryEntity(prefabs),
-                spawned = false
+                spawn = false
             });
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
