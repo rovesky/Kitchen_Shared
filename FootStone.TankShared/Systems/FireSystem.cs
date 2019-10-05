@@ -98,8 +98,7 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.SetComponent(e, rotation);
 
                       
-                        PostUpdateCommands.AddComponent(e, new Rocket() { id = e.Index, Type = RocketType.Enemy});
-                  
+                        PostUpdateCommands.AddComponent(e, new Rocket() { id = e.Index, Type = RocketType.Enemy});                  
                         PostUpdateCommands.AddComponent(e, new Attack() {Power = 1});
                         PostUpdateCommands.AddComponent(e, new Health() { Value = 1 });
                         PostUpdateCommands.AddComponent(e, new Damage());
