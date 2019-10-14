@@ -7,8 +7,8 @@ namespace Assets.Scripts.ECS
     [Serializable]
     public struct Player : IComponentData
     {
-        public int playerId;
         public int id;
+        public int playerId;       
     }
 }
 

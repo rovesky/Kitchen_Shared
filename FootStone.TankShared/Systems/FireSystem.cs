@@ -43,8 +43,7 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.AddComponent(e, new Health(){Value = 1});
                         PostUpdateCommands.AddComponent(e, new Damage() );
                         PostUpdateCommands.AddComponent(e, new Attack() {Power = 20});
-                        PostUpdateCommands.AddComponent(e, new MoveTranslation() {Speed = 6, Direction = Direction.Up});
-              
+                        PostUpdateCommands.AddComponent(e, new MoveTranslation() {Speed = 6, Direction = Direction.Up});              
                     }
                 }
             );
@@ -89,7 +88,6 @@ namespace Assets.Scripts.ECS
                         // var e = PostUpdateCommands.Instantiate(fire.Rocket);
 
                         Translation position = new Translation() {Value = gunTransform.Position};
-
                         var targetPos = EntityManager.GetComponentData<Translation>(playerEntities[0]);
                         Rotation rotation = new Rotation()
                             {Value = Quaternion.LookRotation(-(targetPos.Value - position.Value))};
@@ -102,7 +100,6 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.AddComponent(e, new Attack() {Power = 1});
                         PostUpdateCommands.AddComponent(e, new Health() { Value = 1 });
                         PostUpdateCommands.AddComponent(e, new Damage());
-
                         PostUpdateCommands.AddComponent(e, new MoveForward() { Speed = 3});
                      //   PostUpdateCommands.AddComponent(e, new KillOutofRender() {IsVisible = true});
                     }

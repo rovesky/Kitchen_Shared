@@ -7,8 +7,8 @@ namespace Assets.Scripts.ECS
     [Serializable]
     public struct Enemy : IComponentData
     {
-        public EnemyType type;
         public int id;
+        public EnemyType type;       
     }
 
 }
