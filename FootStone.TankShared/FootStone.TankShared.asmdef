@@ -14,7 +14,8 @@
     "Unity.Physics.Hybrid",
     "Unity.Transforms",
     "Unity.Transforms.Hybrid",
-    "FootStone.KcpTransport"
+    "FootStone.KcpTransport",
+    "Unity.Networking.Transport"
   ],
   "optionalUnityReferences": [],
   "includePlatforms": [],

@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace Assets.Scripts.ECS
 {
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
-   // [DisableAutoCreation]
+    //[UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [DisableAutoCreation]
     public class DespawnSystem : ComponentSystem
     {
         protected override void OnUpdate()

@@ -8,6 +8,17 @@ using UnityEngine.Profiling;
 
 namespace FootStone.ECS
 {
+
+    public static class WorldExtension
+    {
+        public static T GetOrCreateSystem<T>(this World world) where T : FSComponentSystem
+        {
+            var system =  world.GetOrCreateSystem<T>();
+            system.GameWorld = new GameWorld();
+            return system;
+        }
+    }
+
     public struct DespawningEntity : IComponentData
     {
     }
