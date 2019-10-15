@@ -20,7 +20,7 @@ namespace FootStone.ECS
 
         public void SetTick(int tick, float tickDuration)
         {
-            this.Tick = tick;
+            this.Tick = (uint)tick;
             this.TickDuration = tickDuration;
         }
 
@@ -33,7 +33,7 @@ namespace FootStone.ECS
         {
             TickDuration += duration;
             var deltaTicks = Mathf.FloorToInt(TickDuration * (float) TickRate);
-            Tick += deltaTicks;
+            Tick += (uint)deltaTicks;
             TickDuration = TickDuration % TickInterval;
         }
 
@@ -71,7 +71,7 @@ namespace FootStone.ECS
         public float TickInterval { get; private set; } 
 
         /// <summary>Current Tick  </summary>
-        public int Tick { get; set; }
+        public uint Tick { get; set; }
 
         /// <summary>Duration of current Tick </summary>
         public float TickDuration { get; set; } 

@@ -5,61 +5,77 @@ using Object = UnityEngine.Object;
 using Unity.Entities;
 using UnityEditor;
 using UnityEngine.Profiling;
+using System.Diagnostics;
 
 namespace FootStone.ECS
 {
 
     public static class WorldExtension
     {
-        public static T GetOrCreateSystem<T>(this World world) where T : FSComponentSystem
+        public static T GetOrCreateSystemE<T>(this World world) where T : FSComponentSystem
         {
+           // FSLog.Info($"GetOrCreateSystem: {typeof(T).Name}");
             var system =  world.GetOrCreateSystem<T>();
-            system.GameWorld = new GameWorld();
+            system.GameWorld = GameWorld.Active;
             return system;
         }
     }
 
-    public struct DespawningEntity : IComponentData
-    {
-    }
+    //public struct DespawningEntity : IComponentData
+    //{
+    //}
 
 
-    [InternalBufferCapacity(16)]
-    public struct EntityGroupChildren : IBufferElementData
-    {
-        public Entity entity;
-    }
+    //[InternalBufferCapacity(16)]
+    //public struct EntityGroupChildren : IBufferElementData
+    //{
+    //    public Entity entity;
+    //}
 
-    [DisableAutoCreation]
-    public class DestroyDespawning : ComponentSystem
-    {
-        EntityQuery Group;
+    //[DisableAutoCreation]
+    //public class DestroyDespawning : ComponentSystem
+    //{
+    //    EntityQuery Group;
 
-        protected override void OnCreateManager()
-        {
-            base.OnCreateManager();
-            Group = GetEntityQuery(typeof(DespawningEntity));
-        }
+    //    protected override void OnCreateManager()
+    //    {
+    //        base.OnCreateManager();
+    //        Group = GetEntityQuery(typeof(DespawningEntity));
+    //    }
 
-        protected override void OnUpdate()
-        {
-            //var entityArray = Group.GetEntityArray();
-            //for (var i = 0; i < entityArray.Length; i++)
-            //{
-            //    PostUpdateCommands.DestroyEntity(entityArray[i]);
-            //}
-        }
-    }
+    //    protected override void OnUpdate()
+    //    {
+    //        //var entityArray = Group.GetEntityArray();
+    //        //for (var i = 0; i < entityArray.Length; i++)
+    //        //{
+    //        //    PostUpdateCommands.DestroyEntity(entityArray[i]);
+    //        //}
+    //    }
+    //}
 
     public class GameWorld
     {
 
         // TODO (petera) this is kind of ugly. But very useful to look at worlds from outside for stats purposes...
-        public static List<GameWorld> s_Worlds = new List<GameWorld>();
+       // public static List<GameWorld> s_Worlds = new List<GameWorld>();
 
-        public GameTick WorldTick {
+        public static GameWorld Active { get; set; }
+
+        public GameTick GameTick
+        {
             get => worldTick;
-            set => worldTick = value; 
+            set => worldTick = value;
+        }
+
+        public uint Tick {
+            get => worldTick.Tick;
+            set => worldTick.Tick = value; 
+        }
+
+        public float TickDuration
+        {
+            get => worldTick.TickDuration;
+            set => worldTick.TickDuration = value;
         }
 
         public int lastServerTick;
@@ -72,12 +88,14 @@ namespace FootStone.ECS
 
 
         public double nextTickTime = 0;
+        private long stopwatchFrequency;
+        private Stopwatch clock;
 
         // SceneRoot can be used to organize crated gameobject in scene view. Is null in standalone.
-        public GameObject SceneRoot
-        {
-            get { return m_sceneRoot; }
-        }
+        //public GameObject SceneRoot
+        //{
+        //    get { return m_sceneRoot; }
+        //}
 
         public GameWorld(string name = "world")
         {
@@ -89,239 +107,244 @@ namespace FootStone.ECS
             //    GameObject.DontDestroyOnLoad(m_sceneRoot);
             //}
 
-            GameDebug.Assert(World.Active != null, "There is no active world");
-            ecsWorld = World.Active;
+            //GameDebug.Assert(World.Active != null, "There is no active world");
+            //ecsWorld = World.Active;
 
-            m_EntityManager = ecsWorld.EntityManager;
+            //m_EntityManager = ecsWorld.EntityManager;
 
-            GameDebug.Assert(m_EntityManager.IsCreated);
+            //GameDebug.Assert(m_EntityManager.IsCreated);
 
-            worldTick.TickRate = 60;
+            //  worldTick.TickRate = 30;
+            worldTick = new GameTick(30);
 
             nextTickTime = Game.frameTime;
 
-            s_Worlds.Add(this);
+            // s_Worlds.Add(this);
 
-            m_destroyDespawningSystem = ecsWorld.CreateSystem<DestroyDespawning>();
+            //  m_destroyDespawningSystem = ecsWorld.CreateSystem<DestroyDespawning>();
+
+            stopwatchFrequency = Stopwatch.Frequency;
+            clock = new Stopwatch();
+            clock.Start();
         }
 
         public void Shutdown()
         {
-            GameDebug.Log("GameWorld " + ecsWorld.Name + " shutting down");
+         //   GameDebug.Log("GameWorld " + ecsWorld.Name + " shutting down");
 
-            foreach (var entity in m_dynamicEntities)
-            {
-                if (m_DespawnRequests.Contains(entity))
-                    continue;
+         //   foreach (var entity in m_dynamicEntities)
+         //   {
+         //       if (m_DespawnRequests.Contains(entity))
+         //           continue;
 
-                //#if UNITY_EDITOR
-                if (entity == null)
-                    continue;
+         //       //#if UNITY_EDITOR
+         //       if (entity == null)
+         //           continue;
 
-                var gameObjectEntity = entity.GetComponent<GameObjectEntity>();
-                if (gameObjectEntity != null && !m_EntityManager.Exists(gameObjectEntity.Entity))
-                    continue;
-                //#endif            
+         //       var gameObjectEntity = entity.GetComponent<GameObjectEntity>();
+         //       if (gameObjectEntity != null && !m_EntityManager.Exists(gameObjectEntity.Entity))
+         //           continue;
+         //       //#endif            
 
-                RequestDespawn(entity);
-            }
-            ProcessDespawns();
+         //       RequestDespawn(entity);
+         //   }
+         //   ProcessDespawns();
 
-            s_Worlds.Remove(this);
+         ////   s_Worlds.Remove(this);
 
-            GameObject.Destroy(m_sceneRoot);
+         //   GameObject.Destroy(m_sceneRoot);
         }
 
-        public void RegisterSceneEntities()
-        {
-            //// Replicated entities are sorted by their netID and numbered accordingly
-            //var sceneEntities = new List<ReplicatedEntity>(Object.FindObjectsOfType<ReplicatedEntity>());
-            //sceneEntities.Sort((a, b) => ByteArrayComp.instance.Compare(a.netID, b.netID));
-            //for (int i = 0; i < sceneEntities.Count; i++)
-            //{
-            //    var gameObjectEntity = sceneEntities[i].GetComponent<GameObjectEntity>();
+        //public void RegisterSceneEntities()
+        //{
+        //    //// Replicated entities are sorted by their netID and numbered accordingly
+        //    //var sceneEntities = new List<ReplicatedEntity>(Object.FindObjectsOfType<ReplicatedEntity>());
+        //    //sceneEntities.Sort((a, b) => ByteArrayComp.instance.Compare(a.netID, b.netID));
+        //    //for (int i = 0; i < sceneEntities.Count; i++)
+        //    //{
+        //    //    var gameObjectEntity = sceneEntities[i].GetComponent<GameObjectEntity>();
 
-            //    var replicatedEntityData = gameObjectEntity.EntityManager.GetComponentData<ReplicatedEntityData>(gameObjectEntity.Entity);
-            //    replicatedEntityData.id = i;
-            //    gameObjectEntity.EntityManager.SetComponentData(gameObjectEntity.Entity,replicatedEntityData);
-            //}
-            //m_sceneEntities.AddRange(sceneEntities);
-        }
+        //    //    var replicatedEntityData = gameObjectEntity.EntityManager.GetComponentData<ReplicatedEntityData>(gameObjectEntity.Entity);
+        //    //    replicatedEntityData.id = i;
+        //    //    gameObjectEntity.EntityManager.SetComponentData(gameObjectEntity.Entity,replicatedEntityData);
+        //    //}
+        //    //m_sceneEntities.AddRange(sceneEntities);
+        //}
 
-        public EntityManager GetEntityManager()
-        {
-            return m_EntityManager;
-        }
+        //public EntityManager GetEntityManager()
+        //{
+        //    return m_EntityManager;
+        //}
 
-        public World GetECSWorld()
-        {
-            return ecsWorld;
-        }
+        //public World GetECSWorld()
+        //{
+        //    return ecsWorld;
+        //}
 
-        public T Spawn<T>(GameObject prefab) where T : Component
-        {
-            return Spawn<T>(prefab, Vector3.zero, Quaternion.identity);
-        }
+        //public T Spawn<T>(GameObject prefab) where T : Component
+        //{
+        //    return Spawn<T>(prefab, Vector3.zero, Quaternion.identity);
+        //}
 
-        public T Spawn<T>(GameObject prefab, Vector3 position, Quaternion rotation) where T : Component
-        {
-            Entity entity;
-            var gameObject = SpawnInternal(prefab, position, rotation, out entity);
-            if (gameObject == null)
-                return null;
+        //public T Spawn<T>(GameObject prefab, Vector3 position, Quaternion rotation) where T : Component
+        //{
+        //    Entity entity;
+        //    var gameObject = SpawnInternal(prefab, position, rotation, out entity);
+        //    if (gameObject == null)
+        //        return null;
 
-            var result = gameObject.GetComponent<T>();
-            if (result == null)
-            {
-                GameDebug.Log(string.Format("Spawned entity '{0}' didn't have component '{1}'", prefab, typeof(T).FullName));
-                return null;
-            }
+        //    var result = gameObject.GetComponent<T>();
+        //    if (result == null)
+        //    {
+        //        GameDebug.Log(string.Format("Spawned entity '{0}' didn't have component '{1}'", prefab, typeof(T).FullName));
+        //        return null;
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public GameObject Spawn(string name, params System.Type[] components)
-        {
-            var go = new GameObject(name, components);
-            RegisterInternal(go, true);
-            return go;
-        }
+        //public GameObject Spawn(string name, params System.Type[] components)
+        //{
+        //    var go = new GameObject(name, components);
+        //    RegisterInternal(go, true);
+        //    return go;
+        //}
 
-        public GameObject SpawnInternal(GameObject prefab, Vector3 position, Quaternion rotation, out Entity entity)
-        {
-            Profiler.BeginSample("GameWorld.SpawnInternal");
+        //public GameObject SpawnInternal(GameObject prefab, Vector3 position, Quaternion rotation, out Entity entity)
+        //{
+        //    Profiler.BeginSample("GameWorld.SpawnInternal");
 
-            var go = Object.Instantiate(prefab, position, rotation);
+        //    var go = Object.Instantiate(prefab, position, rotation);
 
-            entity = RegisterInternal(go, true);
+        //    entity = RegisterInternal(go, true);
 
-            Profiler.EndSample();
+        //    Profiler.EndSample();
 
-            return go;
-        }
+        //    return go;
+        //}
 
         ////////////////////////////////////////////////////////////////////////////////
 
         //   public List<ReplicatedEntity> SceneEntities { get { return m_sceneEntities; } }
 
-        public void RequestDespawn(GameObject entity)
-        {
-            if (m_DespawnRequests.Contains(entity))
-            {
-                GameDebug.Assert(false, "Trying to request depawn of same gameobject({0}) multiple times", entity.name);
-                return;
-            }
+        //public void RequestDespawn(GameObject entity)
+        //{
+        //    if (m_DespawnRequests.Contains(entity))
+        //    {
+        //        GameDebug.Assert(false, "Trying to request depawn of same gameobject({0}) multiple times", entity.name);
+        //        return;
+        //    }
 
-            var gameObjectEntity = entity.GetComponent<GameObjectEntity>();
-            if (gameObjectEntity != null)
-                m_EntityManager.AddComponent(gameObjectEntity.Entity, typeof(DespawningEntity));
+        //    var gameObjectEntity = entity.GetComponent<GameObjectEntity>();
+        //    if (gameObjectEntity != null)
+        //        m_EntityManager.AddComponent(gameObjectEntity.Entity, typeof(DespawningEntity));
 
-            m_DespawnRequests.Add(entity);
-        }
+        //    m_DespawnRequests.Add(entity);
+        //}
 
-        public void RequestDespawn(GameObject entity, EntityCommandBuffer commandBuffer)
-        {
-            if (m_DespawnRequests.Contains(entity))
-            {
-                GameDebug.Assert(false, "Trying to request depawn of same gameobject({0}) multiple times", entity.name);
-                return;
-            }
+        //public void RequestDespawn(GameObject entity, EntityCommandBuffer commandBuffer)
+        //{
+        //    if (m_DespawnRequests.Contains(entity))
+        //    {
+        //        GameDebug.Assert(false, "Trying to request depawn of same gameobject({0}) multiple times", entity.name);
+        //        return;
+        //    }
 
-            var gameObjectEntity = entity.GetComponent<GameObjectEntity>();
-            if (gameObjectEntity != null)
-                commandBuffer.AddComponent(gameObjectEntity.Entity, new DespawningEntity());
+        //    var gameObjectEntity = entity.GetComponent<GameObjectEntity>();
+        //    if (gameObjectEntity != null)
+        //        commandBuffer.AddComponent(gameObjectEntity.Entity, new DespawningEntity());
 
-            m_DespawnRequests.Add(entity);
-        }
+        //    m_DespawnRequests.Add(entity);
+        //}
 
-        public void RequestDespawn(Entity entity)
-        {
-            m_EntityManager.AddComponent(entity, typeof(DespawningEntity));
-            m_DespawnEntityRequests.Add(entity);
+        //public void RequestDespawn(Entity entity)
+        //{
+        //    m_EntityManager.AddComponent(entity, typeof(DespawningEntity));
+        //    m_DespawnEntityRequests.Add(entity);
 
-            if (m_EntityManager.HasComponent<EntityGroupChildren>(entity))
-            {
-                // Copy buffer as we dont have EntityCommandBuffer to perform changes            
-                var buffer = m_EntityManager.GetBuffer<EntityGroupChildren>(entity);
-                var entities = new Entity[buffer.Length];
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    entities[i] = buffer[i].entity;
-                }
+        //    if (m_EntityManager.HasComponent<EntityGroupChildren>(entity))
+        //    {
+        //        // Copy buffer as we dont have EntityCommandBuffer to perform changes            
+        //        var buffer = m_EntityManager.GetBuffer<EntityGroupChildren>(entity);
+        //        var entities = new Entity[buffer.Length];
+        //        for (int i = 0; i < buffer.Length; i++)
+        //        {
+        //            entities[i] = buffer[i].entity;
+        //        }
 
-                for (int i = 0; i < entities.Length; i++)
-                {
-                    m_EntityManager.AddComponent(entities[i], typeof(DespawningEntity));
-                    m_DespawnEntityRequests.Add(entities[i]);
-                }
-            }
-        }
+        //        for (int i = 0; i < entities.Length; i++)
+        //        {
+        //            m_EntityManager.AddComponent(entities[i], typeof(DespawningEntity));
+        //            m_DespawnEntityRequests.Add(entities[i]);
+        //        }
+        //    }
+        //}
 
-        public void RequestDespawn(EntityCommandBuffer commandBuffer, Entity entity)
-        {
-            if (m_DespawnEntityRequests.Contains(entity))
-            {
-                GameDebug.Assert(false, "Trying to request depawn of same gameobject({0}) multiple times", entity);
-                return;
-            }
-            commandBuffer.AddComponent(entity, new DespawningEntity());
-            m_DespawnEntityRequests.Add(entity);
+        //public void RequestDespawn(EntityCommandBuffer commandBuffer, Entity entity)
+        //{
+        //    if (m_DespawnEntityRequests.Contains(entity))
+        //    {
+        //        GameDebug.Assert(false, "Trying to request depawn of same gameobject({0}) multiple times", entity);
+        //        return;
+        //    }
+        //    commandBuffer.AddComponent(entity, new DespawningEntity());
+        //    m_DespawnEntityRequests.Add(entity);
 
-            if (m_EntityManager.HasComponent<EntityGroupChildren>(entity))
-            {
-                var buffer = m_EntityManager.GetBuffer<EntityGroupChildren>(entity);
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    commandBuffer.AddComponent(buffer[i].entity, new DespawningEntity());
-                    m_DespawnEntityRequests.Add(buffer[i].entity);
-                }
-            }
-        }
+        //    if (m_EntityManager.HasComponent<EntityGroupChildren>(entity))
+        //    {
+        //        var buffer = m_EntityManager.GetBuffer<EntityGroupChildren>(entity);
+        //        for (int i = 0; i < buffer.Length; i++)
+        //        {
+        //            commandBuffer.AddComponent(buffer[i].entity, new DespawningEntity());
+        //            m_DespawnEntityRequests.Add(buffer[i].entity);
+        //        }
+        //    }
+        //}
 
-        public void ProcessDespawns()
-        {
-            foreach (var gameObject in m_DespawnRequests)
-            {
-                m_dynamicEntities.Remove(gameObject);
-                Object.Destroy(gameObject);
-            }
+        //public void ProcessDespawns()
+        //{
+        //    foreach (var gameObject in m_DespawnRequests)
+        //    {
+        //        m_dynamicEntities.Remove(gameObject);
+        //        Object.Destroy(gameObject);
+        //    }
 
-            foreach (var entity in m_DespawnEntityRequests)
-            {
-                m_EntityManager.DestroyEntity(entity);
-            }
-            m_DespawnEntityRequests.Clear();
-            m_DespawnRequests.Clear();
+        //    foreach (var entity in m_DespawnEntityRequests)
+        //    {
+        //        m_EntityManager.DestroyEntity(entity);
+        //    }
+        //    m_DespawnEntityRequests.Clear();
+        //    m_DespawnRequests.Clear();
 
-            m_destroyDespawningSystem.Update();
-        }
+        //    m_destroyDespawningSystem.Update();
+        //}
 
-        Entity RegisterInternal(GameObject gameObject, bool isDynamic)
-        {
-            // If gameObject has GameObjectEntity it is already registered in entitymanager. If not we register it here  
-            var gameObjectEntity = gameObject.GetComponent<GameObjectEntity>();
-            if (gameObjectEntity == null)
-                GameObjectEntity.AddToEntityManager(m_EntityManager, gameObject);
+        //Entity RegisterInternal(GameObject gameObject, bool isDynamic)
+        //{
+        //    // If gameObject has GameObjectEntity it is already registered in entitymanager. If not we register it here  
+        //    var gameObjectEntity = gameObject.GetComponent<GameObjectEntity>();
+        //    if (gameObjectEntity == null)
+        //        GameObjectEntity.AddToEntityManager(m_EntityManager, gameObject);
 
-            if (isDynamic)
-                m_dynamicEntities.Add(gameObject);
+        //    if (isDynamic)
+        //        m_dynamicEntities.Add(gameObject);
 
-            return gameObjectEntity != null ? gameObjectEntity.Entity : Entity.Null;
-        }
+        //    return gameObjectEntity != null ? gameObjectEntity.Entity : Entity.Null;
+        //}
 
 
 
-        EntityManager m_EntityManager;
-        World ecsWorld;
+        //EntityManager m_EntityManager;
+        //World ecsWorld;
 
-        GameObject m_sceneRoot;
+        //GameObject m_sceneRoot;
 
-        DestroyDespawning m_destroyDespawningSystem;
+        //DestroyDespawning m_destroyDespawningSystem;
 
-        List<GameObject> m_dynamicEntities = new List<GameObject>();
-        // List<ReplicatedEntity> m_sceneEntities = new List<ReplicatedEntity>();
-        List<GameObject> m_DespawnRequests = new List<GameObject>(32);
-        List<Entity> m_DespawnEntityRequests = new List<Entity>(32);
+        //List<GameObject> m_dynamicEntities = new List<GameObject>();
+        //// List<ReplicatedEntity> m_sceneEntities = new List<ReplicatedEntity>();
+        //List<GameObject> m_DespawnRequests = new List<GameObject>(32);
+        //List<Entity> m_DespawnEntityRequests = new List<Entity>(32);
 
         float frameDuration;
         private GameTick worldTick;

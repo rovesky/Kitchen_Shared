@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace Assets.Scripts.ECS
 {
 
     [DisableAutoCreation]
-    public class MoveTargetSystem : ComponentSystem
+    public class MoveTargetSystem : FSComponentSystem
     {
         public EntityQuery PlayerGroup;
 

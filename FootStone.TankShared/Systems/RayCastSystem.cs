@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -9,7 +10,7 @@ namespace Assets.Scripts.ECS
 {
 
     [DisableAutoCreation]
-    public class RayCastSystem : ComponentSystem
+    public class RayCastSystem : FSComponentSystem
     {
         private void DoCollide(Entity entityA,ref LocalToWorld localToWorld, ref Translation position, ref PhysicsCollider collider, float distance)
         {

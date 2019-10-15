@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Assets.Scripts.ECS
 {
 
     [DisableAutoCreation]
-    public class MoveForwardSystem : ComponentSystem
+    public class MoveForwardSystem : FSComponentSystem
     {
         protected override void OnUpdate()
         {

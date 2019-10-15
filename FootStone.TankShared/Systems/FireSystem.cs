@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using FootStone.ECS;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
     [DisableAutoCreation]
-    public class PlayerFireSystem : ComponentSystem
+    public class PlayerFireSystem : FSComponentSystem
     {
         private GameObject rocketPrefab;
 
@@ -51,7 +52,7 @@ namespace Assets.Scripts.ECS
     }
 
     [DisableAutoCreation]
-    public class EnemyFireSystem : ComponentSystem
+    public class EnemyFireSystem : FSComponentSystem
     {
         private GameObject rocketPrefab;
         private EntityQuery playerGroup;

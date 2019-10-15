@@ -54,8 +54,6 @@ namespace Assets.Scripts.ECS
         public ButtonBitField buttons;
         public Vector3 targetPos;
         public bool isBack;
-     
-
 
         public void Reset()
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
     [DisableAutoCreation]
-    public class MoveTranslationSystem : ComponentSystem
+    public class MoveTranslationSystem : FSComponentSystem
     {
         protected override void OnUpdate()
         {

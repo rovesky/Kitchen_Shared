@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Assets.Scripts.ECS
 {
     //[UpdateInGroup(typeof(LateSimulationSystemGroup))]
     [DisableAutoCreation]
-    public class DespawnSystem : ComponentSystem
+    public class DespawnSystem : FSComponentSystem
     {
         protected override void OnUpdate()
         {
