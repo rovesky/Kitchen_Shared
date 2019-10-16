@@ -24,7 +24,7 @@ namespace Assets.Scripts.ECS
             {
                 position = new Translation()
                 {
-                    Value = position.Value - lw.Forward * move.Speed * Time.deltaTime
+                    Value = position.Value - lw.Forward * move.Speed * GameWorld.TickDuration
                 };
             });
 

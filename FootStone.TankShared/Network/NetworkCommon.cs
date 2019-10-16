@@ -47,7 +47,7 @@ public static class NetworkConfig
     public const int commandServerQueueSize = 32;
 
     // Number of commands the client stores - also maximum number of predictive steps the client can take
-    public const int commandClientBufferSize = 32;
+    public const uint commandClientBufferSize = 32;
 
     public const int maxFragments = 16;
     public const int packageFragmentSize = NetworkParameterConstants.MTU - 128;  // 128 is just a random safety distance to MTU

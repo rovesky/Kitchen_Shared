@@ -53,14 +53,14 @@ namespace Assets.Scripts.ECS
         public int renderTick;
         public ButtonBitField buttons;
         public Vector3 targetPos;
-        public bool isBack;
+       // public bool isBack;
 
         public void Reset()
         {
             renderTick = 0;
             buttons.flags = 0;
             targetPos = Vector3.zero;
-            isBack = false;
+          //  isBack = false;
         }
 
         public byte[] ToData()

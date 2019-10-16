@@ -17,27 +17,26 @@ namespace Assets.Scripts.ECS
     {
         protected override void OnUpdate()
         {
-            float dt = Time.fixedDeltaTime;
-
+          
             Entities.ForEach(
                 (ref Translation position, ref MoveTranslation move) =>
                 {
                     var value = position.Value;
                     if (move.Direction == Direction.Up)
                     {
-                        value.z += move.Speed * Time.deltaTime;
+                        value.z += move.Speed * GameWorld.TickDuration;
                     }
                     else if (move.Direction == Direction.Down)
                     {
-                        value.z -= move.Speed * Time.deltaTime;
+                        value.z -= move.Speed * GameWorld.TickDuration;
                     }
                     else if (move.Direction == Direction.Left)
                     {
-                        value.x -= move.Speed * Time.deltaTime;
+                        value.x -= move.Speed * GameWorld.TickDuration;
                     }
                     else if (move.Direction == Direction.Right)
                     {
-                        value.x += move.Speed * Time.deltaTime;
+                        value.x += move.Speed * GameWorld.TickDuration;
                     }
 
                     position = new Translation()

@@ -22,13 +22,13 @@ namespace Assets.Scripts.ECS
                 (ref Translation gunTransform,ref PlayerCommand command, ref Rotation gunRotation, ref FireRocket fire) =>
                 {
               
-                    fire.RocketTimer -= Time.deltaTime;
+                    fire.RocketTimer -= GameWorld.TickDuration;
                     if (fire.RocketTimer > 0)
                         return;
 
                     fire.RocketTimer = fire.FireCooldown;
 
-                    if (command.isBack && command.buttons.IsSet(PlayerCommand.Button.PrimaryFire))
+                    if (command.buttons.IsSet(PlayerCommand.Button.PrimaryFire))
                     {
                         var go = Object.Instantiate(rocketPrefab);
                         var e = go.GetComponent<EntityTracker>().EntityToTrack;
@@ -78,7 +78,7 @@ namespace Assets.Scripts.ECS
                 Entities.WithAllReadOnly<Enemy>().ForEach(
                     (ref LocalToWorld gunTransform, ref Rotation gunRotation, ref FireRocket fire) =>
                     {
-                        fire.RocketTimer -= Time.deltaTime;
+                        fire.RocketTimer -= GameWorld.TickDuration;
                         if (fire.RocketTimer > 0)
                             return;
 

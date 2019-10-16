@@ -22,7 +22,7 @@ namespace Assets.Scripts.ECS
             Entities.WithAllReadOnly<MoveSin>().ForEach((ref Translation translation) =>
             {
                 // 左右移动
-                float rx = Mathf.Sin(Time.time) * Time.deltaTime;
+                float rx = Mathf.Sin(Time.time) * GameWorld.TickDuration; 
                 translation = new Translation()
                 {
                     Value = new float3(translation.Value.x + rx,

@@ -18,9 +18,9 @@ namespace FootStone.ECS
             TickDuration = 0;
         }
 
-        public void SetTick(int tick, float tickDuration)
+        public void SetTick(uint tick, float tickDuration)
         {
-            this.Tick = (uint)tick;
+            this.Tick = tick;
             this.TickDuration = tickDuration;
         }
 

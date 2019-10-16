@@ -47,7 +47,7 @@ namespace Assets.Scripts.ECS
                 var targetPos = EntityManager.GetComponentData<Translation>(target);
                 var targetRotation = EntityManager.GetComponentData<Rotation>(target);
 
-                Vector3 value = Vector3.MoveTowards(position.Value, targetPos.Value, move.Speed * Time.deltaTime);
+                Vector3 value = Vector3.MoveTowards(position.Value, targetPos.Value, move.Speed * GameWorld.TickDuration);
 
                 position = new Translation()
                 {
