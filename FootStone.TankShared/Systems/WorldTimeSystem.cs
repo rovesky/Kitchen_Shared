@@ -1,27 +1,29 @@
 ﻿using FootStone.ECS;
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Entities;
-using UnityEngine;
 
 namespace Assets.Scripts.ECS
 {
- 
+
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class WorldTimeSystem : FSComponentSystem
     {
         private long stopwatchFrequency;
         private Stopwatch clock;
-        private double frameTime;
+      //  private double frameTime;
+      //  private EntityQuery worldTimeQuery;
 
         protected override void OnCreate()
         {
             base.OnCreate();
+
+            var worldTimeQuery = GetEntityQuery(ComponentType.ReadWrite<WorldTime>());
+            EntityManager.CreateEntity(typeof(WorldTime));
+            worldTimeQuery.SetSingleton(new WorldTime()
+            {
+                frameTime = 0,
+                tick = new GameTick(30)
+            });
 
             stopwatchFrequency = Stopwatch.Frequency;
             clock = new Stopwatch();
@@ -35,7 +37,9 @@ namespace Assets.Scripts.ECS
         }
         protected override void OnUpdate()
         {
-            Game.frameTime = (double)clock.ElapsedTicks / stopwatchFrequency;
+            var worldTime = GetSingleton<WorldTime>();
+            worldTime.frameTime = (double)clock.ElapsedTicks / stopwatchFrequency;  
+            SetSingleton(worldTime);
         }
     }
 }

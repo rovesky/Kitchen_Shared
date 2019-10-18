@@ -10,10 +10,12 @@ namespace FootStone.ECS
     public struct GameTick
     {
 
+        public static GameTick defaultGameTick = new GameTick(30);
+
         public GameTick(int tickRate)
         {
-            _tickRate = tickRate;
-            TickInterval = 1.0f / _tickRate;
+            this.tickRate = tickRate;
+            TickInterval = 1.0f / this.tickRate;
             Tick = 1;
             TickDuration = 0;
         }
@@ -53,11 +55,11 @@ namespace FootStone.ECS
         /// <summary>Number of ticks per second.</summary>
         public int TickRate
         {
-            get => _tickRate;
+            get => tickRate;
             set
             {
-                _tickRate = value;
-                TickInterval = 1.0f / _tickRate;
+                tickRate = value;
+                TickInterval = 1.0f / tickRate;
             }
         }
 
@@ -77,6 +79,6 @@ namespace FootStone.ECS
         public float TickDuration { get; set; } 
 
 
-        private int _tickRate;
+        private int tickRate;
     }
 }

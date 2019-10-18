@@ -10,6 +10,7 @@ namespace Assets.Scripts.ECS
     [Serializable]
     public struct Connection : IComponentData 
     {
-        public int id;    
+        public int id;
+        public int sessionId;
     }
 }

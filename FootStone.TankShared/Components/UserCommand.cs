@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
     [Serializable]
-    public struct PlayerCommand : IComponentData
+    public struct UserCommand : IComponentData
     {
         public enum Button : uint
         {
@@ -50,17 +50,25 @@ namespace Assets.Scripts.ECS
             }
         }
 
-        public int renderTick;
+        public uint checkTick;
+        public uint renderTick;
         public ButtonBitField buttons;
         public Vector3 targetPos;
-       // public bool isBack;
+
+        public static UserCommand defaultCommand = new UserCommand()
+        {
+            checkTick = 0,
+            renderTick = 0,
+            buttons = default,
+            targetPos = Vector3.zero
+        };
 
         public void Reset()
         {
+            checkTick = 0;
             renderTick = 0;
             buttons.flags = 0;
             targetPos = Vector3.zero;
-          //  isBack = false;
         }
 
         public byte[] ToData()
@@ -68,6 +76,7 @@ namespace Assets.Scripts.ECS
             MemoryStream memStream = new MemoryStream(100);
             BinaryWriter writer = new BinaryWriter(memStream);
 
+            writer.Write(checkTick);
             writer.Write(renderTick);
             writer.Write(buttons.flags);
             writer.Write(targetPos.x);
@@ -82,7 +91,8 @@ namespace Assets.Scripts.ECS
             var memStream = new MemoryStream(data);
             var reader = new BinaryReader(memStream);
 
-            renderTick = reader.ReadInt32();
+            checkTick = reader.ReadUInt32();
+            renderTick = reader.ReadUInt32();
             buttons.flags = reader.ReadUInt32();
             targetPos.x = reader.ReadSingle();
             targetPos.y = reader.ReadSingle();

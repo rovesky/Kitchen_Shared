@@ -21,8 +21,9 @@ namespace Assets.Scripts.ECS
         {            
             Entities.WithAllReadOnly<MoveSin>().ForEach((ref Translation translation) =>
             {
+                var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
                 // 左右移动
-                float rx = Mathf.Sin(Time.time) * GameWorld.TickDuration; 
+                float rx = Mathf.Sin(Time.time) * tickDuration; 
                 translation = new Translation()
                 {
                     Value = new float3(translation.Value.x + rx,

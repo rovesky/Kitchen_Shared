@@ -19,16 +19,17 @@ namespace Assets.Scripts.ECS
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<Player>().ForEach(
-                (ref Translation gunTransform,ref PlayerCommand command, ref Rotation gunRotation, ref FireRocket fire) =>
+                (ref Translation gunTransform,ref UserCommand command, ref Rotation gunRotation, ref FireRocket fire) =>
                 {
-              
-                    fire.RocketTimer -= GameWorld.TickDuration;
+
+                    var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
+                    fire.RocketTimer -= tickDuration;
                     if (fire.RocketTimer > 0)
                         return;
 
                     fire.RocketTimer = fire.FireCooldown;
 
-                    if (command.buttons.IsSet(PlayerCommand.Button.PrimaryFire))
+                    if (command.buttons.IsSet(UserCommand.Button.PrimaryFire))
                     {
                         var go = Object.Instantiate(rocketPrefab);
                         var e = go.GetComponent<EntityTracker>().EntityToTrack;
@@ -78,7 +79,8 @@ namespace Assets.Scripts.ECS
                 Entities.WithAllReadOnly<Enemy>().ForEach(
                     (ref LocalToWorld gunTransform, ref Rotation gunRotation, ref FireRocket fire) =>
                     {
-                        fire.RocketTimer -= GameWorld.TickDuration;
+                        var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
+                        fire.RocketTimer -= tickDuration;
                         if (fire.RocketTimer > 0)
                             return;
 

@@ -22,9 +22,10 @@ namespace Assets.Scripts.ECS
 
             Entities.ForEach((ref LocalToWorld lw, ref Translation position, ref MoveForward move) =>
             {
+                var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
                 position = new Translation()
                 {
-                    Value = position.Value - lw.Forward * move.Speed * GameWorld.TickDuration
+                    Value = position.Value - lw.Forward * move.Speed * tickDuration
                 };
             });
 

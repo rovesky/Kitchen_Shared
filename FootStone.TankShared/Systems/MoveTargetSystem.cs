@@ -41,13 +41,14 @@ namespace Assets.Scripts.ECS
 
             Entities.ForEach((ref Translation position, ref Rotation rotation, ref MoveTarget move) =>
             {
+                var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
 
                 var target = playerEntities[0];
 
                 var targetPos = EntityManager.GetComponentData<Translation>(target);
                 var targetRotation = EntityManager.GetComponentData<Rotation>(target);
 
-                Vector3 value = Vector3.MoveTowards(position.Value, targetPos.Value, move.Speed * GameWorld.TickDuration);
+                Vector3 value = Vector3.MoveTowards(position.Value, targetPos.Value, move.Speed * tickDuration);
 
                 position = new Translation()
                 {

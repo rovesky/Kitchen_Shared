@@ -7,7 +7,16 @@ using UnityEditor;
 using UnityEngine.Profiling;
 
 namespace FootStone.ECS
-{ 
+{
+    [DisableAutoCreation]
+    public class NoSortComponentSystemGroup : ComponentSystemGroup
+    {
+        public override void SortSystemUpdateList()
+        {
+
+        }
+    }
+
 
     public abstract class FSComponentSystem: ComponentSystem
     {
