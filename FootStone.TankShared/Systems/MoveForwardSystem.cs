@@ -19,14 +19,15 @@ namespace Assets.Scripts.ECS
     {
         protected override void OnUpdate()
         {
+            var tickDuration = GetSingleton<WorldTime>().gameTick.TickDuration;
 
-            Entities.ForEach((ref LocalToWorld lw, ref Translation position, ref MoveForward move) =>
-            {
-                var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
-                position = new Translation()
-                {
-                    Value = position.Value - lw.Forward * move.Speed * tickDuration
-                };
+            Entities.ForEach((ref EntityPredictData predictData, ref MoveForward move) =>
+            {                  
+               
+                float3 forward = (Quaternion)predictData.rotation * Vector3.forward;
+             //   FSLog.Info($"MoveForward,forward：[{forward.x},{forward.y},{forward.z}]");                
+                predictData.position = predictData.position - forward * move.Speed * tickDuration;
+               
             });
 
         }

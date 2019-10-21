@@ -22,7 +22,7 @@ namespace Assets.Scripts.ECS
                 (ref Translation gunTransform,ref UserCommand command, ref Rotation gunRotation, ref FireRocket fire) =>
                 {
 
-                    var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
+                    var tickDuration = GetSingleton<WorldTime>().gameTick.TickDuration;
                     fire.RocketTimer -= tickDuration;
                     if (fire.RocketTimer > 0)
                         return;
@@ -45,7 +45,12 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.AddComponent(e, new Health(){Value = 1});
                         PostUpdateCommands.AddComponent(e, new Damage() );
                         PostUpdateCommands.AddComponent(e, new Attack() {Power = 20});
-                        PostUpdateCommands.AddComponent(e, new MoveTranslation() {Speed = 6, Direction = Direction.Up});              
+                        PostUpdateCommands.AddComponent(e, new MoveForward() {Speed = 6});
+
+                        PostUpdateCommands.AddComponent(e, new EntityPredictData() {
+                            position = position.Value,
+                            rotation  = rotation.Value
+                        });
                     }
                 }
             );
@@ -79,7 +84,7 @@ namespace Assets.Scripts.ECS
                 Entities.WithAllReadOnly<Enemy>().ForEach(
                     (ref LocalToWorld gunTransform, ref Rotation gunRotation, ref FireRocket fire) =>
                     {
-                        var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
+                        var tickDuration = GetSingleton<WorldTime>().gameTick.TickDuration;
                         fire.RocketTimer -= tickDuration;
                         if (fire.RocketTimer > 0)
                             return;
@@ -104,7 +109,12 @@ namespace Assets.Scripts.ECS
                         PostUpdateCommands.AddComponent(e, new Health() { Value = 1 });
                         PostUpdateCommands.AddComponent(e, new Damage());
                         PostUpdateCommands.AddComponent(e, new MoveForward() { Speed = 3});
-                     //   PostUpdateCommands.AddComponent(e, new KillOutofRender() {IsVisible = true});
+                        //   PostUpdateCommands.AddComponent(e, new KillOutofRender() {IsVisible = true});
+                        PostUpdateCommands.AddComponent(e, new EntityPredictData()
+                        {
+                            position = position.Value,
+                            rotation = rotation.Value
+                        });
                     }
                 );
             }

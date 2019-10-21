@@ -22,7 +22,7 @@ namespace Assets.Scripts.ECS
             worldTimeQuery.SetSingleton(new WorldTime()
             {
                 frameTime = 0,
-                tick = new GameTick(30)
+                gameTick = new GameTick(30)
             });
 
             stopwatchFrequency = Stopwatch.Frequency;

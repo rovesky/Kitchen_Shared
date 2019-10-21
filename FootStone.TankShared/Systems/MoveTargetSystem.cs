@@ -41,7 +41,7 @@ namespace Assets.Scripts.ECS
 
             Entities.ForEach((ref Translation position, ref Rotation rotation, ref MoveTarget move) =>
             {
-                var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
+                var tickDuration = GetSingleton<WorldTime>().gameTick.TickDuration;
 
                 var target = playerEntities[0];
 

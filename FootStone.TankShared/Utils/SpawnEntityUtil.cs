@@ -32,13 +32,15 @@ namespace Assets.Scripts.ECS
             if (type == EnemyType.Normal)
             {
                 em.AddComponentData(e, new Health() { Value = 100 });
-                em.AddComponentData(e, new MoveTranslation() { Speed = 1f, Direction = Direction.Down });
+                em.AddComponentData(e, new MoveForward() { Speed = 1f});
+                //     em.AddComponentData(e, new MoveTranslation() { Speed = 1f, Direction = Direction.Down });
                 em.AddComponentData(e, new MoveSin());
             }
             else if (type == EnemyType.Super)
             {
                 em.AddComponentData(e, new Health() { Value = 500 });
-                em.AddComponentData(e, new MoveTranslation() { Speed = 0.5f, Direction = Direction.Down });
+                em.AddComponentData(e, new MoveForward() { Speed = 0.5f });
+                //   em.AddComponentData(e, new MoveTranslation() { Speed = 0.5f, Direction = Direction.Down });
                 em.AddComponentData(e, new FireRocket()
                 {
                     Rocket = rocket,

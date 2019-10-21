@@ -1,14 +1,6 @@
 ﻿using FootStone.ECS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics.Systems;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace Assets.Scripts.ECS
@@ -18,18 +10,17 @@ namespace Assets.Scripts.ECS
     public class MoveSinSystem : FSComponentSystem
     {
         protected override void OnUpdate()
-        {            
-            Entities.WithAllReadOnly<MoveSin>().ForEach((ref Translation translation) =>
-            {
-                var tickDuration = GetSingleton<WorldTime>().tick.TickDuration;
+        {
+            var tickDuration = GetSingleton<WorldTime>().TickDuration;
+            var tick = GetSingleton<WorldTime>().Tick;
+            Entities.WithAllReadOnly<MoveSin>().ForEach((ref EntityPredictData predictData) =>
+            {        
                 // 左右移动
-                float rx = Mathf.Sin(Time.time) * tickDuration; 
-                translation = new Translation()
-                {
-                    Value = new float3(translation.Value.x + rx,
-                                       translation.Value.y,
-                                       translation.Value.z)
-                };
+                float rx = Mathf.Sin(tick/30.0f) * tickDuration;
+
+                predictData.position = new float3(predictData.position.x + rx,
+                                       predictData.position.y,
+                                       predictData.position.z);              
 
             });
         }

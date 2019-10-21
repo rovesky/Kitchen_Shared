@@ -11,8 +11,21 @@ namespace Assets.Scripts.ECS
     [Serializable]
     public struct WorldTime : IComponentData
     {
-        public GameTick tick;
-        public double frameTime;          
+        public GameTick gameTick;
+        public double frameTime;
+
+        public uint Tick => gameTick.Tick;
+        public float TickDuration => gameTick.TickDuration;
+
+        public void SetTick(uint tick,float duration)
+        {
+            gameTick.SetTick(tick, duration);
+        }
+
+        public void SetTick(GameTick gameTick)
+        {
+            this.gameTick = gameTick;
+        }
     }
 
 }
