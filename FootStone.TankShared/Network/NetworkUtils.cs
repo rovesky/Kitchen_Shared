@@ -212,17 +212,17 @@ class ByteArrayComp : IEqualityComparer<byte[]>, IComparer<byte[]>
     }
 }
 
-//public class Aggregator
-//{
-//    const int k_WindowSize = 120;
+public class Aggregator
+{
+    const int k_WindowSize = 120;
 
-//    public float previousValue;
-//    public FloatRollingAverage graph = new FloatRollingAverage(k_WindowSize);
+    public float previousValue;
+    public FloatRollingAverage graph = new FloatRollingAverage(k_WindowSize);
 
-//    public void Update(float value)
-//    {
-//        graph.Update(value - previousValue);
-//        previousValue = value;
-//    }
-//}
+    public void Update(float value)
+    {
+        graph.Update(value - previousValue);
+        previousValue = value;
+    }
+}
 

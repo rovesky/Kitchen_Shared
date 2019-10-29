@@ -1,6 +1,41 @@
 ﻿
 using Unity.Networking.Transport;
 
+public struct TransportEvent
+{
+    public enum Type
+    {
+        Data,
+        Connect,
+        Disconnect
+    }
+    public Type type;
+    public int connectionId;
+    public byte[] data;
+    public int dataSize;
+}
+
+public interface INetworkTransport
+{
+    int Connect(string ip, int port);
+    void Disconnect(int connectionId);
+
+    bool NextEvent(ref TransportEvent e);
+    void SendData(int connectionId, byte[] data, int sendSize);
+
+    string GetConnectionDescription(int connectionId);
+
+    void Update();
+
+    void Shutdown();
+}
+
+public interface INetworkCallbacks
+{
+    void OnConnect(int clientId);
+    void OnDisconnect(int clientId);
+    void OnEvent(int clientId, NetworkEvent info);
+}
 
 public enum NetworkMessage
 {
@@ -47,7 +82,7 @@ public static class NetworkConfig
     public const int commandServerQueueSize = 32;
 
     // Number of commands the client stores - also maximum number of predictive steps the client can take
-    public const uint commandClientBufferSize = 32;
+    public const int commandClientBufferSize = 32;
 
     public const int maxFragments = 16;
     public const int packageFragmentSize = NetworkParameterConstants.MTU - 128;  // 128 is just a random safety distance to MTU

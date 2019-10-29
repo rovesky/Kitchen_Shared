@@ -12,6 +12,7 @@ namespace Assets.Scripts.ECS
         public uint tick;
         public int length;    
         public uint* data;
+        public long time;
     }
     [Serializable]
     public struct Snapshot : IComponentData

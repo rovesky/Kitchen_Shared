@@ -6,6 +6,13 @@ using UnityEngine;
 namespace Assets.Scripts.ECS
 {
     [Serializable]
+    [InternalBufferCapacity(64)]
+    public struct UserCommandBuffer : IBufferElementData
+    {
+        public UserCommand command;
+    }
+
+    [Serializable]
     public struct UserCommand : IComponentData
     {
         public enum Button : uint
@@ -65,10 +72,10 @@ namespace Assets.Scripts.ECS
 
         public void Reset()
         {
-            checkTick = 0;
-            renderTick = 0;
+          //  checkTick = 0;
+          //  renderTick = 0;
             buttons.flags = 0;
-            targetPos = Vector3.zero;
+           // targetPos = Vector3.zero;
         }
 
         public byte[] ToData()
@@ -97,6 +104,23 @@ namespace Assets.Scripts.ECS
             targetPos.x = reader.ReadSingle();
             targetPos.y = reader.ReadSingle();
             targetPos.z = reader.ReadSingle();           
+        }
+
+
+        public void Serialize(ref NetworkWriter networkWriter)
+        {
+            networkWriter.WriteUInt32("checkTick", checkTick);
+            networkWriter.WriteUInt32("renderTick", renderTick);
+            networkWriter.WriteUInt32("buttonFlag", buttons.flags);
+            networkWriter.WriteVector3Q("targetPos", targetPos);          
+        }
+
+        public void Deserialize(ref NetworkReader networkReader)
+        {
+            checkTick = networkReader.ReadUInt32();
+            renderTick = networkReader.ReadUInt32();
+            buttons.flags = networkReader.ReadUInt32();
+            targetPos = networkReader.ReadVector3Q();       
         }
     }
 

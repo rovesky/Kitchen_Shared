@@ -1,4 +1,5 @@
 ﻿using FootStone.ECS;
+using System;
 using System.Diagnostics;
 using Unity.Entities;
 
@@ -41,5 +42,12 @@ namespace Assets.Scripts.ECS
             worldTime.frameTime = (double)clock.ElapsedTicks / stopwatchFrequency;  
             SetSingleton(worldTime);
         }
+
+        public long GetCurrentTime()
+        {
+            return clock.ElapsedMilliseconds;
+        }
+
+     
     }
 }
