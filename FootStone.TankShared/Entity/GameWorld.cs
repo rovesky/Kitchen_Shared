@@ -6,6 +6,7 @@ using Unity.Entities;
 using UnityEditor;
 using UnityEngine.Profiling;
 using System.Diagnostics;
+using System;
 
 namespace FootStone.ECS
 {
@@ -50,6 +51,11 @@ namespace FootStone.ECS
         public void Update()
         {
             FrameTime = (double)Clock.ElapsedTicks / stopwatchFrequency;
+        }
+
+        internal T Spawn<T>(GameObject prefab)
+        {
+            throw new NotImplementedException();
         }
 
         //public void Shutdown()

@@ -11,7 +11,7 @@ public struct ProjectileSettings
     public float impactDamage;
     public float impactImpulse;
     public float collisionRadius;
-    public SplashDamageSettings splashDamage;
+ //   public SplashDamageSettings splashDamage;
 }
 
 [CreateAssetMenu(fileName = "ProjectileTypeDefinition", menuName = "FPS Sample/Projectile/ProjectileTypeDefinition")]

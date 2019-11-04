@@ -3,26 +3,28 @@ using UnityEngine;
 using Unity.Entities;
 using UnityEngine.Profiling;
 using Unity.Mathematics;
+using Assets.Scripts.ECS;
 
 [DisableAutoCreation]
-public class CreateProjectileMovementCollisionQueries : BaseComponentSystem
+public class CreateProjectileMovementCollisionQueries : ComponentSystem
 {
     EntityQuery ProjectileGroup;
 
-    public CreateProjectileMovementCollisionQueries(GameWorld world) : base(world) { }
+    public CreateProjectileMovementCollisionQueries()  {
+    }
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
         base.OnCreateManager();
-        ProjectileGroup = GetComponentGroup(typeof(UpdateProjectileFlag), typeof(ProjectileData), 
-            ComponentType.Exclude<DespawningEntity>());
+        ProjectileGroup = GetEntityQuery(typeof(UpdateProjectileFlag), typeof(ProjectileData), 
+            ComponentType.Exclude<Despawn>());
     }
 
     protected override void OnUpdate()
     {
-        var entityArray = ProjectileGroup.GetEntityArray();
-        var projectileDataArray = ProjectileGroup.GetComponentDataArray<ProjectileData>();
-        var time = m_world.worldTime;
+        var entityArray = ProjectileGroup.ToEntityArray(Allocator.Persistent);
+        var projectileDataArray = ProjectileGroup.ToComponentDataArray<ProjectileData>(Allocator.Persistent);
+        var worldTime = GetSingleton<WorldTime>();
         for (var i = 0; i < projectileDataArray.Length; i++)
         {
             var projectileData = projectileDataArray[i];
@@ -31,9 +33,9 @@ public class CreateProjectileMovementCollisionQueries : BaseComponentSystem
 
             var entity = entityArray[i];
 
-            var collisionTestTick = time.tick - projectileData.collisionCheckTickDelay;
+            var collisionTestTick = (int)worldTime.Tick - projectileData.collisionCheckTickDelay;
 
-            var totalMoveDuration = time.DurationSinceTick(projectileData.startTick);
+            var totalMoveDuration = worldTime.gameTick.DurationSinceTick(projectileData.startTick);
             var totalMoveDist = totalMoveDuration * projectileData.settings.velocity;
 
             var dir = Vector3.Normalize(projectileData.endPos - projectileData.startPos);
@@ -55,27 +57,29 @@ public class CreateProjectileMovementCollisionQueries : BaseComponentSystem
             });
             PostUpdateCommands.SetComponent(entity,projectileData);
         }
+        entityArray.Dispose();
+        projectileDataArray.Dispose();
     }
 }
 
 [DisableAutoCreation]
-public class HandleProjectileMovementCollisionQuery : BaseComponentSystem
+public class HandleProjectileMovementCollisionQuery :ComponentSystem
 {
     EntityQuery ProjectileGroup;
 
-    public HandleProjectileMovementCollisionQuery(GameWorld world) : base(world) { }
+    public HandleProjectileMovementCollisionQuery() { }
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        ProjectileGroup = GetComponentGroup(typeof(UpdateProjectileFlag), typeof(ProjectileData), 
-            ComponentType.Exclude<DespawningEntity>());
+        ProjectileGroup = GetEntityQuery(typeof(UpdateProjectileFlag), typeof(ProjectileData), 
+            ComponentType.Exclude<Despawn>());
     }
     
     protected override void OnUpdate()
     {
-        var entityArray = ProjectileGroup.GetEntityArray();
-        var projectileDataArray = ProjectileGroup.GetComponentDataArray<ProjectileData>();
+        var entityArray = ProjectileGroup.ToEntityArray(Allocator.Persistent);
+        var projectileDataArray = ProjectileGroup.ToComponentDataArray<ProjectileData>(Allocator.Persistent);
         var queryReciever = World.GetExistingSystem<RaySphereQueryReciever>();    
         for (var i = 0; i < projectileDataArray.Length; i++)
         {
@@ -98,7 +102,7 @@ public class HandleProjectileMovementCollisionQuery : BaseComponentSystem
                 projectileData.impacted = 1;
                 projectileData.impactPos = queryResult.hitPoint;
                 projectileData.impactNormal = queryResult.hitNormal;
-                projectileData.impactTick = m_world.worldTime.tick;
+                projectileData.impactTick = (int)GetSingleton<WorldTime>().Tick;
 
                 // Owner can despawn while projectile is in flight, so we need to make sure we dont send non existing instigator
                 var damageInstigator = EntityManager.Exists(projectileData.projectileOwner) ? projectileData.projectileOwner : Entity.Null;
@@ -106,6 +110,7 @@ public class HandleProjectileMovementCollisionQuery : BaseComponentSystem
                 var collisionHit = queryResult.hitCollisionOwner != Entity.Null;
                 if (collisionHit)
                 {
+                    /*
                     if (damageInstigator != Entity.Null)
                     {
                         if (EntityManager.HasComponent<DamageEvent>(queryResult.hitCollisionOwner))
@@ -113,17 +118,18 @@ public class HandleProjectileMovementCollisionQuery : BaseComponentSystem
                             var damageEventBuffer = EntityManager.GetBuffer<DamageEvent>(queryResult.hitCollisionOwner);
                             DamageEvent.AddEvent(damageEventBuffer, damageInstigator, projectileData.settings.impactDamage, projectileDir, projectileData.settings.impactImpulse);
                         }
-                    }
+                    }*/
                 }
-
+                /*
                 if (projectileData.settings.splashDamage.radius > 0)
                 {
                     if (damageInstigator != Entity.Null)
-                    {
+                    
                         var collisionMask = ~(1 << projectileData.teamId);
                         SplashDamageRequest.Create(PostUpdateCommands, query.hitCollisionTestTick, damageInstigator, queryResult.hitPoint, collisionMask, projectileData.settings.splashDamage);
-                    }
-                }
+                    
+                   }  */
+
 
                 newPosition = queryResult.hitPoint;
             }
@@ -132,54 +138,59 @@ public class HandleProjectileMovementCollisionQuery : BaseComponentSystem
             {
                 var color = impact ? Color.red : Color.green;
                 Debug.DrawLine(projectileData.position, newPosition, color, 2);
-                DebugDraw.Sphere(newPosition, 0.1f, color, impact ? 2 : 0);
+            //    DebugDraw.Sphere(newPosition, 0.1f, color, impact ? 2 : 0);
             }
 
             projectileData.position = newPosition;
             PostUpdateCommands.SetComponent(entityArray[i],projectileData);
         }
+
+        entityArray.Dispose();
+        projectileDataArray.Dispose();
     }
 }
 
 
 [DisableAutoCreation]
-public class DespawnProjectiles : BaseComponentSystem
+public class DespawnProjectiles :ComponentSystem
 {
     EntityQuery ProjectileGroup;
 
-    public DespawnProjectiles(GameWorld world) : base(world) { }
+    public DespawnProjectiles() { }
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
         base.OnCreateManager();
-        ProjectileGroup = GetComponentGroup(typeof(ProjectileData));
+        ProjectileGroup = GetEntityQuery(typeof(ProjectileData));
     }
     
     protected override void OnUpdate()
     {
-        var time = m_world.worldTime;
-        var entityArray = ProjectileGroup.GetEntityArray();
-        var projectileDataArray = ProjectileGroup.GetComponentDataArray<ProjectileData>();
+        var worldTime = GetSingleton<WorldTime>();
+        var entityArray = ProjectileGroup.ToEntityArray(Allocator.Persistent);
+        var projectileDataArray = ProjectileGroup.ToComponentDataArray<ProjectileData>(Allocator.Persistent);
         for (var i = 0; i < projectileDataArray.Length; i++)
         {
             var projectileData = projectileDataArray[i];
             
             if (projectileData.impactTick > 0)
             {
-                if (m_world.worldTime.DurationSinceTick(projectileData.impactTick) > 1.0f)
+                if (worldTime.gameTick.DurationSinceTick(projectileData.impactTick) > 1.0f)
                 {
-                    PostUpdateCommands.AddComponent(entityArray[i],new DespawningEntity());
+                    PostUpdateCommands.AddComponent(entityArray[i],new Despawn());
                 }
                 continue;
             }
 
-            var age = time.DurationSinceTick(projectileData.startTick);
+            var age = worldTime.gameTick.DurationSinceTick(projectileData.startTick);
             var toOld = age > projectileData.maxAge;
             if (toOld)
             {
-                PostUpdateCommands.AddComponent(entityArray[i],new DespawningEntity());
+                PostUpdateCommands.AddComponent(entityArray[i],new Despawn());
             }
         }
+        entityArray.Dispose();
+        projectileDataArray.Dispose();
     }
 }
 

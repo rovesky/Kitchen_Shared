@@ -5,11 +5,11 @@ using Unity.Entities;
 using UnityEngine.Profiling;
 
 [DisableAutoCreation]
-public class HandleServerProjectileRequests : BaseComponentSystem
+public class HandleServerProjectileRequests :ComponentSystem
 {
 	EntityQuery Group;
 
-	public HandleServerProjectileRequests(GameWorld world, BundledResourceManager resourceSystem) : base(world)
+	public HandleServerProjectileRequests(BundledResourceManager resourceSystem) 
 	{
 		m_resourceSystem = resourceSystem;
     
@@ -19,7 +19,7 @@ public class HandleServerProjectileRequests : BaseComponentSystem
 	protected override void OnCreateManager()
 	{
 		base.OnCreateManager();
-		Group = GetComponentGroup(typeof(ProjectileRequest));
+		Group = GetEntityQuery(typeof(ProjectileRequest));
 	}
 
 	protected override void OnDestroyManager()
@@ -30,8 +30,8 @@ public class HandleServerProjectileRequests : BaseComponentSystem
 
 	protected override void OnUpdate()
 	{
-		var entityArray = Group.GetEntityArray();
-		var requestArray = Group.GetComponentDataArray<ProjectileRequest>();
+		var entityArray = Group.ToEntityArray(Allocator.Persistent);
+		var requestArray = Group.ToComponentDataArray<ProjectileRequest>(Allocator.Persistent);
 		
 		// Copy requests as spawning will invalidate Group 
 		var requests = new ProjectileRequest[requestArray.Length];
@@ -52,7 +52,7 @@ public class HandleServerProjectileRequests : BaseComponentSystem
 				continue;
 			}
 
-			var projectileEntity = m_settings.projectileFactory.Create(EntityManager,m_resourceSystem, m_world);
+			var projectileEntity = m_settings.projectileFactory.Create(EntityManager,m_resourceSystem, null);
 
 			var projectileData = EntityManager.GetComponentData<ProjectileData>(projectileEntity);
 			projectileData.SetupFromRequest(request, registryIndex);
@@ -61,7 +61,10 @@ public class HandleServerProjectileRequests : BaseComponentSystem
 			PostUpdateCommands.SetComponent(projectileEntity, projectileData);
 			PostUpdateCommands.AddComponent(projectileEntity, new UpdateProjectileFlag());
 		}
-	}
+        entityArray.Dispose();
+        requestArray.Dispose();
+
+    }
 
 	BundledResourceManager m_resourceSystem;
 	ProjectileModuleSettings m_settings;

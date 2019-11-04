@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using FootStone.ECS;
+using Unity.Entities;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 
@@ -20,36 +22,36 @@ public class ProjectileModuleClient
     {
         m_world = world;
         
-        if (world.SceneRoot != null)
-        {
-            m_SystemRoot = new GameObject("ProjectileSystem");
-            m_SystemRoot.transform.SetParent(world.SceneRoot.transform);
-        }
+        //if (world.SceneRoot != null)
+        //{
+        //    m_SystemRoot = new GameObject("ProjectileSystem");
+        //    m_SystemRoot.transform.SetParent(world.SceneRoot.transform);
+        //}
         
         m_settings = Resources.Load<ProjectileModuleSettings>("ProjectileModuleSettings");
 
-        m_clientProjectileFactory = new ClientProjectileFactory(m_world, m_world.GetEntityManager(), m_SystemRoot, resourceSystem);
+        m_clientProjectileFactory = new ClientProjectileFactory(m_world, World.Active.EntityManager, m_SystemRoot, resourceSystem);
         
-        m_handleRequests = m_world.GetECSWorld().CreateManager<HandleClientProjectileRequests>(m_world, resourceSystem, m_SystemRoot, m_clientProjectileFactory);
-        m_handleProjectileSpawn = m_world.GetECSWorld().CreateManager<HandleProjectileSpawn>(m_world, m_SystemRoot, resourceSystem, m_clientProjectileFactory);
-        m_removeMispredictedProjectiles = m_world.GetECSWorld().CreateManager<RemoveMispredictedProjectiles>(m_world);
-        m_despawnClientProjectiles = m_world.GetECSWorld().CreateManager<DespawnClientProjectiles>(m_world, m_clientProjectileFactory);
-        m_CreateProjectileMovementQueries = m_world.GetECSWorld().CreateManager<CreateProjectileMovementCollisionQueries>(m_world);
-        m_HandleProjectileMovementQueries = m_world.GetECSWorld().CreateManager<HandleProjectileMovementCollisionQuery>(m_world);
-        m_updateClientProjectilesPredicted = m_world.GetECSWorld().CreateManager<UpdateClientProjectilesPredicted>(m_world);
-        m_updateClientProjectilesNonPredicted = m_world.GetECSWorld().CreateManager<UpdateClientProjectilesNonPredicted>(m_world);
+        m_handleRequests = World.Active.CreateSystem<HandleClientProjectileRequests>(resourceSystem, m_SystemRoot, m_clientProjectileFactory);
+        m_handleProjectileSpawn = World.Active.CreateSystem<HandleProjectileSpawn>(m_SystemRoot, resourceSystem, m_clientProjectileFactory);
+        m_removeMispredictedProjectiles = World.Active.CreateSystem<RemoveMispredictedProjectiles>();
+        m_despawnClientProjectiles = World.Active.CreateSystem<DespawnClientProjectiles>( m_clientProjectileFactory);
+        m_CreateProjectileMovementQueries = World.Active.CreateSystem<CreateProjectileMovementCollisionQueries>();
+        m_HandleProjectileMovementQueries = World.Active.CreateSystem<HandleProjectileMovementCollisionQuery>();
+        m_updateClientProjectilesPredicted = World.Active.CreateSystem<UpdateClientProjectilesPredicted>();
+        m_updateClientProjectilesNonPredicted = World.Active.CreateSystem<UpdateClientProjectilesNonPredicted>();
     }
 
     public void Shutdown()
     {
-        m_world.GetECSWorld().DestroyManager(m_handleRequests);
-        m_world.GetECSWorld().DestroyManager(m_handleProjectileSpawn);
-        m_world.GetECSWorld().DestroyManager(m_removeMispredictedProjectiles);
-        m_world.GetECSWorld().DestroyManager(m_despawnClientProjectiles);
-        m_world.GetECSWorld().DestroyManager(m_CreateProjectileMovementQueries);
-        m_world.GetECSWorld().DestroyManager(m_HandleProjectileMovementQueries);
-        m_world.GetECSWorld().DestroyManager(m_updateClientProjectilesPredicted);
-        m_world.GetECSWorld().DestroyManager(m_updateClientProjectilesNonPredicted);
+        World.Active.DestroySystem(m_handleRequests);
+        World.Active.DestroySystem(m_handleProjectileSpawn);
+        World.Active.DestroySystem(m_removeMispredictedProjectiles);
+        World.Active.DestroySystem(m_despawnClientProjectiles);
+        World.Active.DestroySystem(m_CreateProjectileMovementQueries);
+        World.Active.DestroySystem(m_HandleProjectileMovementQueries);
+        World.Active.DestroySystem(m_updateClientProjectilesPredicted);
+        World.Active.DestroySystem(m_updateClientProjectilesNonPredicted);
 
     
         if(m_SystemRoot != null)

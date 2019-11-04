@@ -8,7 +8,7 @@ public struct UpdateProjectileFlag : IComponentData
     public int foo;
 }
 
-public struct ProjectileData : IComponentData, IReplicatedComponent
+public struct ProjectileData : IComponentData//, IReplicatedComponent
 {
     public int test;        // TODO remove this test no longer needed  
     public int projectileTypeRegistryIndex;
@@ -20,10 +20,10 @@ public struct ProjectileData : IComponentData, IReplicatedComponent
     public float3 impactPos;
     public float3 impactNormal;
     
-    public static IReplicatedComponentSerializerFactory CreateSerializerFactory()
+   /* public static IReplicatedComponentSerializerFactory CreateSerializerFactory()
     {
         return new ReplicatedComponentSerializerFactory<ProjectileData>();
-    }
+    }*/
     
     public void Serialize(ref SerializeContext context, ref NetworkWriter networkWriter)
     {

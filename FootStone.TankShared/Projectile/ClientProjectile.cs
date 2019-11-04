@@ -4,17 +4,17 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Experimental.VFX;
 
-[ClientOnlyComponent]
+//[ClientOnlyComponent]
 public class ClientProjectile : MonoBehaviour
 {
     // Settings
     public GameObject shellRoot;
     public GameObject trailRoot;
-    public SoundDef thrustSound;
+   // public SoundDef thrustSound;
     public float rotationSpeed = 500;
     public float offsetScaleDuration = 0.5f;
-    public SoundSystem.SoundHandle m_ThrustSoundHandle;
-    public SpatialEffectTypeDefinition impactEffect;
+   // public SoundSystem.SoundHandle m_ThrustSoundHandle;
+  //  public SpatialEffectTypeDefinition impactEffect;
     
     // State
     public bool IsVisible { get { return m_isVisible == 1; } }
@@ -51,14 +51,14 @@ public class ClientProjectile : MonoBehaviour
                 StopAllEffects(trailRoot);
         }
 
-        if (thrustSound && isVisible)
+     /*   if (thrustSound && isVisible)
         {
             m_ThrustSoundHandle = Game.SoundSystem.Play(thrustSound, gameObject.transform);
         }
         else if (m_ThrustSoundHandle.IsValid() && !isVisible)
         {
             Game.SoundSystem.Stop(m_ThrustSoundHandle);
-        }
+        }*/
 
         var lights = GetComponentsInChildren<Light>();
         foreach (var light in lights)
