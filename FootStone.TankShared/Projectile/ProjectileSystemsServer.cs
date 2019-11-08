@@ -7,7 +7,7 @@ using UnityEngine.Profiling;
 [DisableAutoCreation]
 public class HandleServerProjectileRequests :ComponentSystem
 {
-	EntityQuery Group;
+	private EntityQuery Group;
 
 	public HandleServerProjectileRequests(BundledResourceManager resourceSystem) 
 	{
@@ -16,15 +16,15 @@ public class HandleServerProjectileRequests :ComponentSystem
 		m_settings = Resources.Load<ProjectileModuleSettings>("ProjectileModuleSettings");
 	}
 
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		Group = GetEntityQuery(typeof(ProjectileRequest));
 	}
 
-	protected override void OnDestroyManager()
+	protected override void OnDestroy()
 	{
-		base.OnDestroyManager();
+		base.OnDestroy();
 		Resources.UnloadAsset(m_settings);
 	}
 
