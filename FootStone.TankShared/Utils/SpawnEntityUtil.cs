@@ -77,6 +77,11 @@ namespace Assets.Scripts.ECS
             {
                 Speed = 5,
             });
+
+            em.AddComponentData(e, new MoveInput()
+            {
+                Speed = 6,
+            });
             return e;
         }
     }
