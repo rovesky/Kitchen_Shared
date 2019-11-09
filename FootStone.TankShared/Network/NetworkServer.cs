@@ -464,7 +464,7 @@ unsafe public class NetworkServer
             return;
         }
 
-        GameDebug.Log("Incoming connection: #" + connectionId + " from: " + m_Transport.GetConnectionDescription(connectionId));
+        FSLog.Info("Incoming connection: #" + connectionId + " from: " + m_Transport.GetConnectionDescription(connectionId));
 
         var connection = new ServerConnection(this, connectionId, m_Transport);
 
@@ -794,7 +794,7 @@ unsafe public class NetworkServer
             rawOutputStream.SkipBytes(compressedSize);
 
             var messageSize = CompleteSendPackage(packageInfo, ref rawOutputStream);
-            FSLog.Info($"send message ,size:{messageSize}");
+        //    FSLog.Info($"send message ,size:{messageSize}");
             // Decide when next package can go out
             if (maxBPS > 0)
             {

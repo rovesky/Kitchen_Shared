@@ -233,10 +233,10 @@ public class NetworkClient
             switch (e.type)
             {
                 case TransportEvent.Type.Connect:
-                    OnConnect(e.connectionId);
+                    OnConnect(e.connectionId, clientNetworkConsumer);
                     break;
                 case TransportEvent.Type.Disconnect:
-                    OnDisconnect(e.connectionId);
+                    OnDisconnect(e.connectionId, clientNetworkConsumer);
                     break;
                 case TransportEvent.Type.Data:
                     OnData(e.connectionId, e.data, e.dataSize, clientNetworkConsumer, snapshotConsumer);
@@ -277,13 +277,16 @@ public class NetworkClient
         Profiler.EndSample();
     }
 
-    void OnConnect(int connectionId)
+    void OnConnect(int connectionId, INetworkClientCallbacks networkClientConsumer)
     {
+       // m_Connection.clientId
         if (m_Connection != null && m_Connection.connectionId == connectionId)
             GameDebug.Assert(connectionState == ConnectionState.Connecting);
+
+        networkClientConsumer.OnConnect(connectionId);
     }
 
-    void OnDisconnect(int connectionId)
+    void OnDisconnect(int connectionId, INetworkClientCallbacks networkClientConsumer = null)
     {
         if (m_Connection != null && m_Connection.connectionId == connectionId)
         {
@@ -300,6 +303,9 @@ public class NetworkClient
 
             m_Connection.Reset();
             m_Connection = null;
+
+            if(networkClientConsumer!= null)
+                networkClientConsumer.OnDisconnect(connectionId);
         }
     }
 
