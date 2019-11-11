@@ -16,6 +16,8 @@ namespace Assets.Scripts.ECS
 
         public uint Tick => gameTick.Tick;
         public float TickDuration => gameTick.TickDuration;
+        public float TickDurationAsFraction => gameTick.TickDurationAsFraction;
+      
 
         public void SetTick(uint tick,float duration)
         {

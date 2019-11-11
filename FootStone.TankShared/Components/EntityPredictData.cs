@@ -21,6 +21,13 @@ namespace Assets.Scripts.ECS
                    Mathf.Abs(this.position.z - other.position.z) < minValue;
 
         }
+
+        public void Interpolate(ref EntityPredictData prevState, ref EntityPredictData nextState, float interpVal)
+        {
+            position = Vector3.Lerp(prevState.position, nextState.position, interpVal);
+            rotation = Quaternion.Lerp(prevState.rotation, nextState.rotation, interpVal);
+
+        }
     }
 
 }
