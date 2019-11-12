@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
 using UnityEngine.Assertions;
 
@@ -124,13 +125,13 @@ namespace Assets.Scripts.ECS
 						Collider = collider.ColliderPtr
 					};
 
-					//var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(characterData.Entity);
+					var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(characterData.Entity);
 
 					PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
 					int numConstraints = 0;
 					float skinWidth = characterData.SkinWidth;
-					CharacterControllerUtilities.CheckSupport(PhysicsWorld, skinWidth, distanceHits, ref constraints, out numConstraints);
+					CharacterControllerUtilities.CheckSupport(PhysicsWorld, selfRigidBodyIndex, skinWidth, distanceHits, ref constraints, out numConstraints);
 
 					float3 desiredVelocity = userCommand.targetPos * moveInput.Speed;
 

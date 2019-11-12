@@ -71,15 +71,18 @@ namespace Assets.Scripts.ECS
 			#endregion
 		}
 
-		public static unsafe void CheckSupport(PhysicsWorld world, float skinWidth, NativeList<DistanceHit> distanceHits, ref NativeArray<SurfaceConstraintInfo> constraints, out int numConstraints)
+		public static unsafe void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, float skinWidth, NativeList<DistanceHit> distanceHits, ref NativeArray<SurfaceConstraintInfo> constraints, out int numConstraints)
 		{
 			// Iterate over distance hits and create constraints from them
 			numConstraints = 0;
 			for (int i = 0; i < distanceHits.Length; i++)
 			{
 				DistanceHit hit = distanceHits[i];
-				CreateConstraint(world, hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,
-					skinWidth, ref constraints, ref numConstraints);
+				if (hit.RigidBodyIndex != selfRigidBodyIndex)
+				{
+					CreateConstraint(world, hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,
+						skinWidth, ref constraints, ref numConstraints);
+				}
 			}
 		}
 

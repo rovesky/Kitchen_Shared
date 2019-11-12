@@ -3,11 +3,10 @@ using Unity.Entities;
 
 namespace Assets.Scripts.ECS
 {
-	[Serializable]
 	public struct CharacterDataComponent : IComponentData
 	{
 		public float SkinWidth;
+		public Entity Entity;
 		//public float ContactTolerance;
-		//public Entity Entity;
 	}
 }
