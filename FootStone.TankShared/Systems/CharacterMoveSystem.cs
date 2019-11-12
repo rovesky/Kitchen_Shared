@@ -142,6 +142,10 @@ namespace Assets.Scripts.ECS
 					SimplexSolver.Solve(PhysicsWorld, remainingTime, up, numConstraints, ref constraints, ref newPosition, ref newVelocity, out float integratedTime);
 
 					predictData.position = newPosition;
+					if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)
+					{
+						predictData.rotation = quaternion.LookRotationSafe(desiredVelocity, up);
+					}
 					chunkPredictDataData[i] = predictData;
 				}
 			}
