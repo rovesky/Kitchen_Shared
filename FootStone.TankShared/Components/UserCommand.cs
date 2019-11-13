@@ -18,16 +18,16 @@ namespace Assets.Scripts.ECS
         public enum Button : uint
         {
             None = 0,
-            Move = 1 << 0,
-            Boost = 1 << 1,
-            PrimaryFire = 1 << 2,
-            SecondaryFire = 1 << 3,
-            Reload = 1 << 4,
-            Melee = 1 << 5,
-            Use = 1 << 6,
-            Ability1 = 1 << 7,
-            Ability2 = 1 << 8,
-            Ability3 = 1 << 9,
+            Pick = 1 << 0,
+            Throw = 1 << 1,
+            Jump = 1 << 2,
+            Ability1 = 1 << 3,
+            Ability2 = 1 << 4,
+            Ability3 = 1 << 5,
+            Ability4 = 1 << 6,
+            Ability5 = 1 << 7,
+            Ability6 = 1 << 8,
+            Ability7 = 1 << 9,
         }
 
         public struct ButtonBitField

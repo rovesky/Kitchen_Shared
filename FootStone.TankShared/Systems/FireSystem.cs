@@ -29,7 +29,7 @@ namespace Assets.Scripts.ECS
 
                     fire.RocketTimer = fire.FireCooldown;
 
-                    if (command.buttons.IsSet(UserCommand.Button.PrimaryFire))
+                    if (command.buttons.IsSet(UserCommand.Button.Ability1))
                     {
                         var go = Object.Instantiate(rocketPrefab);
                         var e = go.GetComponent<EntityTracker>().EntityToTrack;
