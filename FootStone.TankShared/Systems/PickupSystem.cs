@@ -22,9 +22,10 @@ namespace Assets.Scripts.ECS
         {
             Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref PickupItem pickupItem,ref UserCommand command,ref EntityPredictData predictData) =>
             {
-                //  FSLog.Info("PickSystem Update");
+                
                 if (command.buttons.IsSet(UserCommand.Button.Pick) )
                 {
+                    FSLog.Info($"Pick Command:{command.checkTick},{command.renderTick}");
                     if (pickupItem.pickupEntity == Entity.Null)
                     {
                         if (plateQuery.CalculateEntityCount() == 0)
@@ -36,6 +37,7 @@ namespace Assets.Scripts.ECS
 
                         if (!EntityManager.HasComponent<Parent>(pickupItem.pickupEntity))
                         {
+                            FSLog.Info("Pickup item");
                             EntityManager.AddComponentData(pickupItem.pickupEntity, new Parent() { Value = entity });
                             EntityManager.AddComponentData(pickupItem.pickupEntity, new LocalToParent());
                             EntityManager.SetComponentData(pickupItem.pickupEntity, new Translation() { Value = new float3(0, 0.2f, 0.8f) });
@@ -50,6 +52,7 @@ namespace Assets.Scripts.ECS
                     }
                     else
                     {
+                        FSLog.Info("throw item");
                         EntityManager.RemoveComponent<Parent>(pickupItem.pickupEntity);
                         EntityManager.RemoveComponent<LocalToParent>(pickupItem.pickupEntity);          
                      
