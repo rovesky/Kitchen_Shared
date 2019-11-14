@@ -120,7 +120,7 @@ namespace Assets.Scripts.ECS
 
 					ColliderDistanceInput input = new ColliderDistanceInput()
 					{
-						MaxDistance = 10.3f,
+						MaxDistance = 0.5f,
 						Transform = transform,
 						Collider = collider.ColliderPtr
 					};
