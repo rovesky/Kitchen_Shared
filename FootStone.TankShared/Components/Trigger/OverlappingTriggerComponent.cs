@@ -4,6 +4,5 @@ namespace Assets.Scripts.ECS
 {
 	public struct OverlappingTriggerComponent : IComponentData
 	{
-		
 	}
 }

@@ -22,47 +22,68 @@ namespace Assets.Scripts.ECS
         {
             Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref PickupItem pickupItem,ref UserCommand command,ref EntityPredictData predictData) =>
             {
-                if (!command.buttons.IsSet(UserCommand.Button.Pick))
-                    return;
+                //  FSLog.Info("PickSystem Update");
+                if (command.buttons.IsSet(UserCommand.Button.Throw) )
+                {
+                    if (predictData.pickupEntity == Entity.Null)
+                    {
+                        if (plateQuery.CalculateEntityCount() == 0)
+                            return;
 
-                if (EntityManager.HasComponent<ReleaseItem>(entity))
-                    return;
+                        var plates = plateQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
+						for (int i = 0; i < plates.Length; ++i)
+						{
+							var e = plates[i];
+							var plate = EntityManager.GetComponentData<Plate>(e);
+							if (!plate.IsFree)
+							{
+								continue;
+							}
+							predictData.pickupEntity = e;
+							if (!EntityManager.HasComponent<Parent>(predictData.pickupEntity))
+							{
+								EntityManager.AddComponentData(predictData.pickupEntity, new Parent() { Value = entity });
+								EntityManager.AddComponentData(predictData.pickupEntity, new LocalToParent());
+								EntityManager.SetComponentData(predictData.pickupEntity, new Translation() { Value = new float3(0, 0.2f, 0.8f) });
+								EntityManager.SetComponentData(predictData.pickupEntity, new Rotation() { Value = quaternion.identity });
 
-                var pickupEntity = predictData.pickupEntity;
-                if (pickupEntity != Entity.Null)
-                    return;
+								var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(predictData.pickupEntity);
+								physicsVelocity.Linear = float3.zero;
+								EntityManager.SetComponentData(predictData.pickupEntity, physicsVelocity);
 
-                if (plateQuery.CalculateEntityCount() == 0)
-                    return;
+							}
+							plate.IsFree = false;
+							EntityManager.SetComponentData(e, plate);
+							break;
+						}
+						plates.Dispose();
+                    }
+                    else
+                    {
+                        EntityManager.RemoveComponent<Parent>(predictData.pickupEntity);
+                        EntityManager.RemoveComponent<LocalToParent>(predictData.pickupEntity);          
+                     
+                        var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(predictData.pickupEntity);
+                        Vector3 linear = math.mul(predictData.rotation, Vector3.forward);
+                        linear.y = 0.4f;
+                        linear.Normalize();
+                        physicsVelocity.Linear = linear * 10;
+                        EntityManager.SetComponentData(predictData.pickupEntity,physicsVelocity);
 
-                var plates = plateQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
-                pickupEntity = plates[0];
-                plates.Dispose();
+                        EntityManager.SetComponentData(predictData.pickupEntity, new Translation()
+                          { Value = predictData.position + math.mul(predictData.rotation, new float3(0, 0.2f, 1.2f))  });
 
-                if (EntityManager.HasComponent<Parent>(pickupEntity))
-                    return;
+						//   var pickupItemData = EntityManager.GetComponentData<EntityPredictData>(pickupItem.pickupEntity);
+						//   pickupItemData.position = predictData.position + math.mul(predictData.rotation, new float3(0, 0.2f, 1.2f));
+						////   pickupItemData.rotation = quaternion.identity;
+						//   EntityManager.SetComponentData(pickupItem.pickupEntity, pickupItemData);
 
-                FSLog.Info($"Pick Command:{command.checkTick},{command.renderTick},{pickupEntity}");
-                predictData.pickupEntity = pickupEntity;
-
-
-                //   FSLog.Info("Pickup item");
-                EntityManager.AddComponentData(pickupEntity, new Parent() { Value = entity });
-                EntityManager.AddComponentData(pickupEntity, new LocalToParent());
-
-                //var pickupEntityData = EntityManager.GetComponentData<EntityPredictData>(pickupEntity);
-                //pickupEntityData.position = new float3(0, 0.2f, 0.8f);
-                //pickupEntityData.rotation = quaternion.identity;
-                //EntityManager.SetComponentData(pickupEntity, pickupEntityData);
-                EntityManager.SetComponentData(pickupEntity, new Translation() { Value = new float3(0, 0.2f, 0.8f) });
-                EntityManager.SetComponentData(pickupEntity, new Rotation() { Value = quaternion.identity });
-
-                var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(pickupEntity);
-                physicsVelocity.Linear = Vector3.zero;
-                EntityManager.SetComponentData(pickupEntity, physicsVelocity);
-
-              
-
+						var plate = EntityManager.GetComponentData<Plate>(predictData.pickupEntity);
+						plate.IsFree = true;
+						EntityManager.SetComponentData(predictData.pickupEntity, plate);
+						predictData.pickupEntity = Entity.Null;
+                    }                   
+                }
             });
         }      
     }

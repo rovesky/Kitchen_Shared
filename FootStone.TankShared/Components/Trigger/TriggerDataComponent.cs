@@ -8,8 +8,7 @@ namespace Assets.Scripts.ECS
 	{
 		None = 0,
 		Portal = 1 << 0,
-		ChangeMaterial = 1 << 1,
-		ChangeMaterialPortal = ChangeMaterial | Portal,
+		Table = 1 << 1,
 	}
 
 	public struct TriggerDataComponent : IComponentData
@@ -17,6 +16,19 @@ namespace Assets.Scripts.ECS
 		public int VolumeType;
 	}
 
+	public struct OnPutEntity : IComponentData
+	{
+		public Entity Owner;
+		public Entity Goods;
+	}
+
+	public struct OnPickUpEntity : IComponentData
+	{
+		public Entity Owner;
+	}
+
+	#region 仅客户端使用
 	public struct OnTriggerEnter : IComponentData { }
 	public struct OnTriggerExit : IComponentData { }
+	#endregion
 }

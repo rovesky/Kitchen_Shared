@@ -59,7 +59,8 @@ namespace Assets.Scripts.ECS
 			var rotationType = GetArchetypeChunkComponentType<Rotation>();
 			var tickDuration = GetSingleton<WorldTime>().TickDuration;
 
-			var m_TriggerEntitiesIndex = new NativeArray<int>(1, Allocator.TempJob);
+			var CharacterIndex = new NativeArray<int>(1, Allocator.TempJob);
+			var triggerEntitiesIndex = new NativeArray<int>(1, Allocator.TempJob);
 			var triggerEntities = new NativeArray<Entity>(1, Allocator.TempJob);
 			var ccJob = new GetTriggerOverlappingJob()
 			{
@@ -75,7 +76,8 @@ namespace Assets.Scripts.ECS
 				PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
 				VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
 
-				pCounter = m_TriggerEntitiesIndex,
+				Character = CharacterIndex,
+				pCounter = triggerEntitiesIndex,
 				TriggerEntities = triggerEntities,
 			};
 
@@ -88,9 +90,10 @@ namespace Assets.Scripts.ECS
 			JobHandle addNewJobHandle = new AddNewOverlappingJob
 			{
 				CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
+				Character = CharacterIndex,
 				TriggerDataGroup = triggerDataGroup,
 				TriggerEntities = triggerEntities,
-				TriggerEntitiesCount = m_TriggerEntitiesIndex,
+				TriggerEntitiesCount = triggerEntitiesIndex,
 				OverlappingGroup = overlappingGroup,
 			}.Schedule(inputDeps);
 			m_EntityCommandBufferSystem.AddJobHandleForProducer(addNewJobHandle);
@@ -99,13 +102,14 @@ namespace Assets.Scripts.ECS
 			JobHandle removeOldJobHandle = new RemoveOldOverlappingJob
 			{
 				CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
+				Character = CharacterIndex,
 				TriggerDataGroup = triggerDataGroup,
 				TriggerEntities = triggerEntities,
-				TriggerEntitiesCount = m_TriggerEntitiesIndex,
+				TriggerEntitiesCount = triggerEntitiesIndex,
 				OverlappingEntities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob),
 			}.Schedule(inputDeps);
 			m_EntityCommandBufferSystem.AddJobHandleForProducer(removeOldJobHandle);
-			
+
 			inputDeps = JobHandle.CombineDependencies(addNewJobHandle, removeOldJobHandle);
 
 			return inputDeps;
@@ -128,6 +132,7 @@ namespace Assets.Scripts.ECS
 			[ReadOnly] public ArchetypeChunkComponentType<CharacterDataComponent> CharacterDataType;
 			[ReadOnly] public ArchetypeChunkComponentType<UserCommand> UserCommandType;
 
+			[NativeFixedLength(1)] public NativeArray<int> Character;
 			[NativeFixedLength(1)] public NativeArray<int> pCounter;
 			[NativeFixedLength(1)] public NativeArray<Entity> TriggerEntities;
 			[DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> VolumeEntities;
@@ -178,6 +183,7 @@ namespace Assets.Scripts.ECS
 					pCounter[0] = 0;
 					if (triggerIndex >= 0)
 					{
+						Character[0] = characterData.Entity.Index;
 						pCounter[0] = 1;
 						TriggerEntities[0] = PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
 					}
@@ -191,6 +197,7 @@ namespace Assets.Scripts.ECS
 
 			[ReadOnly] public NativeArray<Entity> TriggerEntities;
 			[NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
+			[NativeFixedLength(1)] [ReadOnly] public NativeArray<int> Character;
 			[ReadOnly] public ComponentDataFromEntity<OverlappingTriggerComponent> OverlappingGroup;
 			[ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
 
@@ -199,7 +206,6 @@ namespace Assets.Scripts.ECS
 				for (int i = 0; i < TriggerEntitiesCount[0]; i++)
 				{
 					var overlappingEntity = TriggerEntities[i];
-
 					if (!OverlappingGroup.Exists(overlappingEntity))
 					{
 						var triggerComponent = TriggerDataGroup[overlappingEntity];
@@ -223,6 +229,7 @@ namespace Assets.Scripts.ECS
 
 			[DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> TriggerEntities;
 			[DeallocateOnJobCompletion] [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
+			[DeallocateOnJobCompletion] [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> Character;
 			[DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> OverlappingEntities;
 			[ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
 
