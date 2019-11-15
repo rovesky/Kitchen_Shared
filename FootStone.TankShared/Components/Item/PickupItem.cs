@@ -10,7 +10,7 @@ namespace Assets.Scripts.ECS
 
     public struct PickupItem : IComponentData
     {      
-        public Entity pickupEntity;
+      //  public Entity pickupEntity;
 
     }
 }
