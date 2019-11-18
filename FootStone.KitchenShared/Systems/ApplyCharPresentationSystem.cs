@@ -22,6 +22,7 @@ namespace Assets.Scripts.ECS
                 ref Translation translation,ref Rotation rotation) =>
             {
                 translation.Value = predictData.position;
+                translation.Value.y = 1.0f;
                 rotation.Value = predictData.rotation;
             });
 
