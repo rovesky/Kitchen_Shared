@@ -18,7 +18,7 @@ namespace Assets.Scripts.ECS
         public enum Button : uint
         {
             None = 0,
-            Pick = 1 << 0,
+            Pickup = 1 << 0,
             Throw = 1 << 1,
             Jump = 1 << 2,
             Ability1 = 1 << 3,

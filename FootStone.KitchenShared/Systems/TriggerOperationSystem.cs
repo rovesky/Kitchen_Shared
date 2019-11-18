@@ -18,9 +18,10 @@ namespace Assets.Scripts.ECS
 		protected override void OnUpdate()
 		{
 			//FSLog.Info("TriggerOperationSystem Update");
-			Entities.WithAllReadOnly<Player>().ForEach((Entity entity, ref PickupItem pickupItem, ref UserCommand command, ref CharacterPredictState predictData) =>
+			Entities.WithAllReadOnly<Player>().ForEach((Entity entity, ref PickupItem pickupItem, ref UserCommand command, 
+                ref CharacterPredictState predictData) =>
 			{
-				if (command.buttons.IsSet(UserCommand.Button.Pick))
+				if (command.buttons.IsSet(UserCommand.Button.Pickup))
 				{
 					var isEmpty = predictData.pickupEntity == Entity.Null;
 					var entities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob);
