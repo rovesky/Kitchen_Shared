@@ -29,11 +29,11 @@ namespace Assets.Scripts.ECS
 					{
 						var overlapping = entities[i];
 						FSLog.Info(overlapping);
-						//var overlappingData = EntityManager.GetComponentData<OverlappingTriggerComponent>(overlapping);
-						//if (overlappingData.TriggerIndex != entity.Index)
-						//{
-						//	continue;
-						//}
+						var overlappingData = EntityManager.GetComponentData<OverlappingTriggerComponent>(overlapping);
+						if (overlappingData.TriggerEntity != entity.Index)
+						{
+							continue;
+						}
 						var triggerData = EntityManager.GetComponentData<TriggerDataComponent>(overlapping);
 						if ((triggerData.VolumeType & (int)TriggerVolumeType.Table) != 0)
 						{
