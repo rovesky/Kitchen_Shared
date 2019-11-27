@@ -8,27 +8,27 @@ namespace Assets.Scripts.ECS
 
     public struct CharacterPredictState : IComponentData,IPredict<CharacterPredictState>
     {
-        public float3 position;
-        public quaternion rotation;
-        public Entity pickupEntity;
+        public float3 Position;
+        public quaternion Rotation;
+        public Entity PickupedEntity;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
-            position = reader.ReadVector3Q();
-            rotation = reader.ReadQuaternionQ();
+            Position = reader.ReadVector3Q();
+            Rotation = reader.ReadQuaternionQ();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-            writer.WriteVector3Q("position", position);
-            writer.WriteQuaternionQ("rotation", rotation);
+            writer.WriteVector3Q("Position", Position);
+            writer.WriteQuaternionQ("rotation", Rotation);
         }
 
         public bool VerifyPrediction(ref CharacterPredictState state)
         {
-            return position.Equals(state.position) &&
-                rotation.Equals(state.rotation) &&
-                pickupEntity.Equals(state.pickupEntity);
+            return Position.Equals(state.Position) &&
+                Rotation.Equals(state.Rotation) &&
+                PickupedEntity.Equals(state.PickupedEntity);
         }
     }
 

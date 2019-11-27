@@ -18,10 +18,10 @@ namespace Assets.Scripts.ECS
         //    var e = go.GetComponent<EntityTracker>().EntityToTrack;
         //    // var e = PostUpdateCommands.Instantiate(spawn.entity);
 
-        //    Translation position = new Translation() { Value = pos };
+        //    Translation Position = new Translation() { Value = pos };
         //    Rotation rotation = new Rotation() { Value = Quaternion.identity };
 
-        //    em.SetComponentData(e, position);
+        //    em.SetComponentData(e, Position);
         //    em.SetComponentData(e, rotation);
 
         //    em.AddComponentData(e, new Enemy() { type = type, id = e.Index });
@@ -55,10 +55,10 @@ namespace Assets.Scripts.ECS
         //{
         //    //创建Player
         //    var e = em.Instantiate(prefab);
-        //    Translation position = new Translation() { Value = pos };
+        //    Translation Position = new Translation() { Value = pos };
         //    Rotation rotation = new Rotation() { Value = Quaternion.identity};
       
-        //    em.SetComponentData(e, position);
+        //    em.SetComponentData(e, Position);
 
         //    em.AddComponentData(e, new Player() { playerId = playerId, id = e.Index });
         //    em.AddComponentData(e, new Attack() { Power = 10000 });

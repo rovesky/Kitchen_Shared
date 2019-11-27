@@ -8,25 +8,25 @@ namespace Assets.Scripts.ECS
 
     public struct CharacterInterpolateState : IComponentData,IInterpolate<CharacterInterpolateState>
     {
-        public float3 position;
-        public quaternion rotation;
+        public float3 Position;
+        public quaternion Rotation;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
-            position = reader.ReadVector3Q();
-            rotation = reader.ReadQuaternionQ();
+            Position = reader.ReadVector3Q();
+            Rotation = reader.ReadQuaternionQ();
         }     
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-            writer.WriteVector3Q("position", position);
-            writer.WriteQuaternionQ("rotation", rotation);
+            writer.WriteVector3Q("Position", Position);
+            writer.WriteQuaternionQ("rotation", Rotation);
         }
 
         public void Interpolate(ref CharacterInterpolateState prevState, ref CharacterInterpolateState nextState, float interpVal)
         {
-            position = Vector3.Lerp(prevState.position, nextState.position, interpVal);
-            rotation = Quaternion.Lerp(prevState.rotation, nextState.rotation, interpVal);
+            Position = Vector3.Lerp(prevState.Position, nextState.Position, interpVal);
+            Rotation = Quaternion.Lerp(prevState.Rotation, nextState.Rotation, interpVal);
 
         }
     }
