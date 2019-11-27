@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Assets.Scripts.ECS
 {
-  
     [DisableAutoCreation]
     public class DespawnSystem : ComponentSystem
     {

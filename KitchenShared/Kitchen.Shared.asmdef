@@ -16,8 +16,10 @@
     "Unity.Transforms.Hybrid",
     "Unity.Rendering.Hybrid",
     "Unity.Networking.Transport",
+
     "FootStone.ECSNetwork",
-    "FootStone.ECSUtils"
+    "FootStone.ECSUtils",
+    "FootStone.ECSShared"
   ],
   "optionalUnityReferences": [],
   "includePlatforms": [],
