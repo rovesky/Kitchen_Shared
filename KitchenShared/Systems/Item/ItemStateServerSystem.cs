@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Transforms;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class ItemStateServerSystem : ComponentSystem

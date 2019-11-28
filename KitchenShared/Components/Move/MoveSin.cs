@@ -8,7 +8,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [Serializable]
     public struct MoveSin : IComponentData{  }

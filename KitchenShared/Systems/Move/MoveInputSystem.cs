@@ -10,7 +10,7 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class MoveInputSystem : ComponentSystem
@@ -20,7 +20,7 @@ namespace Assets.Scripts.ECS
 
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
             var tick = GetSingleton<WorldTime>().Tick;
-            Entities.ForEach((ref MoveInput moveMouse, ref UserCommand playerCommand, ref CharacterPredictState predictData) =>
+            Entities.ForEach((ref MoveInput moveMouse, ref UserCommand playerCommand, ref CharacterPredictedState predictData) =>
             {
               //  FSLog.Info("MoveInputSystem OnUpdate!");
                 float3 pos = predictData.Position + (float3)playerCommand.targetPos * moveMouse.Speed * tickDuration;

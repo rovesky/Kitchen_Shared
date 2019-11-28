@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {  
 
     public struct PickupItem : IComponentData

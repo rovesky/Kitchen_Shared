@@ -1,8 +1,9 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 
     public struct ItemState : IComponentData
@@ -12,7 +13,7 @@ namespace Assets.Scripts.ECS
         public Entity owner;   
     }
 
-    public struct ItemInterpolatedState : IComponentData, IInterpolate<ItemInterpolatedState>
+    public struct ItemInterpolatedState : IComponentData, IInterpolatedState<ItemInterpolatedState>
     {
         public float3 position;
         public quaternion rotation;
@@ -23,7 +24,12 @@ namespace Assets.Scripts.ECS
             throw new System.NotImplementedException();
         }
 
-        public void Interpolate(ref ItemInterpolatedState prevState, ref ItemInterpolatedState nextState, float interpVal)
+        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Interpolate(ref SerializeContext context, ref ItemInterpolatedState prevState, ref ItemInterpolatedState nextState, float interpVal)
         {
             if (prevState.owner == nextState.owner)
             {
@@ -39,9 +45,6 @@ namespace Assets.Scripts.ECS
             }
         }
 
-        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
-        {
-            throw new System.NotImplementedException();
-        }
+     
     }
 }

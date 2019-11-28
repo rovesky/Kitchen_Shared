@@ -5,7 +5,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class PickupSystem : ComponentSystem
@@ -20,7 +20,7 @@ namespace Assets.Scripts.ECS
 
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref PickupItem pickupItem,ref UserCommand command,ref CharacterPredictState predictData) =>
+            Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref PickupItem pickupItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
             {
                 //  FSLog.Info("PickSystem Update");
                 if (command.buttons.IsSet(UserCommand.Button.Throw) )

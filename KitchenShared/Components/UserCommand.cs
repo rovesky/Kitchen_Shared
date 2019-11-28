@@ -3,9 +3,8 @@ using System.IO;
 using Unity.Entities;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
-    [Serializable]
     [InternalBufferCapacity(64)]
     public struct UserCommandBuffer : IBufferElementData
     {

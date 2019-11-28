@@ -9,7 +9,7 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine.Assertions;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 	[DisableAutoCreation]
 	public class CharacterTriggerSystem : JobComponentSystem

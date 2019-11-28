@@ -11,7 +11,7 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 
     [DisableAutoCreation]
@@ -21,7 +21,7 @@ namespace Assets.Scripts.ECS
         {
             var tickDuration = GetSingleton<WorldTime>().GameTick.TickDuration;
 
-            Entities.ForEach((ref CharacterPredictState predictData, ref MoveForward move) =>
+            Entities.ForEach((ref CharacterPredictedState predictData, ref MoveForward move) =>
             {                  
                
                 float3 forward = (Quaternion)predictData.Rotation * Vector3.forward;

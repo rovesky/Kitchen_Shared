@@ -1,7 +1,7 @@
 ﻿using System;
 using Unity.Entities;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 	[Flags]
 	public enum TriggerVolumeType

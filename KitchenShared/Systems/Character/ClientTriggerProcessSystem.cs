@@ -2,7 +2,7 @@
 using Unity.Rendering;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 	[DisableAutoCreation]
 	public class ClientTriggerProcessSystem : ComponentSystem

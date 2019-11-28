@@ -1,10 +1,11 @@
-﻿using Unity.Collections;
+﻿using FootStone.ECS;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 	[DisableAutoCreation]
 	public class TriggerOperationSystem : ComponentSystem
@@ -19,7 +20,7 @@ namespace Assets.Scripts.ECS
 		{
 			//FSLog.Info("TriggerOperationSystem Update");
 			Entities.WithAllReadOnly<Player>().ForEach((Entity entity, ref PickupItem pickupItem, ref UserCommand command, 
-                ref CharacterPredictState predictData) =>
+                ref CharacterPredictedState predictData) =>
 			{
 				if (command.buttons.IsSet(UserCommand.Button.Pickup))
 				{
@@ -56,7 +57,7 @@ namespace Assets.Scripts.ECS
 			});
 		}
 
-		private void PutDownItem(Entity owner, Entity overlapping, ref CharacterPredictState item, ref SlotComponent slot)
+		private void PutDownItem(Entity owner, Entity overlapping, ref CharacterPredictedState item, ref SlotComponent slot)
 		{
 			FSLog.Info("PutDownItem");
 			var entity = item.PickupedEntity;
@@ -77,7 +78,7 @@ namespace Assets.Scripts.ECS
 			EntityManager.SetComponentData(overlapping, slot);
 		}
 
-		private void PickUpItem(Entity owner, Entity overlapping, ref CharacterPredictState item, ref SlotComponent slot)
+		private void PickUpItem(Entity owner, Entity overlapping, ref CharacterPredictedState item, ref SlotComponent slot)
 		{
 			FSLog.Info("PickUpItem");
 			var entity = slot.FiltInEntity;

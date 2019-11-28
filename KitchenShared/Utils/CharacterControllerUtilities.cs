@@ -4,7 +4,7 @@ using Unity.Physics;
 using Unity.Physics.Extensions;
 using UnityEngine.Assertions;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 	public static class CharacterControllerUtilities
 	{

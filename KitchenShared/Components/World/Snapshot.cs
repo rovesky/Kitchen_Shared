@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [InternalBufferCapacity(128)]
     public  unsafe struct SnapshotTick : IBufferElementData

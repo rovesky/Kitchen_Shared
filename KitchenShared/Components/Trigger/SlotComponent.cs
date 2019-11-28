@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 	public struct SlotComponent : IComponentData
     {

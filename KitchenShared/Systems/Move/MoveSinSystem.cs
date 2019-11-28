@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 
     [DisableAutoCreation]
@@ -13,7 +13,7 @@ namespace Assets.Scripts.ECS
         {
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
             var tick = GetSingleton<WorldTime>().Tick;
-            Entities.WithAllReadOnly<MoveSin>().ForEach((ref CharacterPredictState predictData) =>
+            Entities.WithAllReadOnly<MoveSin>().ForEach((ref CharacterPredictedState predictData) =>
             {        
                 // 左右移动
                 float rx = Mathf.Sin(tick/30.0f) * tickDuration;

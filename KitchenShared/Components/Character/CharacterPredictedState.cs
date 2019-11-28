@@ -1,21 +1,23 @@
+using FootStone.ECS;
 using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 
-    public struct CharacterInterpolateState : IComponentData,IInterpolate<CharacterInterpolateState>
+    public struct CharacterPredictedState : IComponentData,IPredictedState<CharacterPredictedState>
     {
         public float3 Position;
         public quaternion Rotation;
+        public Entity PickupedEntity;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
-        }     
+        }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
@@ -23,11 +25,11 @@ namespace Assets.Scripts.ECS
             writer.WriteQuaternionQ("rotation", Rotation);
         }
 
-        public void Interpolate(ref CharacterInterpolateState prevState, ref CharacterInterpolateState nextState, float interpVal)
+        public bool VerifyPrediction(ref CharacterPredictedState state)
         {
-            Position = Vector3.Lerp(prevState.Position, nextState.Position, interpVal);
-            Rotation = Quaternion.Lerp(prevState.Rotation, nextState.Rotation, interpVal);
-
+            return Position.Equals(state.Position) &&
+                Rotation.Equals(state.Rotation) &&
+                PickupedEntity.Equals(state.PickupedEntity);
         }
     }
 

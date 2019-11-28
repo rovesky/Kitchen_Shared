@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
 
     [DisableAutoCreation]
@@ -18,8 +18,8 @@ namespace Assets.Scripts.ECS
 
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, ref CharacterPredictState predictData,
-                ref CharacterInterpolateState interpolateData) =>
+            Entities.ForEach((Entity entity, ref CharacterPredictedState predictData,
+                ref CharacterInterpolatedState interpolateData) =>
             {
                 interpolateData.Position = predictData.Position;
                 interpolateData.Rotation = predictData.Rotation;

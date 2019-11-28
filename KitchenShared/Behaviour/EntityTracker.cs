@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     public class EntityTracker : MonoBehaviour, IReceiveEntity
     {

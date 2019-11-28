@@ -9,7 +9,7 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class MovePositionSystem : ComponentSystem
@@ -19,7 +19,7 @@ namespace Assets.Scripts.ECS
 
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
             var tick = GetSingleton<WorldTime>().Tick;
-            Entities.ForEach((ref MovePosition moveMouse, ref UserCommand playerCommand, ref CharacterPredictState predictData) =>
+            Entities.ForEach((ref MovePosition moveMouse, ref UserCommand playerCommand, ref CharacterPredictedState predictData) =>
             {
                 if (playerCommand.buttons.IsSet(UserCommand.Button.Pickup))
                 {

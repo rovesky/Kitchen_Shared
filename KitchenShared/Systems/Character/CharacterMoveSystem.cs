@@ -9,7 +9,7 @@ using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
 using UnityEngine.Assertions;
 
-namespace Assets.Scripts.ECS
+namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class CharacterMoveSystem : JobComponentSystem
@@ -33,7 +33,7 @@ namespace Assets.Scripts.ECS
                     typeof(PhysicsCollider),
                     typeof(CharacterMove),
                     typeof(UserCommand),
-                    typeof(CharacterPredictState)
+                    typeof(CharacterPredictedState)
                 }
             };
             m_CharacterControllersGroup = GetEntityQuery(query);
@@ -46,7 +46,7 @@ namespace Assets.Scripts.ECS
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
             var characterMoveType = GetArchetypeChunkComponentType<CharacterMove>();
             var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
-            var predictDataType = GetArchetypeChunkComponentType<CharacterPredictState>();
+            var predictDataType = GetArchetypeChunkComponentType<CharacterPredictedState>();
             var entityType = GetArchetypeChunkEntityType();
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
 
@@ -80,7 +80,7 @@ namespace Assets.Scripts.ECS
 
             [ReadOnly] public PhysicsWorld PhysicsWorld;
 
-            public ArchetypeChunkComponentType<CharacterPredictState> PredictDataType;
+            public ArchetypeChunkComponentType<CharacterPredictedState> PredictDataType;
             [ReadOnly] public ArchetypeChunkEntityType EntitytType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
             [ReadOnly] public ArchetypeChunkComponentType<CharacterMove> CharacterMoveType;
