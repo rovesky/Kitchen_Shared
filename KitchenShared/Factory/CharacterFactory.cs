@@ -19,18 +19,46 @@ namespace FootStone.Kitchen
                 Resources.Load("Player1") as GameObject, World.Active);
 
             var e = entityManager.Instantiate(playerPrefab);
-            Translation position = new Translation() {Value = Vector3.zero};
-            Rotation rotation = new Rotation() {Value = Quaternion.identity};
 
-            entityManager.SetComponentData(e, position);
+            entityManager.AddComponentData(e, new ReplicatedEntityData()
+            {
+                Id = -1,
+                PredictingPlayerId = -1
+            });
 
             entityManager.AddComponentData(e, new Player());
             entityManager.AddComponentData(e, new UpdateUI());
+
+            entityManager.AddComponentData(e, new CharacterPredictedState()
+            {
+                Position = Vector3.zero,
+                Rotation = Quaternion.identity,
+                PickupedEntity = Entity.Null
+            });
+
             entityManager.AddComponentData(e, new CharacterInterpolatedState()
             {
                 Position = Vector3.zero,
                 Rotation = Quaternion.identity,
             });
+
+            entityManager.AddComponentData(e, new UserCommand());
+
+            entityManager.AddComponentData(e, new CharacterMove()
+            {
+                SkinWidth = 0.02f,
+                Velocity = 6.0f
+            });
+
+            entityManager.AddComponentData(e, new PickupItem());
+
+            entityManager.AddComponentData(e, new ThrowItem()
+            {
+                speed = 0
+            });
+
+         
+
             return e;
         }
     }

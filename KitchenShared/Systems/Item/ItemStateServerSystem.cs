@@ -12,13 +12,13 @@ namespace FootStone.Kitchen
             Entities.WithAllReadOnly<Plate>().ForEach((Entity entity, ref ItemInterpolatedState state,
                 ref Translation translation, ref Rotation rotation) =>
             {
-                state.position = translation.Value;
-                state.rotation = rotation.Value;
+                state.Position = translation.Value;
+                state.Rotation = rotation.Value;
 
                 if (EntityManager.HasComponent<Parent>(entity))
-                    state.owner = EntityManager.GetComponentData<Parent>(entity).Value;
+                    state.Owner = EntityManager.GetComponentData<Parent>(entity).Value;
                 else
-                    state.owner = Entity.Null;
+                    state.Owner = Entity.Null;
             });
         }
     }

@@ -8,7 +8,6 @@ namespace FootStone.Kitchen
     
     public struct Plate : IComponentData
     {
-        public int id;
 		public bool IsFree;
     }
 

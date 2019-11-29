@@ -1,13 +1,10 @@
 using FootStone.ECS;
-using System;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-
-    public struct CharacterPredictedState : IComponentData,IPredictedState<CharacterPredictedState>
+    public struct CharacterPredictedState : IComponentData, IPredictedState<CharacterPredictedState>
     {
         public float3 Position;
         public quaternion Rotation;
@@ -17,20 +14,26 @@ namespace FootStone.Kitchen
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
+            context.RefSerializer.DeserializeReference(ref reader, ref PickupedEntity);
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-            writer.WriteVector3Q("Position", Position);
+            writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
+            context.RefSerializer.SerializeReference(ref writer, "pickupedEntity", PickupedEntity);
         }
 
         public bool VerifyPrediction(ref CharacterPredictedState state)
         {
             return Position.Equals(state.Position) &&
-                Rotation.Equals(state.Rotation) &&
-                PickupedEntity.Equals(state.PickupedEntity);
+                   Rotation.Equals(state.Rotation) &&
+                   PickupedEntity.Equals(state.PickupedEntity);
+        }
+
+        public static IPredictedStateSerializerFactory CreateSerializerFactory()
+        {
+            return new PredictedStateSerializerFactory<CharacterPredictedState>();
         }
     }
-
 }

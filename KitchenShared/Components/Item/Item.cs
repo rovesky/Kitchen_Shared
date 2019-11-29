@@ -5,46 +5,52 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-
     public struct ItemState : IComponentData
     {
-        public float3 position;
-        public quaternion rotation;
-        public Entity owner;   
+        public float3 Position;
+        public quaternion Rotation;
+        public Entity Owner;   
     }
 
     public struct ItemInterpolatedState : IComponentData, IInterpolatedState<ItemInterpolatedState>
     {
-        public float3 position;
-        public quaternion rotation;
-        public Entity owner;
+        public float3 Position;
+        public quaternion Rotation;
+        public Entity Owner;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
-            throw new System.NotImplementedException();
+            Position = reader.ReadVector3Q();
+            Rotation = reader.ReadQuaternionQ();
+            context.RefSerializer.DeserializeReference(ref reader, ref Owner);
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.WriteVector3Q("position", Position);
+            writer.WriteQuaternionQ("rotation", Rotation);
+            context.RefSerializer.SerializeReference(ref writer, "owner", Owner);
         }
 
         public void Interpolate(ref SerializeContext context, ref ItemInterpolatedState prevState, ref ItemInterpolatedState nextState, float interpVal)
         {
-            if (prevState.owner == nextState.owner)
+            if (prevState.Owner == nextState.Owner)
             {
-                position = Vector3.Lerp(prevState.position, nextState.position, interpVal);
-                rotation = Quaternion.Lerp(prevState.rotation, nextState.rotation, interpVal);
-                owner = prevState.owner;
+                Position = Vector3.Lerp(prevState.Position, nextState.Position, interpVal);
+                Rotation = Quaternion.Lerp(prevState.Rotation, nextState.Rotation, interpVal);
+                Owner = prevState.Owner;
             }
             else
             {
-                position = nextState.position;
-                rotation = nextState.rotation;
-                owner = nextState.owner;
+                Position = nextState.Position;
+                Rotation = nextState.Rotation;
+                Owner = nextState.Owner;
             }
         }
 
-     
+        public static IInterpolatedStateSerializerFactory CreateSerializerFactory()
+        {
+            return new InterpolatedStateSerializerFactory<ItemInterpolatedState>();
+        }
     }
 }

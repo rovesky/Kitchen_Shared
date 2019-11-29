@@ -32,7 +32,8 @@ namespace FootStone.Kitchen
 			{
 				All = new ComponentType[]
 				{
-				typeof(PhysicsCollider),
+                typeof(ServerEntity),
+                typeof(PhysicsCollider),
 				typeof(CharacterMove),
 				typeof(UserCommand),
 				typeof(Translation),

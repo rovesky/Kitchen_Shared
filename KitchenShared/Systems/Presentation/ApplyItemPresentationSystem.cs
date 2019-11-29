@@ -21,10 +21,10 @@ namespace FootStone.Kitchen
             Entities.ForEach((Entity entity, ref ItemInterpolatedState predictData,
                 ref Translation translation,ref Rotation rotation) =>
             {
-                translation.Value = predictData.position;
-                rotation.Value = predictData.rotation;
+                translation.Value = predictData.Position;
+                rotation.Value = predictData.Rotation;
 
-                if (predictData.owner != Entity.Null)
+                if (predictData.Owner != Entity.Null)
                 {
                     if (!EntityManager.HasComponent<Parent>(entity))
                     {
@@ -33,7 +33,7 @@ namespace FootStone.Kitchen
                     }
 
                     var parent = EntityManager.GetComponentData<Parent>(entity);
-                    parent.Value = predictData.owner;
+                    parent.Value = predictData.Owner;
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else

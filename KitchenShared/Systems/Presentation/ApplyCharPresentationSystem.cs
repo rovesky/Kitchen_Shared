@@ -9,16 +9,10 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class ApplyCharPresentationSystem : ComponentSystem
     {
- 
-
-        protected override void OnCreate()
-        {          
-           
-        }
 
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, ref CharacterInterpolatedState predictData,
+            Entities.ForEach((Entity entity,ref CharacterInterpolatedState predictData,
                 ref Translation translation,ref Rotation rotation) =>
             {
                 translation.Value = predictData.Position;
