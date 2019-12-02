@@ -11,290 +11,289 @@ using UnityEngine.Assertions;
 
 namespace FootStone.Kitchen
 {
-	[DisableAutoCreation]
-	public class CharacterTriggerSystem : JobComponentSystem
-	{
-		BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-		ExportPhysicsWorld m_ExportPhysicsWorldSystem;
-		EndSimulationEntityCommandBufferSystem m_EntityCommandBufferSystem;
+    [DisableAutoCreation]
+    public class CharacterTriggerSystem : JobComponentSystem
+    {
+        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
 
-		EntityQuery m_CharacterControllersGroup;
-		EntityQuery m_OverlappingGroup;
-		EntityQuery m_TriggerVolumeGroup;
+        private EntityQuery m_CharacterControllersGroup;
+        private EndSimulationEntityCommandBufferSystem m_EntityCommandBufferSystem;
+        private ExportPhysicsWorld m_ExportPhysicsWorldSystem;
+        private EntityQuery m_OverlappingGroup;
+        private EntityQuery m_TriggerVolumeGroup;
 
-		protected override void OnCreate()
-		{
-			m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-			m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
-			m_EntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        protected override void OnCreate()
+        {
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
+            m_EntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
-			EntityQueryDesc query = new EntityQueryDesc
-			{
-				All = new ComponentType[]
-				{
-                typeof(ServerEntity),
-                typeof(PhysicsCollider),
-				typeof(CharacterMove),
-				typeof(UserCommand),
-				typeof(Translation),
-				typeof(Rotation),
-				}
-			};
-			m_CharacterControllersGroup = GetEntityQuery(query);
-			m_OverlappingGroup = GetEntityQuery(typeof(OverlappingTriggerComponent));
-			m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerDataComponent));
-		}
+            var query = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(ServerEntity),
+                    typeof(PhysicsCollider),
+                    typeof(CharacterMove),
+                    typeof(UserCommand),
+                    typeof(Translation),
+                    typeof(Rotation)
+                }
+            };
+            m_CharacterControllersGroup = GetEntityQuery(query);
+            m_OverlappingGroup = GetEntityQuery(typeof(OverlappingTriggerComponent));
+            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerDataComponent));
+        }
 
-		protected override JobHandle OnUpdate(JobHandle inputDeps)
-		{
-			var entities = m_CharacterControllersGroup.ToEntityArray(Allocator.TempJob);
+        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        {
+            var entities = m_CharacterControllersGroup.ToEntityArray(Allocator.TempJob);
 
-			var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
-			var userCommandGroup = GetComponentDataFromEntity<UserCommand>(true);
-			var translationGroup = GetComponentDataFromEntity<Translation>(true);
-			var rotationGroup = GetComponentDataFromEntity<Rotation>(true);
-			var tickDuration = GetSingleton<WorldTime>().TickDuration;
+            var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
+            var userCommandGroup = GetComponentDataFromEntity<UserCommand>(true);
+            var translationGroup = GetComponentDataFromEntity<Translation>(true);
+            var rotationGroup = GetComponentDataFromEntity<Rotation>(true);
+         //   var tickDuration = GetSingleton<WorldTime>().TickDuration;
 
-			var triggerEntitiesCount = new NativeArray<int>(1, Allocator.TempJob);
-			var characters = new NativeArray<int>(entities.Length, Allocator.TempJob);
-			var triggerEntities = new NativeArray<Entity>(entities.Length, Allocator.TempJob);
-			var ccJob = new GetTriggerOverlappingJob()
-			{
-				Entities = entities,
-				// Archetypes
-				PhysicsColliderGroup = physicsColliderGroup,
-				UserCommandGroup = userCommandGroup,
-				TranslationGroup = translationGroup,
-				RotationGroup = rotationGroup,
-				// Input
-				DeltaTime = tickDuration,
-				PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
-				VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
+            var triggerEntitiesCount = new NativeArray<int>(1, Allocator.TempJob);
+            var characters = new NativeArray<int>(entities.Length, Allocator.TempJob);
+            var triggerEntities = new NativeArray<Entity>(entities.Length, Allocator.TempJob);
+            var ccJob = new GetTriggerOverlappingJob
+            {
+                Entities = entities,
+                // Archetypes
+                PhysicsColliderGroup = physicsColliderGroup,
+                UserCommandGroup = userCommandGroup,
+                TranslationGroup = translationGroup,
+                RotationGroup = rotationGroup,
+                // Input
+             //   DeltaTime = tickDuration,
+                PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
+                VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
 
-				pCounter = triggerEntitiesCount,
-				Characters = characters,
-				TriggerEntities = triggerEntities,
-			};
+                pCounter = triggerEntitiesCount,
+                Characters = characters,
+                TriggerEntities = triggerEntities
+            };
 
-			inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
-			inputDeps = ccJob.Schedule(inputDeps);
+            inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
+            inputDeps = ccJob.Schedule(inputDeps);
 
-			var overlappingGroup = GetComponentDataFromEntity<OverlappingTriggerComponent>(true);
-			var triggerDataGroup = GetComponentDataFromEntity<TriggerDataComponent>(true);
-			JobHandle addNewJobHandle = new AddNewOverlappingJob
-			{
-				CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
-				TriggerEntitiesCount = triggerEntitiesCount,
-				Characters = characters,
-				TriggerDataGroup = triggerDataGroup,
-				TriggerEntities = triggerEntities,
-				OverlappingGroup = overlappingGroup,
-			}.Schedule(inputDeps);
-			m_EntityCommandBufferSystem.AddJobHandleForProducer(addNewJobHandle);
+            var overlappingGroup = GetComponentDataFromEntity<OverlappingTriggerComponent>(true);
+            var triggerDataGroup = GetComponentDataFromEntity<TriggerDataComponent>(true);
+            var addNewJobHandle = new AddNewOverlappingJob
+            {
+                CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
+                TriggerEntitiesCount = triggerEntitiesCount,
+                Characters = characters,
+                TriggerDataGroup = triggerDataGroup,
+                TriggerEntities = triggerEntities,
+                OverlappingGroup = overlappingGroup
+            }.Schedule(inputDeps);
+            m_EntityCommandBufferSystem.AddJobHandleForProducer(addNewJobHandle);
 
-			JobHandle removeOldJobHandle = new RemoveOldOverlappingJob
-			{
-				CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
-				TriggerDataGroup = triggerDataGroup,
-				TriggerEntities = triggerEntities,
-				TriggerEntitiesCount = triggerEntitiesCount,
-				OverlappingEntities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob),
-			}.Schedule(inputDeps);
-			m_EntityCommandBufferSystem.AddJobHandleForProducer(removeOldJobHandle);
-			
-			inputDeps = JobHandle.CombineDependencies(addNewJobHandle, removeOldJobHandle);
-			inputDeps.Complete();
+            var removeOldJobHandle = new RemoveOldOverlappingJob
+            {
+                CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
+                TriggerDataGroup = triggerDataGroup,
+                TriggerEntities = triggerEntities,
+                TriggerEntitiesCount = triggerEntitiesCount,
+                OverlappingEntities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob)
+            }.Schedule(inputDeps);
+            m_EntityCommandBufferSystem.AddJobHandleForProducer(removeOldJobHandle);
 
-			m_EntityCommandBufferSystem.Update();
+            inputDeps = JobHandle.CombineDependencies(addNewJobHandle, removeOldJobHandle);
+            inputDeps.Complete();
 
-			characters.Dispose();
-			triggerEntitiesCount.Dispose();
-			triggerEntities.Dispose();
+            m_EntityCommandBufferSystem.Update();
 
-			return inputDeps;
-		}
+            characters.Dispose();
+            triggerEntitiesCount.Dispose();
+            triggerEntities.Dispose();
 
-		//[BurstCompile]
-		struct GetTriggerOverlappingJob : IJob
-		{
-			// Chunks can be deallocated at this point
-			[DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> Entities;
+            return inputDeps;
+        }
 
-			public float DeltaTime;
+        private static int CheckTrigger(PhysicsWorld world, NativeArray<Entity> volumeEntities, int selfRigidBodyIndex,
+            /*quaternion selfRotation,*/ NativeList<DistanceHit> distanceHits)
+        {
+            var triggerIndex = -1;
+            for (var i = 0; i < distanceHits.Length; i++)
+            {
+                var hit = distanceHits[i];
+                if (hit.RigidBodyIndex != selfRigidBodyIndex)
+                {
+                    var e = world.Bodies[hit.RigidBodyIndex].Entity;
+                    if (volumeEntities.Contains(e))
+                    {
+                        if (triggerIndex < 0)
+                        {
+                            triggerIndex = i;
+                        }
+                        else
+                        {
+                            if (distanceHits[triggerIndex].Distance > hit.Distance) triggerIndex = i;
+                        }
+                    }
+                }
+            }
 
-			[ReadOnly]
-			public PhysicsWorld PhysicsWorld;
-			[ReadOnly] public ComponentDataFromEntity<Translation> TranslationGroup;
-			[ReadOnly] public ComponentDataFromEntity<Rotation> RotationGroup;
-			[ReadOnly] public ComponentDataFromEntity<PhysicsCollider> PhysicsColliderGroup;
-			[ReadOnly] public ComponentDataFromEntity<UserCommand> UserCommandGroup;
+            return triggerIndex;
+        }
 
-			[NativeFixedLength(1)] public NativeArray<int> pCounter;
-			public NativeArray<int> Characters;
-			public NativeArray<Entity> TriggerEntities;
-			[DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> VolumeEntities;
+        //[BurstCompile]
+        private struct GetTriggerOverlappingJob : IJob
+        {
+            // Chunks can be deallocated at this point
+            [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> Entities;
 
-			public unsafe void Execute()
-			{
-				pCounter[0] = 0;
-				var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
-				
-				for (int i = 0; i < Entities.Length; i++)
-				{
-					var entity = Entities[i];
-					var collider = PhysicsColliderGroup[entity];
-					var userCommand = UserCommandGroup[entity];
-					var translation = TranslationGroup[entity];
-					var rotation = RotationGroup[entity];
+         //   public float DeltaTime;
 
-					// Collision filter must be valid
-					Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
+            [ReadOnly] public PhysicsWorld PhysicsWorld;
+            [ReadOnly] public ComponentDataFromEntity<Translation> TranslationGroup;
+            [ReadOnly] public ComponentDataFromEntity<Rotation> RotationGroup;
+            [ReadOnly] public ComponentDataFromEntity<PhysicsCollider> PhysicsColliderGroup;
+            [ReadOnly] public ComponentDataFromEntity<UserCommand> UserCommandGroup;
 
-					// Character transform
-					RigidTransform transform = new RigidTransform
-					{
-						pos = translation.Value,
-						rot = rotation.Value
-					};
+            [NativeFixedLength(1)] public NativeArray<int> pCounter;
+            public NativeArray<int> Characters;
+            public NativeArray<Entity> TriggerEntities;
+            [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> VolumeEntities;
 
-					ColliderDistanceInput input = new ColliderDistanceInput()
-					{
-						MaxDistance = 0.7f,
-						Transform = transform,
-						Collider = collider.ColliderPtr
-					};
+            public unsafe void Execute()
+            {
+                pCounter[0] = 0;
+                var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
-					var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
+                for (var i = 0; i < Entities.Length; i++)
+                {
+                    var entity = Entities[i];
+                    var collider = PhysicsColliderGroup[entity];
+                    var userCommand = UserCommandGroup[entity];
+                    var translation = TranslationGroup[entity];
+                    var rotation = RotationGroup[entity];
 
-					distanceHits.Clear();
-					PhysicsWorld.CalculateDistance(input, ref distanceHits);
+                    // Collision filter must be valid
+                    Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
 
-					var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities, selfRigidBodyIndex, rotation.Value, distanceHits);
+                    // Character transform
+                    var transform = new RigidTransform
+                    {
+                        pos = translation.Value,
+                        rot = rotation.Value
+                    };
 
-					if (triggerIndex >= 0)
-					{
-						var triggerEntity = PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
-						if (!TriggerEntities.Contains(triggerEntity))
-						{
-							Characters[pCounter[0]] = entity.Index;
-							TriggerEntities[pCounter[0]] = triggerEntity;
-							pCounter[0]++;
-						}
-					}
-				}
-			}
-		}
+                    var input = new ColliderDistanceInput
+                    {
+                        MaxDistance = 0.7f,
+                        Transform = transform,
+                        Collider = collider.ColliderPtr
+                    };
 
-		struct AddNewOverlappingJob : IJob
-		{
-			public EntityCommandBuffer CommandBuffer;
+                    var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
 
-			[NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
-			[ReadOnly] public NativeArray<int> Characters;
-			[ReadOnly] public NativeArray<Entity> TriggerEntities;
-			[ReadOnly] public ComponentDataFromEntity<OverlappingTriggerComponent> OverlappingGroup;
-			[ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
+                    distanceHits.Clear();
+                    PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
-			public void Execute()
-			{
-				for (int i = 0; i < TriggerEntitiesCount[0]; i++)
-				{
-					var overlappingEntity = TriggerEntities[i];
-					if (!OverlappingGroup.Exists(overlappingEntity))
-					{
-						var triggerComponent = TriggerDataGroup[overlappingEntity];
-						CommandBuffer.AddComponent(overlappingEntity, new OverlappingTriggerComponent { TriggerEntity = Characters[i] });
-						CommandBuffer.AddComponent(overlappingEntity, new OnTriggerEnter());
-						switch ((TriggerVolumeType)triggerComponent.VolumeType)
-						{
-							//TODO 根据不同的trigger添加不同的组件
-							case TriggerVolumeType.None:
-							default:
-								break;
-						}
-					}
-					else
-					{
-						var overlappingTriggerComponent = OverlappingGroup[overlappingEntity];
-						if (overlappingTriggerComponent.TriggerEntity != Characters[i])
-						{
-							overlappingTriggerComponent.TriggerEntity = Characters[i];
-							CommandBuffer.SetComponent(overlappingEntity, overlappingTriggerComponent);
-						}
-					}
-				}
-			}
-		}
+                    var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities, selfRigidBodyIndex, /*rotation.Value,*/
+                        distanceHits);
 
-		struct RemoveOldOverlappingJob : IJob
-		{
-			public EntityCommandBuffer CommandBuffer;
+                    if (triggerIndex >= 0)
+                    {
+                        var triggerEntity = PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
+                        if (!TriggerEntities.Contains(triggerEntity))
+                        {
+                            Characters[pCounter[0]] = entity.Index;
+                            TriggerEntities[pCounter[0]] = triggerEntity;
+                            pCounter[0]++;
+                        }
+                    }
+                }
+            }
+        }
 
-			[NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
-			[ReadOnly] public NativeArray<Entity> TriggerEntities;
-			[DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> OverlappingEntities;
-			[ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
+        private struct AddNewOverlappingJob : IJob
+        {
+            public EntityCommandBuffer CommandBuffer;
 
-			public void Execute()
-			{
-				for (int index = 0; index < OverlappingEntities.Length; index++)
-				{
-					var entity = OverlappingEntities[index];
+            [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
+            [ReadOnly] public NativeArray<int> Characters;
+            [ReadOnly] public NativeArray<Entity> TriggerEntities;
+            [ReadOnly] public ComponentDataFromEntity<OverlappingTriggerComponent> OverlappingGroup;
+            [ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
 
-					var isTriggered = false;
-					for (int i = 0; i < TriggerEntitiesCount[0]; ++i)
-					{
-						if (TriggerEntities[i] == entity)
-						{
-							isTriggered = true;
-							break;
-						}
-					}
+            public void Execute()
+            {
+                for (var i = 0; i < TriggerEntitiesCount[0]; i++)
+                {
+                    var overlappingEntity = TriggerEntities[i];
+                    if (!OverlappingGroup.Exists(overlappingEntity))
+                    {
+                        var triggerComponent = TriggerDataGroup[overlappingEntity];
+                        CommandBuffer.AddComponent(overlappingEntity,
+                            new OverlappingTriggerComponent {TriggerEntity = Characters[i]});
+                        CommandBuffer.AddComponent(overlappingEntity, new OnTriggerEnter());
+                        switch ((TriggerVolumeType) triggerComponent.VolumeType)
+                        {
+                            //TODO 根据不同的trigger添加不同的组件
+                            case TriggerVolumeType.None:
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        var overlappingTriggerComponent = OverlappingGroup[overlappingEntity];
+                        if (overlappingTriggerComponent.TriggerEntity != Characters[i])
+                        {
+                            overlappingTriggerComponent.TriggerEntity = Characters[i];
+                            CommandBuffer.SetComponent(overlappingEntity, overlappingTriggerComponent);
+                        }
+                    }
+                }
+            }
+        }
 
-					if (!isTriggered)
-					{
-						var triggerComponent = TriggerDataGroup[entity];
+        private struct RemoveOldOverlappingJob : IJob
+        {
+            public EntityCommandBuffer CommandBuffer;
 
-						//TODO 根据类型删除对应组件
-						switch ((TriggerVolumeType)triggerComponent.VolumeType)
-						{
-							case TriggerVolumeType.None:
-							default:
-								break;
-						}
-						CommandBuffer.RemoveComponent<OverlappingTriggerComponent>(entity);
-						CommandBuffer.AddComponent(entity, new OnTriggerExit());
-					}
-				}
-			}
-		}
+            [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
+            [ReadOnly] public NativeArray<Entity> TriggerEntities;
+            [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> OverlappingEntities;
+            [ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
 
-		private static unsafe int CheckTrigger(PhysicsWorld world, NativeArray<Entity> volumeEntities, int selfRigidBodyIndex, quaternion selfRotation, NativeList<DistanceHit> distanceHits)
-		{
-			int triggerIndex = -1;
-			for (int i = 0; i < distanceHits.Length; i++)
-			{
-				DistanceHit hit = distanceHits[i];
-				if (hit.RigidBodyIndex != selfRigidBodyIndex)
-				{
-					var e = world.Bodies[hit.RigidBodyIndex].Entity;
-					if (volumeEntities.Contains(e))
-					{
-						if (triggerIndex < 0)
-						{
-							triggerIndex = i;
-						}
-						else
-						{
-							if (distanceHits[triggerIndex].Distance > hit.Distance)
-							{
-								triggerIndex = i;
-							}
-						}
-					}
-				}
-			}
-			return triggerIndex;
-		}
-	}
+            public void Execute()
+            {
+                for (var index = 0; index < OverlappingEntities.Length; index++)
+                {
+                    var entity = OverlappingEntities[index];
+
+                    var isTriggered = false;
+                    for (var i = 0; i < TriggerEntitiesCount[0]; ++i)
+                        if (TriggerEntities[i] == entity)
+                        {
+                            isTriggered = true;
+                            break;
+                        }
+
+                    if (!isTriggered)
+                    {
+                        var triggerComponent = TriggerDataGroup[entity];
+
+                        //TODO 根据类型删除对应组件
+                        switch ((TriggerVolumeType) triggerComponent.VolumeType)
+                        {
+                            case TriggerVolumeType.None:
+                            default:
+                                break;
+                        }
+
+                        CommandBuffer.RemoveComponent<OverlappingTriggerComponent>(entity);
+                        CommandBuffer.AddComponent(entity, new OnTriggerExit());
+                    }
+                }
+            }
+        }
+    }
 }

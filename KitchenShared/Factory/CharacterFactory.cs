@@ -57,8 +57,6 @@ namespace FootStone.Kitchen
                 speed = 0
             });
 
-         
-
             return e;
         }
     }

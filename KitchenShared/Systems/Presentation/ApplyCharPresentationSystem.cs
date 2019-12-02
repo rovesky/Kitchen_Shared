@@ -18,6 +18,9 @@ namespace FootStone.Kitchen
                 translation.Value = predictData.Position;
                 translation.Value.y = 1.0f;
                 rotation.Value = predictData.Rotation;
+
+              //  FSLog.Info($"ApplyCharPresentationSystem,x:{predictData.Position.x},z:{predictData.Position.z}," +
+                    //       $"translation.Value.x:{ translation.Value.x},translation.Value.z:{ translation.Value.z}");
             });
 
         }

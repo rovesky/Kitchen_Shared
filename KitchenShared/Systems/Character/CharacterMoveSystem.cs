@@ -30,7 +30,7 @@ namespace FootStone.Kitchen
             {
                 All = new ComponentType[]
                 {
-                 //   typeof(ServerEntity),
+                    typeof(ServerEntity),
                     typeof(PhysicsCollider),
                     typeof(CharacterMove),
                     typeof(UserCommand),
@@ -59,7 +59,7 @@ namespace FootStone.Kitchen
                 CharacterMoveType = characterMoveType,
                 UserCommandType = userCommandType,
                 PredictDataType = predictDataType,
-                EntitytType = entityType,
+                EntityType = entityType,
                 // Input
                 DeltaTime = tickDuration,
                 PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld
@@ -82,14 +82,14 @@ namespace FootStone.Kitchen
             [ReadOnly] public PhysicsWorld PhysicsWorld;
 
             public ArchetypeChunkComponentType<CharacterPredictedState> PredictDataType;
-            [ReadOnly] public ArchetypeChunkEntityType EntitytType;
+            [ReadOnly] public ArchetypeChunkEntityType EntityType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
             [ReadOnly] public ArchetypeChunkComponentType<CharacterMove> CharacterMoveType;
             [ReadOnly] public ArchetypeChunkComponentType<UserCommand> UserCommandType;
           
             public unsafe void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                var chunkEntityData = chunk.GetNativeArray(EntitytType);
+                var chunkEntityData = chunk.GetNativeArray(EntityType);
                 var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);
                 var chunkCharacterMoveData = chunk.GetNativeArray(CharacterMoveType);
                 var chunkUserCommandData = chunk.GetNativeArray(UserCommandType);
@@ -134,6 +134,7 @@ namespace FootStone.Kitchen
                     var skinWidth = characterMove.SkinWidth;
                     CharacterControllerUtilities.CheckSupport(PhysicsWorld, selfRigidBodyIndex, skinWidth, distanceHits,
                         ref constraints, out var numConstraints);
+                //    FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
 
                     float3 desiredVelocity = userCommand.targetPos * characterMove.Velocity;
 
@@ -145,7 +146,7 @@ namespace FootStone.Kitchen
                     SimplexSolver.Solve(PhysicsWorld, remainingTime, up, numConstraints, ref constraints,
                         ref newPosition, ref newVelocity, out var integratedTime);
 
-                  //  FSLog.Info($"newPosition:{newPosition.x},{newPosition.y},{newPosition.z}");
+                   
                     predictData.Position = newPosition;
                     if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)
                         predictData.Rotation = quaternion.LookRotationSafe(desiredVelocity, up);

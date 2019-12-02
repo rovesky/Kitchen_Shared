@@ -7,7 +7,6 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-    [Serializable]
     public struct Score : IComponentData 
     {
         public int ScoreValue;
