@@ -20,7 +20,7 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref ThrowItem throwItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
+            Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref CharacterThrowItem throwItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
             {
                 if (!command.buttons.IsSet(UserCommand.Button.Throw))
                     return;
@@ -43,7 +43,7 @@ namespace FootStone.Kitchen
                 Vector3 linear = math.mul(predictData.Rotation, Vector3.forward);
                 linear.y = 0.4f;
                 linear.Normalize();
-                physicsVelocity.Linear = linear * throwItem.speed;
+                physicsVelocity.Linear = linear * throwItem.Velocity;
                 EntityManager.SetComponentData(pickupEntity, physicsVelocity);
 
                 EntityManager.SetComponentData(pickupEntity, new Translation()

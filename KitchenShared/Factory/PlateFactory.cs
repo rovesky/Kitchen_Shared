@@ -34,6 +34,13 @@ namespace FootStone.Kitchen
                 Owner = Entity.Null
             });
 
+            entityManager.AddComponentData(e, new ItemPredictedState()
+            {
+                Position = Vector3.zero,
+                Rotation = Quaternion.identity,
+                Owner = Entity.Null
+            });
+
             return e;
         }
     }

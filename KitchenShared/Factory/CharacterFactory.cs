@@ -50,11 +50,11 @@ namespace FootStone.Kitchen
                 Velocity = 6.0f
             });
 
-            entityManager.AddComponentData(e, new PickupItem());
+            entityManager.AddComponentData(e, new CharacterPickupItem());
 
-            entityManager.AddComponentData(e, new ThrowItem()
+            entityManager.AddComponentData(e, new CharacterThrowItem()
             {
-                speed = 0
+                Velocity = 0
             });
 
             return e;

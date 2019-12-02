@@ -5,12 +5,6 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public struct ItemState : IComponentData
-    {
-        public float3 Position;
-        public quaternion Rotation;
-        public Entity Owner;   
-    }
 
     public struct ItemInterpolatedState : IComponentData, IInterpolatedState<ItemInterpolatedState>
     {
@@ -42,9 +36,9 @@ namespace FootStone.Kitchen
             }
             else
             {
-                Position = nextState.Position;
-                Rotation = nextState.Rotation;
-                Owner = nextState.Owner;
+                Position = prevState.Position;
+                Rotation = prevState.Rotation;
+                Owner = prevState.Owner;
             }
         }
 

@@ -12,7 +12,8 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
-       
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupSystem>());
+
         }
     }
 }
