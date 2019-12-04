@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
@@ -8,9 +9,12 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, ref ItemInterpolatedState interpolatedData,
-                ref Translation translation, ref Rotation rotation) =>
+            Entities.ForEach((Entity entity, 
+                ref ItemInterpolatedState interpolatedData,
+                ref Translation translation,
+                ref Rotation rotation) =>
             {
+            
                 translation.Value = interpolatedData.Position;
                 rotation.Value = interpolatedData.Rotation;
 
@@ -28,12 +32,14 @@ namespace FootStone.Kitchen
                 }
                 else
                 {
-                    if (!EntityManager.HasComponent<Parent>(entity))
-                        return;
-
-                    EntityManager.RemoveComponent<Parent>(entity);
-                    EntityManager.RemoveComponent<LocalToParent>(entity);
+                    if (EntityManager.HasComponent<Parent>(entity))
+                    {
+                        EntityManager.RemoveComponent<Parent>(entity);
+                        EntityManager.RemoveComponent<LocalToParent>(entity);
+                    }
                 }
+             //   FSLog.Info($"ApplyItemPresentationSystem,x:{interpolatedData.Position.x},z:{interpolatedData.Position.z}");
+
             });
         }
     }

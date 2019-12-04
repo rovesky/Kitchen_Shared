@@ -1,9 +1,4 @@
 ﻿using FootStone.ECS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Entities;
 using UnityEngine;
 
@@ -14,10 +9,18 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity,ref Despawn despawn) =>
+            Entities.ForEach((Entity entity, ref Despawn despawn) =>
             {
-                if(despawn.Frame <=0)
+                if (despawn.Frame <= 0)
+                {
+                    if (EntityManager.HasComponent<Transform>(entity))
+                    {
+                        Object.Destroy(EntityManager.GetComponentObject<Transform>(entity).gameObject);
+                    }
+
                     EntityManager.DestroyEntity(entity);
+                  
+                }
 
                 despawn.Frame--;
             });

@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -11,10 +12,12 @@ namespace FootStone.Kitchen
             Entities.WithAllReadOnly<ServerEntity>()
                 .ForEach((Entity entity, 
                     ref CharacterPredictedState predictData,
-                    ref CharacterInterpolatedState interpolateData) =>
+                    ref CharacterInterpolatedState interpolateData,
+                    ref UserCommand command) =>
                 {
                     interpolateData.Position = predictData.Position;
                     interpolateData.Rotation = predictData.Rotation;
+                    interpolateData.SqrMagnitude = new Vector2(command.targetPos.x, command.targetPos.z).sqrMagnitude;
                     //     FSLog.Info($"UpdateCharPresentationSystem,x:{predictData.Position.x},z:{predictData.Position.z}");
                 });
         }

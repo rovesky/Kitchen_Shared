@@ -20,7 +20,7 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref CharacterPickupItem pickupItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
+            Entities.WithAllReadOnly<Character>().ForEach((Entity entity,ref CharacterPickupItem pickupItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
             {
                 //  FSLog.Info("PickSystem Update");
                 if (command.buttons.IsSet(UserCommand.Button.Throw) )

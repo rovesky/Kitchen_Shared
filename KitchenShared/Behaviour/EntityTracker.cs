@@ -16,28 +16,29 @@ namespace FootStone.Kitchen
         }
 
         // Update is called once per frame
-        void LateUpdate()
-        {
-            if (EntityToTrack != Entity.Null)
-            {
-                try
-                {
-                    var em = World.Active.EntityManager;
+        //void LateUpdate()
+        //{
+        //    return;
+        //    if (EntityToTrack != Entity.Null)
+        //    {
+        //        try
+        //        {
+        //            var em = World.Active.EntityManager;
 
-                    transform.position = em.GetComponentData<Translation>(EntityToTrack).Value;
-                    transform.rotation = em.GetComponentData<Rotation>(EntityToTrack).Value;
+        //            transform.position = em.GetComponentData<Translation>(EntityToTrack).Value;
+        //            transform.rotation = em.GetComponentData<Rotation>(EntityToTrack).Value;
 
-                    //  Debug.Log("EntityTracker!");
-                }
-                catch
-                {
-                    // Debug.LogError("EntityTracker catch!");
-                    // Dirty way to check for an Entity that no longer exists.
-                    EntityToTrack = Entity.Null;
+        //           //  Debug.Log($"EntityTracker,x:{transform.position.x},y:{transform.position.y},z:{transform.position.z}");
+        //        }
+        //        catch
+        //        {
+        //            // Debug.LogError("EntityTracker catch!");
+        //            // Dirty way to check for an Entity that no longer exists.
+        //            EntityToTrack = Entity.Null;
 
-                    Destroy(this.gameObject);
-                }
-            }
-        }
+        //            Destroy(this.gameObject);
+        //        }
+        //    }
+        //}
     }
 }

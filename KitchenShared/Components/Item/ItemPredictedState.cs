@@ -12,9 +12,12 @@ namespace FootStone.Kitchen
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
+            
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
+
+            FSLog.Info($"ItemPredictedState rollback,x:{Position.x},z:{Position.z}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)

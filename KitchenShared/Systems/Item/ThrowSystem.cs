@@ -20,7 +20,7 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Player>().ForEach((Entity entity,ref CharacterThrowItem throwItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
+            Entities.WithAllReadOnly<Character>().ForEach((Entity entity,ref CharacterThrowItem throwItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
             {
                 if (!command.buttons.IsSet(UserCommand.Button.Throw))
                     return;

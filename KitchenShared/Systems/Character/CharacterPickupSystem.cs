@@ -19,29 +19,32 @@ namespace FootStone.Kitchen
 		protected override void OnUpdate()
 		{
 			//FSLog.Info("TriggerOperationSystem Update");
-			Entities.WithAllReadOnly<Player>().ForEach((Entity entity, 
+			Entities.WithAllReadOnly<Character>().ForEach((Entity entity, 
                 ref CharacterPickupItem pickupItem,
                 ref UserCommand command,
                 ref CharacterPredictedState predictData) =>
             {
                 if (!command.buttons.IsSet(UserCommand.Button.Pickup))
                     return;
-
+          
                 var isEmpty = predictData.PickupedEntity == Entity.Null;
                 var entities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob);
-
+              
                 foreach (var overlappingEntity in  entities)
                 {
                  //   FSLog.Info(overlappingEntity);
                     var overlappingData = EntityManager.GetComponentData<OverlappingTriggerComponent>(overlappingEntity);
                     if (overlappingData.TriggerEntity != entity.Index)
                         continue;
-
+                  
                     var worldTick = GetSingleton<WorldTime>().Tick;
                     var triggerData = EntityManager.GetComponentData<TriggerDataComponent>(overlappingEntity);
-                    if ((triggerData.VolumeType & (int) TriggerVolumeType.Table) != 0)
+
+                     if ((triggerData.VolumeType & (int) TriggerVolumeType.Table) != 0)
                     {
                         var slot = EntityManager.GetComponentData<SlotComponent>(overlappingEntity);
+                        FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FiltInEntity}");
+
                         if (isEmpty && slot.FiltInEntity != Entity.Null)
                         {
                             FSLog.Info($"PickUpItem,command tick:{command.checkTick},worldTick:{worldTick}");
@@ -92,8 +95,8 @@ namespace FootStone.Kitchen
             ref SlotComponent slot)
         {
             var entity = slot.FiltInEntity;
-            EntityManager.AddComponentData(entity, new Parent() {Value = owner});
-            EntityManager.AddComponentData(entity, new LocalToParent());
+          //  EntityManager.AddComponentData(entity, new Parent() {Value = owner});
+          //  EntityManager.AddComponentData(entity, new LocalToParent());
             //	EntityManager.SetComponentData(entity, new Translation() { Value = new float3(0, 0.2f, 0.8f) });
             //	EntityManager.SetComponentData(entity, new Rotation() { Value = quaternion.identity });
 

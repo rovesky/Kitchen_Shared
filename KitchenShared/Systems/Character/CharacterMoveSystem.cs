@@ -134,7 +134,7 @@ namespace FootStone.Kitchen
                     var skinWidth = characterMove.SkinWidth;
                     CharacterControllerUtilities.CheckSupport(PhysicsWorld, selfRigidBodyIndex, skinWidth, distanceHits,
                         ref constraints, out var numConstraints);
-                //    FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
+                  //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
 
                     float3 desiredVelocity = userCommand.targetPos * characterMove.Velocity;
 
@@ -146,7 +146,8 @@ namespace FootStone.Kitchen
                     SimplexSolver.Solve(PhysicsWorld, remainingTime, up, numConstraints, ref constraints,
                         ref newPosition, ref newVelocity, out var integratedTime);
 
-                   
+                   // FSLog.Info($"newPosition:{newPosition.x},{newPosition.y},{newPosition.z}");
+
                     predictData.Position = newPosition;
                     if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)
                         predictData.Rotation = quaternion.LookRotationSafe(desiredVelocity, up);
