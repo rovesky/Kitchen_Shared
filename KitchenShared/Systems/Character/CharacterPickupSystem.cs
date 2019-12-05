@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                 ref UserCommand command,
                 ref CharacterPredictedState predictData) =>
             {
-                if (!command.buttons.IsSet(UserCommand.Button.Pickup))
+                if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
           
                 var isEmpty = predictData.PickupedEntity == Entity.Null;
@@ -47,12 +47,12 @@ namespace FootStone.Kitchen
 
                         if (isEmpty && slot.FiltInEntity != Entity.Null)
                         {
-                            FSLog.Info($"PickUpItem,command tick:{command.checkTick},worldTick:{worldTick}");
+                            FSLog.Info($"PickUpItem,command tick:{command.CheckTick},worldTick:{worldTick}");
                             PickUpItem(entity, overlappingEntity, ref predictData, ref slot);
                         }
                         else if (!isEmpty && slot.FiltInEntity == Entity.Null)
                         {
-                            FSLog.Info($"PutDownItem,tick:{command.checkTick},worldTick:{worldTick}");
+                            FSLog.Info($"PutDownItem,tick:{command.CheckTick},worldTick:{worldTick}");
                             PutDownItem(entity, overlappingEntity, ref predictData, ref slot);
                         }
                     }

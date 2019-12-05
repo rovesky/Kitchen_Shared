@@ -23,7 +23,7 @@ namespace FootStone.Kitchen
             Entities.WithAllReadOnly<Character>().ForEach((Entity entity,ref CharacterPickupItem pickupItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
             {
                 //  FSLog.Info("PickSystem Update");
-                if (command.buttons.IsSet(UserCommand.Button.Throw) )
+                if (command.Buttons.IsSet(UserCommand.Button.Throw) )
                 {
                     if (predictData.PickupedEntity == Entity.Null)
                     {

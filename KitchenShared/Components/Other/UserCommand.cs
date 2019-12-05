@@ -8,7 +8,7 @@ namespace FootStone.Kitchen
     [InternalBufferCapacity(64)]
     public struct UserCommandBuffer : IBufferElementData
     {
-        public UserCommand command;
+        public UserCommand Command;
     }
 
     [Serializable]
@@ -31,49 +31,49 @@ namespace FootStone.Kitchen
 
         public struct ButtonBitField
         {
-            public uint flags;
+            public uint Flags;
 
             public bool IsSet(Button button)
             {
-                return (flags & (uint)button) > 0;
+                return (Flags & (uint)button) > 0;
             }
 
             public void Or(Button button, bool val)
             {
                 if (val)
-                    flags = flags | (uint)button;
+                    Flags = Flags | (uint)button;
             }
 
 
             public void Set(Button button, bool val)
             {
                 if (val)
-                    flags = flags | (uint)button;
+                    Flags = Flags | (uint)button;
                 else
                 {
-                    flags = flags & ~(uint)button;
+                    Flags = Flags & ~(uint)button;
                 }
             }
         }
 
-        public uint checkTick;
-        public uint renderTick;
-        public ButtonBitField buttons;
-        public Vector3 targetPos;
+        public uint CheckTick;
+        public uint RenderTick;
+        public ButtonBitField Buttons;
+        public Vector3 TargetDir;
 
-        public static UserCommand defaultCommand = new UserCommand()
+        public static UserCommand DefaultCommand = new UserCommand()
         {
-            checkTick = 0,
-            renderTick = 0,
-            buttons = default,
-            targetPos = Vector3.zero
+            CheckTick = 0,
+            RenderTick = 0,
+            Buttons = default,
+            TargetDir = Vector3.zero
         };
 
         public void Reset()
         {
           //  checkTick = 0;
           //  renderTick = 0;
-            buttons.flags = 0;
+            Buttons.Flags = 0;
            // targetPos = Vector3.zero;
         }
 
@@ -82,12 +82,12 @@ namespace FootStone.Kitchen
             MemoryStream memStream = new MemoryStream(100);
             BinaryWriter writer = new BinaryWriter(memStream);
 
-            writer.Write(checkTick);
-            writer.Write(renderTick);
-            writer.Write(buttons.flags);
-            writer.Write(targetPos.x);
-            writer.Write(targetPos.y);
-            writer.Write(targetPos.z);
+            writer.Write(CheckTick);
+            writer.Write(RenderTick);
+            writer.Write(Buttons.Flags);
+            writer.Write(TargetDir.x);
+            writer.Write(TargetDir.y);
+            writer.Write(TargetDir.z);
 
             return memStream.ToArray();
         }
@@ -97,29 +97,29 @@ namespace FootStone.Kitchen
             var memStream = new MemoryStream(data);
             var reader = new BinaryReader(memStream);
 
-            checkTick = reader.ReadUInt32();
-            renderTick = reader.ReadUInt32();
-            buttons.flags = reader.ReadUInt32();
-            targetPos.x = reader.ReadSingle();
-            targetPos.y = reader.ReadSingle();
-            targetPos.z = reader.ReadSingle();           
+            CheckTick = reader.ReadUInt32();
+            RenderTick = reader.ReadUInt32();
+            Buttons.Flags = reader.ReadUInt32();
+            TargetDir.x = reader.ReadSingle();
+            TargetDir.y = reader.ReadSingle();
+            TargetDir.z = reader.ReadSingle();           
         }
 
 
         public void Serialize(ref NetworkWriter networkWriter)
         {
-            networkWriter.WriteUInt32("checkTick", checkTick);
-            networkWriter.WriteUInt32("renderTick", renderTick);
-            networkWriter.WriteUInt32("buttonFlag", buttons.flags);
-            networkWriter.WriteVector3Q("targetPos", targetPos);          
+            networkWriter.WriteUInt32("checkTick", CheckTick);
+            networkWriter.WriteUInt32("renderTick", RenderTick);
+            networkWriter.WriteUInt32("buttonFlag", Buttons.Flags);
+            networkWriter.WriteVector3Q("targetPos", TargetDir);          
         }
 
         public void Deserialize(ref NetworkReader networkReader)
         {
-            checkTick = networkReader.ReadUInt32();
-            renderTick = networkReader.ReadUInt32();
-            buttons.flags = networkReader.ReadUInt32();
-            targetPos = networkReader.ReadVector3Q();       
+            CheckTick = networkReader.ReadUInt32();
+            RenderTick = networkReader.ReadUInt32();
+            Buttons.Flags = networkReader.ReadUInt32();
+            TargetDir = networkReader.ReadVector3Q();       
         }
     }
 

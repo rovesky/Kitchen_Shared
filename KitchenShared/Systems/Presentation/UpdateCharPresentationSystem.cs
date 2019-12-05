@@ -17,7 +17,7 @@ namespace FootStone.Kitchen
                 {
                     interpolateData.Position = predictData.Position;
                     interpolateData.Rotation = predictData.Rotation;
-                    interpolateData.SqrMagnitude = new Vector2(command.targetPos.x, command.targetPos.z).sqrMagnitude;
+                    interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
                     //     FSLog.Info($"UpdateCharPresentationSystem,x:{predictData.Position.x},z:{predictData.Position.z}");
                 });
         }

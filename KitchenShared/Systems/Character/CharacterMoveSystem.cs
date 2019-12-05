@@ -136,7 +136,7 @@ namespace FootStone.Kitchen
                         ref constraints, out var numConstraints);
                   //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
 
-                    float3 desiredVelocity = userCommand.targetPos * characterMove.Velocity;
+                    float3 desiredVelocity = userCommand.TargetDir * characterMove.Velocity;
 
                     // Solve
                     var newVelocity = desiredVelocity;

@@ -5,27 +5,22 @@ namespace FootStone.Kitchen
 {
     public class TriggerDataBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
-        public TriggerVolumeType type = TriggerVolumeType.None;
+        public TriggerVolumeType Type = TriggerVolumeType.None;
 
-        public GameObject slot;
-
-        private void Awake()
-        {
-
-        }
+        public GameObject Slot;
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
             var com = new TriggerDataComponent
             {
-                VolumeType = (int) type
+                VolumeType = (int) Type
             };
             dstManager.AddComponentData(entity, com);
 
-            if (slot != null)
+            if (Slot != null)
             {
-                var slotEntity = conversionSystem.GetPrimaryEntity(slot);
+                var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
                 var slotCom = new SlotComponent
                 {
                     SlotEntity = slotEntity,

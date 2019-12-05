@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
         {
             Entities.WithAllReadOnly<Character>().ForEach((Entity entity,ref CharacterThrowItem throwItem,ref UserCommand command,ref CharacterPredictedState predictData) =>
             {
-                if (!command.buttons.IsSet(UserCommand.Button.Throw))
+                if (!command.Buttons.IsSet(UserCommand.Button.Throw))
                     return;
 
                 //  if (EntityManager.HasComponent<ReleaseItem>(entity))
@@ -37,7 +37,7 @@ namespace FootStone.Kitchen
                 EntityManager.RemoveComponent<Parent>(pickupEntity);
                 EntityManager.RemoveComponent<LocalToParent>(pickupEntity);
              
-                FSLog.Info($"ThrowItem:{command.checkTick},{command.renderTick},{pickupEntity}");
+                FSLog.Info($"ThrowItem:{command.CheckTick},{command.RenderTick},{pickupEntity}");
 
                 var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(pickupEntity);
                 Vector3 linear = math.mul(predictData.Rotation, Vector3.forward);
