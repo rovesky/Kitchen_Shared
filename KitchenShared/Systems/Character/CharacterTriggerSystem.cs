@@ -34,15 +34,15 @@ namespace FootStone.Kitchen
                 {
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
-                    typeof(CharacterMove),
+                 //   typeof(CharacterMove),
                     typeof(UserCommand),
                     typeof(Translation),
                     typeof(Rotation)
                 }
             };
             m_CharacterControllersGroup = GetEntityQuery(query);
-            m_OverlappingGroup = GetEntityQuery(typeof(OverlappingTriggerComponent));
-            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerDataComponent));
+            m_OverlappingGroup = GetEntityQuery(typeof(OverlappingTrigger));
+            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerData));
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
@@ -79,8 +79,8 @@ namespace FootStone.Kitchen
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
             inputDeps = ccJob.Schedule(inputDeps);
 
-            var overlappingGroup = GetComponentDataFromEntity<OverlappingTriggerComponent>(true);
-            var triggerDataGroup = GetComponentDataFromEntity<TriggerDataComponent>(true);
+            var overlappingGroup = GetComponentDataFromEntity<OverlappingTrigger>(true);
+            var triggerDataGroup = GetComponentDataFromEntity<TriggerData>(true);
             var addNewJobHandle = new AddNewOverlappingJob
             {
                 CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
@@ -219,8 +219,8 @@ namespace FootStone.Kitchen
             [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
             [ReadOnly] public NativeArray<int> Characters;
             [ReadOnly] public NativeArray<Entity> TriggerEntities;
-            [ReadOnly] public ComponentDataFromEntity<OverlappingTriggerComponent> OverlappingGroup;
-            [ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
+            [ReadOnly] public ComponentDataFromEntity<OverlappingTrigger> OverlappingGroup;
+            [ReadOnly] public ComponentDataFromEntity<TriggerData> TriggerDataGroup;
 
             public void Execute()
             {
@@ -231,7 +231,7 @@ namespace FootStone.Kitchen
                     {
                         var triggerComponent = TriggerDataGroup[overlappingEntity];
                         CommandBuffer.AddComponent(overlappingEntity,
-                            new OverlappingTriggerComponent {TriggerEntity = Characters[i]});
+                            new OverlappingTrigger {TriggerEntityIndex = Characters[i]});
                         CommandBuffer.AddComponent(overlappingEntity, new OnTriggerEnter());
                         switch ((TriggerVolumeType) triggerComponent.VolumeType)
                         {
@@ -244,9 +244,9 @@ namespace FootStone.Kitchen
                     else
                     {
                         var overlappingTriggerComponent = OverlappingGroup[overlappingEntity];
-                        if (overlappingTriggerComponent.TriggerEntity != Characters[i])
+                        if (overlappingTriggerComponent.TriggerEntityIndex != Characters[i])
                         {
-                            overlappingTriggerComponent.TriggerEntity = Characters[i];
+                            overlappingTriggerComponent.TriggerEntityIndex = Characters[i];
                             CommandBuffer.SetComponent(overlappingEntity, overlappingTriggerComponent);
                         }
                     }
@@ -261,7 +261,7 @@ namespace FootStone.Kitchen
             [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
             [ReadOnly] public NativeArray<Entity> TriggerEntities;
             [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> OverlappingEntities;
-            [ReadOnly] public ComponentDataFromEntity<TriggerDataComponent> TriggerDataGroup;
+            [ReadOnly] public ComponentDataFromEntity<TriggerData> TriggerDataGroup;
 
             public void Execute()
             {
@@ -289,7 +289,7 @@ namespace FootStone.Kitchen
                                 break;
                         }
 
-                        CommandBuffer.RemoveComponent<OverlappingTriggerComponent>(entity);
+                        CommandBuffer.RemoveComponent<OverlappingTrigger>(entity);
                         CommandBuffer.AddComponent(entity, new OnTriggerExit());
                     }
                 }

@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
@@ -12,7 +13,7 @@ namespace FootStone.Kitchen
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-            var com = new TriggerDataComponent
+            var com = new TriggerData
             {
                 VolumeType = (int) Type
             };
@@ -21,10 +22,10 @@ namespace FootStone.Kitchen
             if (Slot != null)
             {
                 var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
-                var slotCom = new SlotComponent
+                var slotCom = new SlotPredictedState
                 {
-                    SlotEntity = slotEntity,
-                    FiltInEntity = Entity.Null
+                    SlotPos = dstManager.GetComponentData<LocalToWorld>(slotEntity).Position,
+                    FilledInEntity = Entity.Null
                 };
                 dstManager.AddComponentData(entity, slotCom);
             }

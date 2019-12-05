@@ -11,21 +11,21 @@ namespace FootStone.Kitchen
 		Table = 1 << 1,
 	}
 
-	public struct TriggerDataComponent : IComponentData
+	public struct TriggerData : IComponentData
 	{
 		public int VolumeType;
 	}
 
-	public struct OnPutEntity : IComponentData
-	{
-		public Entity Owner;
-		public Entity Goods;
-	}
+	//public struct OnPutEntity : IComponentData
+	//{
+	//	public Entity Owner;
+	//	public Entity Goods;
+	//}
 
-	public struct OnPickUpEntity : IComponentData
-	{
-		public Entity Owner;
-	}
+	//public struct OnPickUpEntity : IComponentData
+	//{
+	//	public Entity Owner;
+	//}
 
 	#region 仅客户端使用
 	public struct OnTriggerEnter : IComponentData { }
