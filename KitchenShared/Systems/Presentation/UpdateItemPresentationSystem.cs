@@ -16,7 +16,7 @@ namespace FootStone.Kitchen
                     interpolateData.Position = predictData.Position;
                     interpolateData.Rotation = predictData.Rotation;
                     interpolateData.Owner = predictData.Owner;
-            //        FSLog.Info($"UpdateItemPresentationSystem,x:{predictData.Position.x},z:{predictData.Position.z}");
+                 //   FSLog.Info($"UpdateItemPresentationSystem,Position:{predictData.Position}");
                 });
         }
     }

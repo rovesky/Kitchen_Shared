@@ -12,7 +12,8 @@ namespace FootStone.Kitchen
             Entities.ForEach((Entity entity, 
                 ref ItemInterpolatedState interpolatedData,
                 ref Translation translation,
-                ref Rotation rotation) =>
+                ref Rotation rotation,
+                ref LocalToWorld localToWorld) =>
             {
             
                 translation.Value = interpolatedData.Position;
@@ -38,7 +39,11 @@ namespace FootStone.Kitchen
                         EntityManager.RemoveComponent<LocalToParent>(entity);
                     }
                 }
-             //   FSLog.Info($"ApplyItemPresentationSystem,x:{interpolatedData.Position.x},z:{interpolatedData.Position.z}");
+
+                var tick = GetSingleton<WorldTime>().Tick;
+                if(interpolatedData.Owner != Entity.Null)
+                    FSLog.Info($"ApplyItemPresentationSystem,tick:{tick},translation.Value:{interpolatedData.Owner}" +
+                             $",pos:{translation.Value},HasParent:{EntityManager.HasComponent<Parent>(entity)},localToWorld:{localToWorld.Position}");
 
             });
         }

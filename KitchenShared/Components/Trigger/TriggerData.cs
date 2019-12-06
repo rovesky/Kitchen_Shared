@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -14,7 +15,8 @@ namespace FootStone.Kitchen
 	public struct TriggerData : IComponentData
 	{
 		public int VolumeType;
-	}
+        public float3 SlotPos;
+    }
 
 	//public struct OnPutEntity : IComponentData
 	//{
