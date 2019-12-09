@@ -6,7 +6,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
-using Unity.Transforms;
 using UnityEngine.Assertions;
 
 namespace FootStone.Kitchen
@@ -34,10 +33,10 @@ namespace FootStone.Kitchen
                 {
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
-                 //   typeof(CharacterMove),
-                    typeof(UserCommand),
-                    typeof(Translation),
-                    typeof(Rotation)
+                    typeof(CharacterPredictedState)
+                    //  typeof(UserCommand),
+                    //  typeof(Translation),
+                    //  typeof(Rotation)
                 }
             };
             m_CharacterControllersGroup = GetEntityQuery(query);
@@ -50,66 +49,68 @@ namespace FootStone.Kitchen
             var entities = m_CharacterControllersGroup.ToEntityArray(Allocator.TempJob);
 
             var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
-            var userCommandGroup = GetComponentDataFromEntity<UserCommand>(true);
-            var translationGroup = GetComponentDataFromEntity<Translation>(true);
-            var rotationGroup = GetComponentDataFromEntity<Rotation>(true);
-         //   var tickDuration = GetSingleton<WorldTime>().TickDuration;
+            var predictedStateGroup = GetComponentDataFromEntity<CharacterPredictedState>();
+            // var userCommandGroup = GetComponentDataFromEntity<UserCommand>(true);
+            // var translationGroup = GetComponentDataFromEntity<Translation>(true);
+            //  var rotationGroup = GetComponentDataFromEntity<Rotation>(true);
 
-            var triggerEntitiesCount = new NativeArray<int>(1, Allocator.TempJob);
-            var characters = new NativeArray<int>(entities.Length, Allocator.TempJob);
-            var triggerEntities = new NativeArray<Entity>(entities.Length, Allocator.TempJob);
+
+         //   var triggerEntitiesCount = new NativeArray<int>(1, Allocator.TempJob);
+        //    var characters = new NativeArray<int>(entities.Length, Allocator.TempJob);
+         //   var triggerEntities = new NativeArray<Entity>(entities.Length, Allocator.TempJob);
             var ccJob = new GetTriggerOverlappingJob
             {
                 Entities = entities,
                 // Archetypes
                 PhysicsColliderGroup = physicsColliderGroup,
-                UserCommandGroup = userCommandGroup,
-                TranslationGroup = translationGroup,
-                RotationGroup = rotationGroup,
+                //UserCommandGroup = userCommandGroup,
+                //TranslationGroup = translationGroup,
+                //RotationGroup = rotationGroup,
+                PredictedStateGroup = predictedStateGroup,
                 // Input
-             //   DeltaTime = tickDuration,
+                //   DeltaTime = tickDuration,
                 PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
                 VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
 
-                pCounter = triggerEntitiesCount,
-                Characters = characters,
-                TriggerEntities = triggerEntities
+                //pCounter = triggerEntitiesCount,
+                //Characters = characters,
+                //TriggerEntities = triggerEntities
             };
 
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
             inputDeps = ccJob.Schedule(inputDeps);
 
-            var overlappingGroup = GetComponentDataFromEntity<OverlappingTrigger>(true);
-            var triggerDataGroup = GetComponentDataFromEntity<TriggerData>(true);
-            var addNewJobHandle = new AddNewOverlappingJob
-            {
-                CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
-                TriggerEntitiesCount = triggerEntitiesCount,
-                Characters = characters,
-                TriggerDataGroup = triggerDataGroup,
-                TriggerEntities = triggerEntities,
-                OverlappingGroup = overlappingGroup
-            }.Schedule(inputDeps);
-            m_EntityCommandBufferSystem.AddJobHandleForProducer(addNewJobHandle);
+            //var overlappingGroup = GetComponentDataFromEntity<OverlappingTrigger>(true);
+            //var triggerDataGroup = GetComponentDataFromEntity<TriggerData>(true);
+            //var addNewJobHandle = new AddNewOverlappingJob
+            //{
+            //    CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
+            //    TriggerEntitiesCount = triggerEntitiesCount,
+            //    Characters = characters,
+            //    TriggerDataGroup = triggerDataGroup,
+            //    TriggerEntities = triggerEntities,
+            //    OverlappingGroup = overlappingGroup
+            //}.Schedule(inputDeps);
+            //m_EntityCommandBufferSystem.AddJobHandleForProducer(addNewJobHandle);
 
-            var removeOldJobHandle = new RemoveOldOverlappingJob
-            {
-                CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
-                TriggerDataGroup = triggerDataGroup,
-                TriggerEntities = triggerEntities,
-                TriggerEntitiesCount = triggerEntitiesCount,
-                OverlappingEntities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob)
-            }.Schedule(inputDeps);
-            m_EntityCommandBufferSystem.AddJobHandleForProducer(removeOldJobHandle);
+            //var removeOldJobHandle = new RemoveOldOverlappingJob
+            //{
+            //    CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer(),
+            //    TriggerDataGroup = triggerDataGroup,
+            //    TriggerEntities = triggerEntities,
+            //    TriggerEntitiesCount = triggerEntitiesCount,
+            //    OverlappingEntities = m_OverlappingGroup.ToEntityArray(Allocator.TempJob)
+            //}.Schedule(inputDeps);
+            //m_EntityCommandBufferSystem.AddJobHandleForProducer(removeOldJobHandle);
 
-            inputDeps = JobHandle.CombineDependencies(addNewJobHandle, removeOldJobHandle);
+            //inputDeps = JobHandle.CombineDependencies(addNewJobHandle, removeOldJobHandle);
             inputDeps.Complete();
 
-            m_EntityCommandBufferSystem.Update();
+            //m_EntityCommandBufferSystem.Update();
 
-            characters.Dispose();
-            triggerEntitiesCount.Dispose();
-            triggerEntities.Dispose();
+           // characters.Dispose();
+          //  triggerEntitiesCount.Dispose();
+          //  triggerEntities.Dispose();
 
             return inputDeps;
         }
@@ -121,21 +122,17 @@ namespace FootStone.Kitchen
             for (var i = 0; i < distanceHits.Length; i++)
             {
                 var hit = distanceHits[i];
-                if (hit.RigidBodyIndex != selfRigidBodyIndex)
-                {
-                    var e = world.Bodies[hit.RigidBodyIndex].Entity;
-                    if (volumeEntities.Contains(e))
-                    {
-                        if (triggerIndex < 0)
-                        {
-                            triggerIndex = i;
-                        }
-                        else
-                        {
-                            if (distanceHits[triggerIndex].Distance > hit.Distance) triggerIndex = i;
-                        }
-                    }
-                }
+                if (hit.RigidBodyIndex == selfRigidBodyIndex)
+                    continue;
+
+                var e = world.Bodies[hit.RigidBodyIndex].Entity;
+                if (!volumeEntities.Contains(e))
+                    continue;
+
+                if (triggerIndex < 0)
+                    triggerIndex = i;
+                else if (distanceHits[triggerIndex].Distance > hit.Distance)
+                    triggerIndex = i;
             }
 
             return triggerIndex;
@@ -146,32 +143,33 @@ namespace FootStone.Kitchen
         {
             // Chunks can be deallocated at this point
             [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> Entities;
-
-         //   public float DeltaTime;
-
             [ReadOnly] public PhysicsWorld PhysicsWorld;
-            [ReadOnly] public ComponentDataFromEntity<Translation> TranslationGroup;
-            [ReadOnly] public ComponentDataFromEntity<Rotation> RotationGroup;
             [ReadOnly] public ComponentDataFromEntity<PhysicsCollider> PhysicsColliderGroup;
-            [ReadOnly] public ComponentDataFromEntity<UserCommand> UserCommandGroup;
+            public ComponentDataFromEntity<CharacterPredictedState> PredictedStateGroup;
 
-            [NativeFixedLength(1)] public NativeArray<int> pCounter;
-            public NativeArray<int> Characters;
-            public NativeArray<Entity> TriggerEntities;
+            //  [ReadOnly] public ComponentDataFromEntity<Translation> TranslationGroup;
+            //  [ReadOnly] public ComponentDataFromEntity<Rotation> RotationGroup;
+            //  [ReadOnly] public ComponentDataFromEntity<UserCommand> UserCommandGroup;
+
+        //    [NativeFixedLength(1)] public NativeArray<int> pCounter;
+        //    public NativeArray<int> Characters;
+        //    public NativeArray<Entity> TriggerEntities;
             [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> VolumeEntities;
+
 
             public unsafe void Execute()
             {
-                pCounter[0] = 0;
+                //  pCounter[0] = 0;
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
-                for (var i = 0; i < Entities.Length; i++)
+                foreach (var entity in Entities)
                 {
-                    var entity = Entities[i];
                     var collider = PhysicsColliderGroup[entity];
-                    var userCommand = UserCommandGroup[entity];
-                    var translation = TranslationGroup[entity];
-                    var rotation = RotationGroup[entity];
+                    //var userCommand = UserCommandGroup[entity];
+                    //var translation = TranslationGroup[entity];
+                    //var rotation = RotationGroup[entity];
+
+                    var predictedState = PredictedStateGroup[entity];
 
                     // Collision filter must be valid
                     Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
@@ -179,8 +177,10 @@ namespace FootStone.Kitchen
                     // Character transform
                     var transform = new RigidTransform
                     {
-                        pos = translation.Value,
-                        rot = rotation.Value
+                        pos = predictedState.Position,
+                        rot = predictedState.Rotation
+                        //pos = translation.Value,
+                        //rot = rotation.Value
                     };
 
                     var input = new ColliderDistanceInput
@@ -195,19 +195,16 @@ namespace FootStone.Kitchen
                     distanceHits.Clear();
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
-                    var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities, selfRigidBodyIndex, /*rotation.Value,*/
+                    var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities,
+                        selfRigidBodyIndex, /*rotation.Value,*/
                         distanceHits);
 
-                    if (triggerIndex >= 0)
-                    {
-                        var triggerEntity = PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
-                        if (!TriggerEntities.Contains(triggerEntity))
-                        {
-                            Characters[pCounter[0]] = entity.Index;
-                            TriggerEntities[pCounter[0]] = triggerEntity;
-                            pCounter[0]++;
-                        }
-                    }
+                    predictedState.TriggerEntity = triggerIndex < 0 ?
+                        Entity.Null : 
+                        PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
+                
+                    PredictedStateGroup[entity] = predictedState;
+                    distanceHits.Dispose();
                 }
             }
         }

@@ -32,6 +32,7 @@ namespace FootStone.Kitchen
             {
                 Position = position,
                 Rotation = rotation,
+                TriggerEntity = Entity.Null,
                 PickupedEntity = Entity.Null
             });
 

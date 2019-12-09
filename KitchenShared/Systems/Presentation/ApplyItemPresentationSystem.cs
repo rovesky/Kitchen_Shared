@@ -13,7 +13,8 @@ namespace FootStone.Kitchen
                 ref ItemInterpolatedState interpolatedData,
                 ref Translation translation,
                 ref Rotation rotation,
-                ref LocalToWorld localToWorld) =>
+                ref LocalToWorld localToWorld,
+                ref ReplicatedEntityData replicatedData) =>
             {
             
                 translation.Value = interpolatedData.Position;
@@ -41,9 +42,11 @@ namespace FootStone.Kitchen
                 }
 
                 var tick = GetSingleton<WorldTime>().Tick;
-                if(interpolatedData.Owner != Entity.Null)
-                    FSLog.Info($"ApplyItemPresentationSystem,tick:{tick},translation.Value:{interpolatedData.Owner}" +
-                             $",pos:{translation.Value},HasParent:{EntityManager.HasComponent<Parent>(entity)},localToWorld:{localToWorld.Position}");
+
+                //if (replicatedData.Id ==20)
+                //    FSLog.Info($"ApplyItemPresentationSystem,tick:{tick},owner:{interpolatedData.Owner}" +
+                //             $",pos:{translation.Value},HasParent:{EntityManager.HasComponent<Parent>(entity)}" +
+                //             $",localToWorld:{localToWorld.Position},replicatedData.netId:{replicatedData.Id}");
 
             });
         }

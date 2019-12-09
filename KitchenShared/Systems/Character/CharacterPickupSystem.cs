@@ -10,59 +10,50 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterPickupSystem : ComponentSystem
     {
-        EntityQuery overlappingGroup;
+       // EntityQuery overlappingGroup;
 
         protected override void OnCreate()
         {
-            overlappingGroup = GetEntityQuery(typeof(OverlappingTrigger));
+           // overlappingGroup = GetEntityQuery(typeof(OverlappingTrigger));
         }
 
         protected override void OnUpdate()
         {
             //FSLog.Info("TriggerOperationSystem Update");
-            Entities.WithAllReadOnly<Character>().ForEach((Entity entity,
+            Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
                 ref CharacterPickupItem pickupItem,
                 ref UserCommand command,
                 ref CharacterPredictedState predictData) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
+               // FSLog.Info("UserCommand.Button.Pickup");
+                var triggerEntity = predictData.TriggerEntity;
+                if (triggerEntity == Entity.Null)
+                    return;
+            
+                var triggerData = EntityManager.GetComponentData<TriggerData>(triggerEntity);
+              //  FSLog.Info($"triggerData.VolumeType:{triggerData.VolumeType}");
+                if ((triggerData.VolumeType & (int) TriggerVolumeType.Table) == 0)
+                    return;
 
+                var worldTick = GetSingleton<WorldTime>().Tick;
                 var isEmpty = predictData.PickupedEntity == Entity.Null;
-                var entities = overlappingGroup.ToEntityArray(Allocator.TempJob);
-                // FSLog.Info($"overlappingGroup: {entities.Length}");
-                foreach (var overlappingEntity in entities)
+                var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
+                // FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FilledInEntity},slot.pos:{slot.SlotPos}");
+
+                if (isEmpty && slot.FilledInEntity != Entity.Null)
                 {
-                    // FSLog.Info(overlappingEntity);
-                    var overlappingData = EntityManager.GetComponentData<OverlappingTrigger>(overlappingEntity);
-                    if (overlappingData.TriggerEntityIndex != entity.Index)
-                        continue;
-
-                    //  FSLog.Info($"overlappingData.TriggerEntityIndex:{overlappingData.TriggerEntityIndex}");
-                    var worldTick = GetSingleton<WorldTime>().Tick;
-                    var triggerData = EntityManager.GetComponentData<TriggerData>(overlappingEntity);
-                    // FSLog.Info($"triggerData.VolumeType:{triggerData.VolumeType}");
-                    if ((triggerData.VolumeType & (int) TriggerVolumeType.Table) != 0)
-                    {
-                        var slot = EntityManager.GetComponentData<SlotPredictedState>(overlappingEntity);
-                        // FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FilledInEntity},slot.pos:{slot.SlotPos}");
-
-                        if (isEmpty && slot.FilledInEntity != Entity.Null)
-                        {
-                            FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                            PickUpItem(entity, overlappingEntity, ref predictData /*, ref slot*/);
-                        }
-                        else if (!isEmpty && slot.FilledInEntity == Entity.Null)
-                        {
-                            FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
-                            PutDownItem(entity, overlappingEntity, ref predictData /*, ref slot*/);
-                        }
-                    }
-
-                    break;
+                    FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
+                    PickUpItem(entity, triggerEntity, ref predictData /*, ref slot*/);
+                }
+                else if (!isEmpty && slot.FilledInEntity == Entity.Null)
+                {
+                    FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
+                    PutDownItem(entity, triggerEntity, ref predictData /*, ref slot*/);
                 }
 
-                entities.Dispose();
+           
 
             });
         }

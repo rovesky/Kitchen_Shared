@@ -8,12 +8,14 @@ namespace FootStone.Kitchen
     {
         public float3 Position;
         public quaternion Rotation;
+        public Entity TriggerEntity;
         public Entity PickupedEntity;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
+            context.RefSerializer.DeserializeReference(ref reader, ref TriggerEntity);
             context.RefSerializer.DeserializeReference(ref reader, ref PickupedEntity);
         }
 
@@ -21,6 +23,7 @@ namespace FootStone.Kitchen
         {
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
+            context.RefSerializer.SerializeReference(ref writer, "triggerEntity", TriggerEntity);
             context.RefSerializer.SerializeReference(ref writer, "pickupedEntity", PickupedEntity);
         }
 
@@ -28,6 +31,7 @@ namespace FootStone.Kitchen
         {
             return Position.Equals(state.Position) &&
                    Rotation.Equals(state.Rotation) &&
+                   TriggerEntity.Equals(state.TriggerEntity) &&
                    PickupedEntity.Equals(state.PickupedEntity);
         }
 
