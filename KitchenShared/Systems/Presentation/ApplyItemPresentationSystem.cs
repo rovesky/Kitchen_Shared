@@ -41,7 +41,7 @@ namespace FootStone.Kitchen
                     }
                 }
 
-                var tick = GetSingleton<WorldTime>().Tick;
+               // var tick = GetSingleton<WorldTime>().Tick;
 
                 //if (replicatedData.Id ==20)
                 //    FSLog.Info($"ApplyItemPresentationSystem,tick:{tick},owner:{interpolatedData.Owner}" +

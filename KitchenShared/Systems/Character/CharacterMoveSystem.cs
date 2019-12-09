@@ -97,7 +97,6 @@ namespace FootStone.Kitchen
              
                 const int maxQueryHits = 128;
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
-                //var castHits = new NativeArray<ColliderCastHit>(maxQueryHits, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
                 var constraints = new NativeArray<SurfaceConstraintInfo>(4 * maxQueryHits, Allocator.Temp,
                     NativeArrayOptions.UninitializedMemory);
 
@@ -125,8 +124,7 @@ namespace FootStone.Kitchen
                         Transform = transform,
                         Collider = collider.ColliderPtr
                     };
-
-                    //	var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(characterData.Entity);
+            
                     var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
 
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);

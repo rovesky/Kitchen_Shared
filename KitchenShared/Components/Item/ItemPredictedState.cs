@@ -15,7 +15,7 @@ namespace FootStone.Kitchen
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
-            FSLog.Info($"ItemPredictedState rollback,x:{Position.x},z:{Position.z}");
+         //   FSLog.Info($"ItemPredictedState rollback,x:{Position.x},z:{Position.z}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)

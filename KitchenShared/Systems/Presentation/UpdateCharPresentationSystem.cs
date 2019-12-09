@@ -11,7 +11,8 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>()
-                .ForEach((Entity entity, 
+                .ForEach((Entity entity,
+                    ref ReplicatedEntityData replicatedEntityData,
                     ref CharacterPredictedState predictData,
                     ref CharacterInterpolatedState interpolateData,
                     ref UserCommand command,
@@ -20,9 +21,9 @@ namespace FootStone.Kitchen
                     interpolateData.Position = predictData.Position;
                     interpolateData.Rotation = predictData.Rotation;
                     interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
-
-                   //if(predictData.PickupedEntity != Entity.Null)
-                     //   FSLog.Info($"UpdateCharPresentationSystem,pos:{predictData.Position},localToWorld:{localToWorld.Position}");
+                    interpolateData.MaterialId = replicatedEntityData.Id % 4 ;
+                    //if(predictData.PickupedEntity != Entity.Null)
+                    //   FSLog.Info($"UpdateCharPresentationSystem,pos:{predictData.Position},localToWorld:{localToWorld.Position}");
                 });
         }
     }
