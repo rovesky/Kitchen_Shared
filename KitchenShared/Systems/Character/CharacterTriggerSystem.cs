@@ -128,7 +128,7 @@ namespace FootStone.Kitchen
                     var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities,
                         selfRigidBodyIndex,distanceHits);
 
-                    predictedState.TriggerEntity = triggerIndex < 0 ?
+                    predictedState.TriggeredEntity = triggerIndex < 0 ?
                         Entity.Null : 
                         PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
                 

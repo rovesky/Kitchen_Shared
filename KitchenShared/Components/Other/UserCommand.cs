@@ -44,7 +44,6 @@ namespace FootStone.Kitchen
                     Flags = Flags | (uint)button;
             }
 
-
             public void Set(Button button, bool val)
             {
                 if (val)

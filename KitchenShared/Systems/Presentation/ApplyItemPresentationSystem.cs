@@ -1,6 +1,9 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -9,16 +12,25 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, 
+            Entities.ForEach((Entity entity,
                 ref ItemInterpolatedState interpolatedData,
                 ref Translation translation,
                 ref Rotation rotation,
-                ref LocalToWorld localToWorld,
-                ref ReplicatedEntityData replicatedData) =>
+                ref PhysicsVelocity physicsVelocity,
+                //    ref LocalToWorld localToWorld,
+                ref ReplicatedEntityData replicatedData
+            ) =>
             {
-            
-                translation.Value = interpolatedData.Position;
-                rotation.Value = interpolatedData.Rotation;
+
+               //     FSLog.Info($"physicsVelocity.Linear:{Vector3.SqrMagnitude(physicsVelocity.Linear)}");
+               // if (Vector3.SqrMagnitude(physicsVelocity.Linear) < 1.0f)
+                {
+                    translation.Value = interpolatedData.Position;
+                    rotation.Value = interpolatedData.Rotation;
+                    //   FSLog.Info($"interpolatedData.Velocity:{interpolatedData.Velocity}");
+
+                 //   physicsVelocity.Linear = interpolatedData.Velocity;
+                }
 
                 if (interpolatedData.Owner != Entity.Null)
                 {
@@ -34,14 +46,13 @@ namespace FootStone.Kitchen
                 }
                 else
                 {
-                    if (EntityManager.HasComponent<Parent>(entity))
-                    {
-                        EntityManager.RemoveComponent<Parent>(entity);
-                        EntityManager.RemoveComponent<LocalToParent>(entity);
-                    }
+                    if (!EntityManager.HasComponent<Parent>(entity))
+                        return;
+                    EntityManager.RemoveComponent<Parent>(entity);
+                    EntityManager.RemoveComponent<LocalToParent>(entity);
                 }
 
-               // var tick = GetSingleton<WorldTime>().Tick;
+                // var tick = GetSingleton<WorldTime>().Tick;
 
                 //if (replicatedData.Id ==20)
                 //    FSLog.Info($"ApplyItemPresentationSystem,tick:{tick},owner:{interpolatedData.Owner}" +

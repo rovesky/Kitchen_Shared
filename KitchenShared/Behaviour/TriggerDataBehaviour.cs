@@ -1,5 +1,4 @@
-﻿using FootStone.ECS;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -7,32 +6,29 @@ namespace FootStone.Kitchen
 {
     public class TriggerDataBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
-        public TriggerVolumeType Type = TriggerVolumeType.None;
-
         public GameObject Slot;
+        public TriggerVolumeType Type;
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-       
-         //   dstManager.AddComponentData(entity, new ServerEntity());
-            if (Slot != null)
-            {
-                var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
-                var com = new TriggerData
-                {
-                    VolumeType = (int)Type,
-                    SlotPos = dstManager.GetComponentData<LocalToWorld>(slotEntity).Position,
-                };
-                dstManager.AddComponentData(entity, com);
+            if (Slot == null)
+                return;
 
-                var slotCom = new SlotPredictedState
-                {
-                    FilledInEntity = Entity.Null
-                };
-              //  FSLog.Info($"SlotPos:{slotCom.SlotPos}");
-                dstManager.AddComponentData(entity, slotCom);
-            }
+            var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
+            var triggerData = new TriggerData
+            {
+                VolumeType = (int) Type,
+                SlotPos = dstManager.GetComponentData<LocalToWorld>(slotEntity).Position
+            };
+            dstManager.AddComponentData(entity, triggerData);
+
+            var slotState = new SlotPredictedState
+            {
+                FilledInEntity = Entity.Null
+            };
+            //  FSLog.Info($"SlotPos:{slotCom.SlotPos}");
+            dstManager.AddComponentData(entity, slotState);
         }
     }
 }

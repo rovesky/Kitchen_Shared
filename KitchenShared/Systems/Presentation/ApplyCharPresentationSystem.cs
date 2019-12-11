@@ -28,21 +28,20 @@ namespace FootStone.Kitchen
                 rotation.Value = interpolatedData.Rotation;
 
                 //setup trigger entity color
-                if (predictedState.TriggerEntity != Entity.Null)
-                {
-                    var triggerEntity = predictedState.TriggerEntity;
-                    var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(triggerEntity);
+                if (predictedState.TriggeredEntity == Entity.Null)
+                    return;
+                var triggerEntity = predictedState.TriggeredEntity;
+                var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(triggerEntity);
 
-                    if (material == null)
+                if (material == null)
+                {
+                    material = new Material(volumeRenderMesh.material)
                     {
-                        material = new Material(volumeRenderMesh.material)
-                        {
-                            color = Color.gray
-                        };
-                    }
-                    volumeRenderMesh.material = material;
-                    PostUpdateCommands.SetSharedComponent(triggerEntity, volumeRenderMesh);
+                        color = Color.gray
+                    };
                 }
+                volumeRenderMesh.material = material;
+                PostUpdateCommands.SetSharedComponent(triggerEntity, volumeRenderMesh);
 
 
                 //  FSLog.Info($"ApplyCharPresentationSystem,x:{predictData.Position.x},z:{predictData.Position.z}," +

@@ -20,7 +20,7 @@ namespace FootStone.Kitchen
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
 
-                var triggerEntity = predictData.TriggerEntity;
+                var triggerEntity = predictData.TriggeredEntity;
                 if (triggerEntity == Entity.Null)
                     return;
 
@@ -31,7 +31,7 @@ namespace FootStone.Kitchen
                 var worldTick = GetSingleton<WorldTime>().Tick;
                 var isEmpty = predictData.PickupedEntity == Entity.Null;
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
-                // FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FilledInEntity},slot.pos:{slot.SlotPos}");
+                FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FilledInEntity}");
 
                 if (isEmpty && slot.FilledInEntity != Entity.Null)
                 {
@@ -49,10 +49,6 @@ namespace FootStone.Kitchen
         private void PutDownItem(Entity overlapping,ref CharacterPredictedState characterState)
         {
             var entity = characterState.PickupedEntity;
-
-            var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
-            physicsVelocity.Linear = float3.zero;
-            EntityManager.SetComponentData(entity, physicsVelocity);
   
             var triggerData = EntityManager.GetComponentData<TriggerData>(overlapping);
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
@@ -60,6 +56,7 @@ namespace FootStone.Kitchen
             //  FSLog.Info($"PutDownItem,pos:{slot.SlotPos}");
             itemPredictedState.Rotation = quaternion.identity;
             itemPredictedState.Owner = Entity.Null;
+            itemPredictedState.Velocity = float3.zero;
             EntityManager.SetComponentData(entity, itemPredictedState);
 
             var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
@@ -76,19 +73,15 @@ namespace FootStone.Kitchen
         private void PickUpItem(Entity owner, Entity overlapping, ref CharacterPredictedState characterState)
         {
             var slot = EntityManager.GetComponentData<SlotPredictedState>(overlapping);
+
             var entity = slot.FilledInEntity;
-
-
-            var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
-            physicsVelocity.Linear = float3.zero;
-            EntityManager.SetComponentData(entity, physicsVelocity);
 
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
             itemPredictedState.Position = new float3(0, 0.2f, 0.8f);
             itemPredictedState.Rotation = quaternion.identity;
+            itemPredictedState.Velocity = float3.zero;
             itemPredictedState.Owner = owner;
             EntityManager.SetComponentData(entity, itemPredictedState);
-
 
             var ownerReplicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(owner);
             var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);

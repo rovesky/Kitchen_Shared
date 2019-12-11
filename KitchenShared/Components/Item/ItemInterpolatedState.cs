@@ -10,12 +10,14 @@ namespace FootStone.Kitchen
     {
         public float3 Position;
         public quaternion Rotation;
+        public float3 Velocity;
         public Entity Owner;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
+            Velocity = reader.ReadVector3Q();
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
         }
 
@@ -23,6 +25,7 @@ namespace FootStone.Kitchen
         {
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
+            writer.WriteVector3Q("velocity", Velocity);
             context.RefSerializer.SerializeReference(ref writer, "owner", Owner);
         }
 
@@ -32,12 +35,14 @@ namespace FootStone.Kitchen
             {
                 Position = Vector3.Lerp(prevState.Position, nextState.Position, interpVal);
                 Rotation = Quaternion.Lerp(prevState.Rotation, nextState.Rotation, interpVal);
+                Velocity = Vector3.Lerp(prevState.Velocity, nextState.Velocity, interpVal);
                 Owner = prevState.Owner;
             }
             else
             {
                 Position = prevState.Position;
                 Rotation = prevState.Rotation;
+                Velocity = prevState.Velocity;
                 Owner = prevState.Owner;
             }
         }

@@ -4,6 +4,6 @@ namespace FootStone.Kitchen
 {
     public struct Plate : IComponentData
     {
-        public bool IsFree;
+     //   public bool IsFree;
     }
 }

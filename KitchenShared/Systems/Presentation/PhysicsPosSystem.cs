@@ -1,22 +1,23 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class UpdateItemPresentationSystem : ComponentSystem
+    public class PhysicsPosSystem : ComponentSystem
     {
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>()
                 .ForEach((Entity entity, 
                     ref ItemPredictedState predictData,
-                    ref ItemInterpolatedState interpolateData) =>
+                    ref Translation position, 
+                    ref Rotation    rotation) =>
                 {
-                    interpolateData.Position = predictData.Position;
-                    interpolateData.Rotation = predictData.Rotation;
-                    interpolateData.Velocity = predictData.Velocity;
-                    interpolateData.Owner = predictData.Owner;
+                    predictData.Position = position.Value;
+                    predictData.Rotation = rotation.Value;
+                  
                  //   FSLog.Info($"UpdateItemPresentationSystem,Position:{predictData.Position}");
                 });
         }

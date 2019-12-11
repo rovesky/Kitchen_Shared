@@ -6,22 +6,24 @@ namespace FootStone.Kitchen
 {
     public struct ItemPredictedState : IComponentData, IPredictedState<ItemPredictedState>
     {
-        public float3 Position;
+        public float3     Position;
         public quaternion Rotation;
-        public Entity Owner;
+        public float3     Velocity;
+        public Entity     Owner;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
+            Velocity = reader.ReadVector3Q();
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
-         //   FSLog.Info($"ItemPredictedState rollback,x:{Position.x},z:{Position.z}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
+            writer.WriteVector3Q("velocity", Velocity);
             context.RefSerializer.SerializeReference(ref writer, "owner", Owner);
         }
 
@@ -29,6 +31,7 @@ namespace FootStone.Kitchen
         {
             return Position.Equals(state.Position) &&
                    Rotation.Equals(state.Rotation) &&
+                   Velocity.Equals(state.Velocity) &&
                    Owner.Equals(state.Owner);
         }
 
