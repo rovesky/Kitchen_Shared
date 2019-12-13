@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                 ref Rotation rotation) =>
             {
                 translation.Value = interpolatedData.Position;
-                translation.Value.y = 1.0f;
+                translation.Value.y = 1.2f;
                 rotation.Value = interpolatedData.Rotation;
 
                 //setup trigger entity color

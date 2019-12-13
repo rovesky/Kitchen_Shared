@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
             ) =>
             {
 
-               //     FSLog.Info($"physicsVelocity.Linear:{Vector3.SqrMagnitude(physicsVelocity.Linear)}");
+               //  FSLog.Info($"interpolatedData.Position:{translation.Value},entity:{entity}");
                // if (Vector3.SqrMagnitude(physicsVelocity.Linear) < 1.0f)
                 {
                     translation.Value = interpolatedData.Position;
@@ -41,7 +41,12 @@ namespace FootStone.Kitchen
                     }
 
                     var parent = EntityManager.GetComponentData<Parent>(entity);
+
+                  //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
+                    if (parent.Value == interpolatedData.Owner)
+                        return;
                     parent.Value = interpolatedData.Owner;
+                
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else

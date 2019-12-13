@@ -77,7 +77,7 @@ namespace FootStone.Kitchen
             var entity = slot.FilledInEntity;
 
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
-            itemPredictedState.Position = new float3(0, 0.2f, 0.8f);
+            itemPredictedState.Position = new float3(0, -0.2f, 0.8f);
             itemPredictedState.Rotation = quaternion.identity;
             itemPredictedState.Velocity = float3.zero;
             itemPredictedState.Owner = owner;
