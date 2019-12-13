@@ -94,14 +94,16 @@ namespace FootStone.Kitchen
                 var chunkCharacterMoveData = chunk.GetNativeArray(CharacterMoveType);
                 var chunkUserCommandData = chunk.GetNativeArray(UserCommandType);
                 var chunkPredictDataData = chunk.GetNativeArray(PredictDataType);
-             
-                const int maxQueryHits = 128;
-                var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
-                var constraints = new NativeArray<SurfaceConstraintInfo>(4 * maxQueryHits, Allocator.Temp,
-                    NativeArrayOptions.UninitializedMemory);
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
+                    const int maxQueryHits = 128;
+                    //   var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
+                    //   var constraints = new NativeArray<SurfaceConstraintInfo>(4 * maxQueryHits, Allocator.Temp,
+                    //      NativeArrayOptions.UninitializedMemory);
+
+
+
                     var entity = chunkEntityData[i];
                     var collider = chunkPhysicsColliderData[i];
                     var characterMove = chunkCharacterMoveData[i];
@@ -118,6 +120,8 @@ namespace FootStone.Kitchen
                         rot = predictData.Rotation
                     };
 
+                    FSLog.Info($"predictData.Position:{predictData.Position}");
+
                     var input = new ColliderDistanceInput
                     {
                         MaxDistance = 0.5f,
@@ -127,6 +131,11 @@ namespace FootStone.Kitchen
             
                     var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
 
+                    var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
+                    NativeList<SurfaceConstraintInfo> constraints = new NativeList<SurfaceConstraintInfo>(
+                        16, Allocator.Temp);
+                    //    SelfFilteringAllHitsCollector<DistanceHit> distanceHitsCollector = new SelfFilteringAllHitsCollector<DistanceHit>(
+                    //        stepInput.RigidBodyIndex, stepInput.ContactTolerance, ref distanceHits);
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
                     var skinWidth = characterMove.SkinWidth;
@@ -141,10 +150,11 @@ namespace FootStone.Kitchen
                     var newPosition = transform.pos;
                     var remainingTime = DeltaTime;
                     var up = math.up();
-                    SimplexSolver.Solve(PhysicsWorld, remainingTime, up, numConstraints, ref constraints,
-                        ref newPosition, ref newVelocity, out var integratedTime);
+                    SimplexSolver.Solve(PhysicsWorld, remainingTime,
+                        remainingTime, up, characterMove.Velocity,
+                         constraints,ref newPosition, ref newVelocity, out var integratedTime);
 
-                   // FSLog.Info($"newPosition:{newPosition.x},{newPosition.y},{newPosition.z}");
+                    FSLog.Info($"newPosition:{newPosition}");
 
                     predictData.Position = newPosition;
                     if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)

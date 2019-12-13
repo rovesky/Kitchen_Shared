@@ -71,7 +71,7 @@ namespace FootStone.Kitchen
 			#endregion
 		}
 
-		public static unsafe void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, float skinWidth, NativeList<DistanceHit> distanceHits, ref NativeArray<SurfaceConstraintInfo> constraints, out int numConstraints)
+		public static unsafe void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, float skinWidth, NativeList<DistanceHit> distanceHits, ref NativeList<SurfaceConstraintInfo> constraints, out int numConstraints)
 		{
 			// Iterate over distance hits and create constraints from them
 			numConstraints = 0;
@@ -88,14 +88,16 @@ namespace FootStone.Kitchen
 
 		private static void CreateConstraint(PhysicsWorld world, int hitRigidBodyIndex,
 			ColliderKey hitColliderKey, float3 hitPosition, float3 hitSurfaceNormal, float hitDistance,
-			float skinWidth, ref NativeArray<SurfaceConstraintInfo> constraints, ref int numConstraints)
+			float skinWidth, ref NativeList<SurfaceConstraintInfo> constraints, ref int numConstraints)
 		{
 			CreateConstraintFromHit(world, hitRigidBodyIndex, hitColliderKey, hitPosition,
 				hitSurfaceNormal, hitDistance, skinWidth, out SurfaceConstraintInfo constraint);
 
-			// Add original constraint to the list
-			constraints[numConstraints++] = constraint;
-		}
+            // Add original constraint to the list
+            //constraints[numConstraints++] = constraint;
+            constraints.Add(constraint);
+
+        }
 
 		private static void CreateConstraintFromHit(PhysicsWorld world, int rigidBodyIndex, ColliderKey colliderKey,
 		float3 hitPosition, float3 normal, float distance, float skinWidth, out SurfaceConstraintInfo constraint)
