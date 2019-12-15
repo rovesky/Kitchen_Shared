@@ -15,8 +15,7 @@ namespace FootStone.Kitchen
     public class CharacterMoveSystem : JobComponentSystem
     {
         private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        //   private EndFramePhysicsSystem m_EndFramePhysicsSystem;
-
+   
         private EntityQuery m_CharacterControllersGroup;
         private ExportPhysicsWorld m_ExportPhysicsWorldSystem;
 
@@ -24,8 +23,7 @@ namespace FootStone.Kitchen
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
             m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
-            //m_EndFramePhysicsSystem = World.GetOrCreateSystem<EndFramePhysicsSystem>();
-
+     
             var query = new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -42,8 +40,6 @@ namespace FootStone.Kitchen
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            //var chunks = m_CharacterControllersGroup.CreateArchetypeChunkArray(Allocator.TempJob);
-
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
             var characterMoveType = GetArchetypeChunkComponentType<CharacterMove>();
             var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
@@ -53,7 +49,6 @@ namespace FootStone.Kitchen
 
             var ccJob = new CharacterMoveControlJob
             {
-                //	Chunks = chunks,
                 // Archetypes
                 PhysicsColliderType = physicsColliderType,
                 CharacterMoveType = characterMoveType,
@@ -74,9 +69,6 @@ namespace FootStone.Kitchen
         [BurstCompile]
         private struct CharacterMoveControlJob : IJobChunk
         {
-            // Chunks can be deallocated at this point
-            //[DeallocateOnJobCompletion] public NativeArray<ArchetypeChunk> Chunks;
-
             public float DeltaTime;
 
             [ReadOnly] public PhysicsWorld PhysicsWorld;
@@ -97,13 +89,6 @@ namespace FootStone.Kitchen
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
-                   // const int maxQueryHits = 128;
-                    //   var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
-                    //   var constraints = new NativeArray<SurfaceConstraintInfo>(4 * maxQueryHits, Allocator.Temp,
-                    //      NativeArrayOptions.UninitializedMemory);
-
-
-
                     var entity = chunkEntityData[i];
                     var collider = chunkPhysicsColliderData[i];
                     var characterMove = chunkCharacterMoveData[i];
@@ -120,8 +105,6 @@ namespace FootStone.Kitchen
                         rot = predictData.Rotation
                     };
 
-               //     FSLog.Info($"predictData.Position:{predictData.Position}");
-
                     var input = new ColliderDistanceInput
                     {
                         MaxDistance = 0.5f,
@@ -133,13 +116,12 @@ namespace FootStone.Kitchen
 
                     var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
                     var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
-                    //    SelfFilteringAllHitsCollector<DistanceHit> distanceHitsCollector = new SelfFilteringAllHitsCollector<DistanceHit>(
-                    //        stepInput.RigidBodyIndex, stepInput.ContactTolerance, ref distanceHits);
+
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
                     var skinWidth = characterMove.SkinWidth;
                     CharacterControllerUtilities.CheckSupport(PhysicsWorld, selfRigidBodyIndex, skinWidth, distanceHits,
-                        ref constraints, out var numConstraints);
+                        ref constraints);
                   //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
 
                     float3 desiredVelocity = userCommand.TargetDir * characterMove.Velocity;

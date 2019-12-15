@@ -42,7 +42,7 @@ namespace FootStone.Kitchen
 				return true;
 			}
 
-			public void TransformNewHits(int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform, uint numSubKeyBits, uint subKey)
+			public void TransformNewHits(int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey)
 			{
 				for (int i = oldNumHits; i < m_NumHits; i++)
 				{
@@ -52,7 +52,7 @@ namespace FootStone.Kitchen
 				}
 			}
 
-			public void TransformNewHits(int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform, int rigidBodyIndex)
+			public void TransformNewHits(int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex)
 			{
 				if (rigidBodyIndex == m_selfRBIndex)
 				{
@@ -71,30 +71,29 @@ namespace FootStone.Kitchen
 			#endregion
 		}
 
-		public static unsafe void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, float skinWidth, NativeList<DistanceHit> distanceHits, ref NativeList<SurfaceConstraintInfo> constraints, out int numConstraints)
-		{
-			// Iterate over distance hits and create constraints from them
-			numConstraints = 0;
-			for (int i = 0; i < distanceHits.Length; i++)
-			{
-				DistanceHit hit = distanceHits[i];
-				if (hit.RigidBodyIndex != selfRigidBodyIndex)
-				{
-					CreateConstraint(world, hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,
-						skinWidth, ref constraints, ref numConstraints);
-				}
-			}
-		}
+		public static void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, 
+            float skinWidth, NativeList<DistanceHit> distanceHits,
+            ref NativeList<SurfaceConstraintInfo> constraints)
+        {
+            // Iterate over distance hits and create constraints from them
+		
+            foreach (var hit in distanceHits)
+            {
+                if (hit.RigidBodyIndex != selfRigidBodyIndex)
+                {
+                    CreateConstraint(world, hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,
+                        skinWidth, ref constraints);
+                }
+            }
+        }
 
 		private static void CreateConstraint(PhysicsWorld world, int hitRigidBodyIndex,
 			ColliderKey hitColliderKey, float3 hitPosition, float3 hitSurfaceNormal, float hitDistance,
-			float skinWidth, ref NativeList<SurfaceConstraintInfo> constraints, ref int numConstraints)
+			float skinWidth, ref NativeList<SurfaceConstraintInfo> constraints)
 		{
 			CreateConstraintFromHit(world, hitRigidBodyIndex, hitColliderKey, hitPosition,
 				hitSurfaceNormal, hitDistance, skinWidth, out SurfaceConstraintInfo constraint);
-
-            // Add original constraint to the list
-            //constraints[numConstraints++] = constraint;
+        
             constraints.Add(constraint);
 
         }
@@ -102,10 +101,10 @@ namespace FootStone.Kitchen
 		private static void CreateConstraintFromHit(PhysicsWorld world, int rigidBodyIndex, ColliderKey colliderKey,
 		float3 hitPosition, float3 normal, float distance, float skinWidth, out SurfaceConstraintInfo constraint)
 		{
-			bool bodyIsDynamic = 0 <= rigidBodyIndex && rigidBodyIndex < world.NumDynamicBodies;
+			var bodyIsDynamic = 0 <= rigidBodyIndex && rigidBodyIndex < world.NumDynamicBodies;
 			constraint = new SurfaceConstraintInfo()
 			{
-				Plane = new Unity.Physics.Plane
+				Plane = new Plane
 				{
 					Normal = normal,
 					Distance = distance - skinWidth,

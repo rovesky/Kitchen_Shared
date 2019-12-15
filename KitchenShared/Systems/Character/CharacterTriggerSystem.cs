@@ -16,53 +16,52 @@ namespace FootStone.Kitchen
         private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
 
         private EntityQuery m_CharacterControllersGroup;
-      //  private EndSimulationEntityCommandBufferSystem m_EntityCommandBufferSystem;
         private ExportPhysicsWorld m_ExportPhysicsWorldSystem;
-      //  private EntityQuery m_OverlappingGroup;
-       private EntityQuery m_TriggerVolumeGroup;
 
-       protected override void OnCreate()
-       {
-           m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-           m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
+        private EntityQuery m_TriggerVolumeGroup;
 
-           var query = new EntityQueryDesc
-           {
-               All = new ComponentType[]
-               {
-                   typeof(ServerEntity),
-                   typeof(PhysicsCollider),
-                   typeof(CharacterPredictedState)
-               }
-           };
-           m_CharacterControllersGroup = GetEntityQuery(query);
-           m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerData));
-       }
+        protected override void OnCreate()
+        {
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
 
-       protected override JobHandle OnUpdate(JobHandle inputDeps)
-       {
-           var entities = m_CharacterControllersGroup.ToEntityArray(Allocator.TempJob);
+            var query = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(ServerEntity),
+                    typeof(PhysicsCollider),
+                    typeof(CharacterPredictedState)
+                }
+            };
+            m_CharacterControllersGroup = GetEntityQuery(query);
+            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerData));
+        }
 
-           var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
-           var predictedStateGroup = GetComponentDataFromEntity<CharacterPredictedState>();
+        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        {
+            var entities = m_CharacterControllersGroup.ToEntityArray(Allocator.TempJob);
 
-           var ccJob = new GetTriggerOverlappingJob
-           {
-               Entities = entities,
-               PhysicsColliderGroup = physicsColliderGroup,
-               PredictedStateGroup = predictedStateGroup,
+            var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
+            var predictedStateGroup = GetComponentDataFromEntity<CharacterPredictedState>();
 
-               PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
-               VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
-           };
+            var ccJob = new GetTriggerOverlappingJob
+            {
+                Entities = entities,
+                PhysicsColliderGroup = physicsColliderGroup,
+                PredictedStateGroup = predictedStateGroup,
 
-           inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
-           ccJob.Schedule(inputDeps).Complete();
-           return inputDeps;
-       }
+                PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
+                VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
+            };
 
-       private static int CheckTrigger(PhysicsWorld world, NativeArray<Entity> volumeEntities, int selfRigidBodyIndex,
-             NativeList<DistanceHit> distanceHits)
+            inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
+            ccJob.Schedule(inputDeps).Complete();
+            return inputDeps;
+        }
+
+        private static int CheckTrigger(PhysicsWorld world, NativeArray<Entity> volumeEntities, int selfRigidBodyIndex,
+            NativeList<DistanceHit> distanceHits)
         {
             var triggerIndex = -1;
             for (var i = 0; i < distanceHits.Length; i++)
@@ -83,7 +82,7 @@ namespace FootStone.Kitchen
 
             return triggerIndex;
         }
-        
+
         private struct GetTriggerOverlappingJob : IJob
         {
             // Chunks can be deallocated at this point
@@ -96,7 +95,7 @@ namespace FootStone.Kitchen
 
             public unsafe void Execute()
             {
-              
+
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
                 foreach (var entity in Entities)
@@ -126,100 +125,18 @@ namespace FootStone.Kitchen
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
                     var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities,
-                        selfRigidBodyIndex,distanceHits);
+                        selfRigidBodyIndex, distanceHits);
 
-                    predictedState.TriggeredEntity = triggerIndex < 0 ?
-                        Entity.Null : 
-                        PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
-                
+                    predictedState.TriggeredEntity = triggerIndex < 0
+                        ? Entity.Null
+                        : PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
+
                     PredictedStateGroup[entity] = predictedState;
                 }
+
                 distanceHits.Dispose();
             }
         }
-
-        //private struct AddNewOverlappingJob : IJob
-        //{
-        //    public EntityCommandBuffer CommandBuffer;
-
-        //    [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
-        //    [ReadOnly] public NativeArray<int> Characters;
-        //    [ReadOnly] public NativeArray<Entity> TriggerEntities;
-        //    [ReadOnly] public ComponentDataFromEntity<OverlappingTrigger> OverlappingGroup;
-        //    [ReadOnly] public ComponentDataFromEntity<TriggerData> TriggerDataGroup;
-
-        //    public void Execute()
-        //    {
-        //        for (var i = 0; i < TriggerEntitiesCount[0]; i++)
-        //        {
-        //            var overlappingEntity = TriggerEntities[i];
-        //            if (!OverlappingGroup.Exists(overlappingEntity))
-        //            {
-        //                var triggerComponent = TriggerDataGroup[overlappingEntity];
-        //                CommandBuffer.AddComponent(overlappingEntity,
-        //                    new OverlappingTrigger {TriggerEntityIndex = Characters[i]});
-        //                CommandBuffer.AddComponent(overlappingEntity, new OnTriggerEnter());
-        //                switch ((TriggerVolumeType) triggerComponent.VolumeType)
-        //                {
-        //                    //TODO 根据不同的trigger添加不同的组件
-        //                    case TriggerVolumeType.None:
-        //                    default:
-        //                        break;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var overlappingTriggerComponent = OverlappingGroup[overlappingEntity];
-        //                if (overlappingTriggerComponent.TriggerEntityIndex != Characters[i])
-        //                {
-        //                    overlappingTriggerComponent.TriggerEntityIndex = Characters[i];
-        //                    CommandBuffer.SetComponent(overlappingEntity, overlappingTriggerComponent);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private struct RemoveOldOverlappingJob : IJob
-        //{
-        //    public EntityCommandBuffer CommandBuffer;
-
-        //    [NativeFixedLength(1)] [ReadOnly] public NativeArray<int> TriggerEntitiesCount;
-        //    [ReadOnly] public NativeArray<Entity> TriggerEntities;
-        //    [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> OverlappingEntities;
-        //    [ReadOnly] public ComponentDataFromEntity<TriggerData> TriggerDataGroup;
-
-        //    public void Execute()
-        //    {
-        //        for (var index = 0; index < OverlappingEntities.Length; index++)
-        //        {
-        //            var entity = OverlappingEntities[index];
-
-        //            var isTriggered = false;
-        //            for (var i = 0; i < TriggerEntitiesCount[0]; ++i)
-        //                if (TriggerEntities[i] == entity)
-        //                {
-        //                    isTriggered = true;
-        //                    break;
-        //                }
-
-        //            if (!isTriggered)
-        //            {
-        //                var triggerComponent = TriggerDataGroup[entity];
-
-        //                //TODO 根据类型删除对应组件
-        //                switch ((TriggerVolumeType) triggerComponent.VolumeType)
-        //                {
-        //                    case TriggerVolumeType.None:
-        //                    default:
-        //                        break;
-        //                }
-
-        //                CommandBuffer.RemoveComponent<OverlappingTrigger>(entity);
-        //                CommandBuffer.AddComponent(entity, new OnTriggerExit());
-        //            }
-        //        }
-        //    }
-        //}
+  
     }
 }
