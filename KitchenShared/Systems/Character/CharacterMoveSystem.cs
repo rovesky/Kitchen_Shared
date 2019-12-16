@@ -7,7 +7,9 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
+using UnityEngine;
 using UnityEngine.Assertions;
+using Math = System.Math;
 
 namespace FootStone.Kitchen
 {
@@ -111,35 +113,45 @@ namespace FootStone.Kitchen
                         Transform = transform,
                         Collider = collider.ColliderPtr
                     };
-            
-                    var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
 
+                    var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
                     var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
                     var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
 
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
                     var skinWidth = characterMove.SkinWidth;
-                    CharacterControllerUtilities.CheckSupport(PhysicsWorld, selfRigidBodyIndex, skinWidth, distanceHits,
+                    CharacterControllerUtilities.CheckSupport(PhysicsWorld, selfRigidBodyIndex, skinWidth,
+                        ref distanceHits,
                         ref constraints);
-                  //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
+                    //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
 
                     float3 desiredVelocity = userCommand.TargetDir * characterMove.Velocity;
 
                     // Solve
                     var newVelocity = desiredVelocity;
                     var newPosition = transform.pos;
+                    //   newPosition.y = 1.2f;
                     var remainingTime = DeltaTime;
                     var up = math.up();
                     SimplexSolver.Solve(PhysicsWorld, remainingTime,
                         remainingTime, up, characterMove.Velocity,
-                         constraints,ref newPosition, ref newVelocity, out var integratedTime);
+                        constraints, ref newPosition, ref newVelocity, out var integratedTime);
 
-                  //  FSLog.Info($"newPosition:{newPosition}");
+                    newPosition.y = 1.2f;
+                   // FSLog.Info($"newPosition:{newPosition}");
+
+                    //旋转角度计算
+                    if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)
+                    {
+                        var fromRotation = predictData.Rotation;
+                        var toRotation = quaternion.LookRotationSafe(desiredVelocity, up);
+                        var angle = Quaternion.Angle(fromRotation, toRotation);
+                        predictData.Rotation = Quaternion.RotateTowards(fromRotation, toRotation,
+                            Math.Abs(angle - 180.0f) < float.Epsilon ? -22.5f : 22.5f);
+                    }
 
                     predictData.Position = newPosition;
-                    if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)
-                        predictData.Rotation = quaternion.LookRotationSafe(desiredVelocity, up);
                     chunkPredictDataData[i] = predictData;
                 }
             }

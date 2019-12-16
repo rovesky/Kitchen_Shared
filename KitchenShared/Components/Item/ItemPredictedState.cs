@@ -1,6 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
@@ -9,6 +10,7 @@ namespace FootStone.Kitchen
         public float3     Position;
         public quaternion Rotation;
         public float3     Velocity;
+        public PhysicsMass Mass;
         public Entity     Owner;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)

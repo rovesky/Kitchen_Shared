@@ -22,15 +22,10 @@ namespace FootStone.Kitchen
             ) =>
             {
 
-               //  FSLog.Info($"interpolatedData.Position:{translation.Value},entity:{entity}");
-               // if (Vector3.SqrMagnitude(physicsVelocity.Linear) < 1.0f)
-                {
-                    translation.Value = interpolatedData.Position;
-                    rotation.Value = interpolatedData.Rotation;
-                    //   FSLog.Info($"interpolatedData.Velocity:{interpolatedData.Velocity}");
-
-                 //   physicsVelocity.Linear = interpolatedData.Velocity;
-                }
+                translation.Value = interpolatedData.Position;
+                rotation.Value = interpolatedData.Rotation;
+                physicsVelocity.Linear = interpolatedData.Velocity;
+             //   FSLog.Info($"physicsVelocity.Linear:{physicsVelocity.Linear}");
 
                 if (interpolatedData.Owner != Entity.Null)
                 {
@@ -41,12 +36,10 @@ namespace FootStone.Kitchen
                     }
 
                     var parent = EntityManager.GetComponentData<Parent>(entity);
-
-                  //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
+                    //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
                     if (parent.Value == interpolatedData.Owner)
                         return;
                     parent.Value = interpolatedData.Owner;
-                
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else
@@ -56,14 +49,6 @@ namespace FootStone.Kitchen
                     EntityManager.RemoveComponent<Parent>(entity);
                     EntityManager.RemoveComponent<LocalToParent>(entity);
                 }
-
-                // var tick = GetSingleton<WorldTime>().Tick;
-
-                //if (replicatedData.Id ==20)
-                //    FSLog.Info($"ApplyItemPresentationSystem,tick:{tick},owner:{interpolatedData.Owner}" +
-                //             $",pos:{translation.Value},HasParent:{EntityManager.HasComponent<Parent>(entity)}" +
-                //             $",localToWorld:{localToWorld.Position},replicatedData.netId:{replicatedData.Id}");
-
             });
         }
     }

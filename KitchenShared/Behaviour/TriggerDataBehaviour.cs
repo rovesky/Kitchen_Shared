@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -7,28 +8,32 @@ namespace FootStone.Kitchen
     public class TriggerDataBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
         public GameObject Slot;
-        public TriggerVolumeType Type;
+        public TriggerType Type;
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-            if (Slot == null)
-                return;
-
-            var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
+            var slotPos = float3.zero;
+            if (Slot != null)
+            {
+                var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
+                slotPos = dstManager.GetComponentData<LocalToWorld>(slotEntity).Position;
+             
+                //  FSLog.Info($"SlotPos:{slotCom.SlotPos}");
+                dstManager.AddComponentData(entity, new SlotPredictedState
+                {
+                    FilledInEntity = Entity.Null
+                });
+            }
+          
             var triggerData = new TriggerData
             {
-                VolumeType = (int) Type,
-                SlotPos = dstManager.GetComponentData<LocalToWorld>(slotEntity).Position
+                Type = (int) Type,
+                SlotPos = slotPos
             };
             dstManager.AddComponentData(entity, triggerData);
 
-            var slotState = new SlotPredictedState
-            {
-                FilledInEntity = Entity.Null
-            };
-            //  FSLog.Info($"SlotPos:{slotCom.SlotPos}");
-            dstManager.AddComponentData(entity, slotState);
+          
         }
     }
 }

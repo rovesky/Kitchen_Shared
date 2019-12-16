@@ -72,13 +72,14 @@ namespace FootStone.Kitchen
 		}
 
 		public static void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, 
-            float skinWidth, NativeList<DistanceHit> distanceHits,
+            float skinWidth,ref NativeList<DistanceHit> distanceHits,
             ref NativeList<SurfaceConstraintInfo> constraints)
         {
             // Iterate over distance hits and create constraints from them
-		
-            foreach (var hit in distanceHits)
+
+            for (var i = 0; i < distanceHits.Length; i++)
             {
+                var hit = distanceHits[i];
                 if (hit.RigidBodyIndex != selfRigidBodyIndex)
                 {
                     CreateConstraint(world, hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,

@@ -36,9 +36,9 @@ namespace FootStone.Kitchen
                 var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(pickupedEntity);
 
                 Vector3 linear = math.mul(predictData.Rotation, Vector3.forward);
-                linear.y = 0.4f;
+                linear.y = 0.3f;
                 linear.Normalize();
-                itemPredictedState.Velocity = linear * 18.0f;
+                itemPredictedState.Velocity = linear * 15.0f;
 
                 itemPredictedState.Position =
                     predictData.Position + math.mul(predictData.Rotation, new float3(0, 0.2f, 0.8f));
@@ -52,6 +52,8 @@ namespace FootStone.Kitchen
 
                 if (!EntityManager.HasComponent<ServerEntity>(pickupedEntity))
                     EntityManager.AddComponentData(pickupedEntity, new ServerEntity());
+
+                EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
 
                 predictData.PickupedEntity = Entity.Null;
             });

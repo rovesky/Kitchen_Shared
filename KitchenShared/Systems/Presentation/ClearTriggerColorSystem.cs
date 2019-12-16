@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using System.Collections.Generic;
+using Unity.Entities;
 using Unity.Rendering;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class ClearTriggerColorSystem : ComponentSystem
     {
-        private Material originMaterial;
+        private readonly Dictionary<int,Material> originMaterials = new Dictionary<int, Material>();
 
         protected override void OnCreate()
         {
@@ -19,13 +20,16 @@ namespace FootStone.Kitchen
             {
                 var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
 
-                if (originMaterial == null)
-                    originMaterial = volumeRenderMesh.material;
+                if (!originMaterials.ContainsKey(data.Type))
+                {
+                    originMaterials.Add(data.Type, volumeRenderMesh.material);
+                }
+             
 
-                if (volumeRenderMesh.material == originMaterial)
+                if (volumeRenderMesh.material == originMaterials[data.Type])
                     return;
 
-                volumeRenderMesh.material = originMaterial;
+                volumeRenderMesh.material = originMaterials[data.Type];
 
                 EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
             });

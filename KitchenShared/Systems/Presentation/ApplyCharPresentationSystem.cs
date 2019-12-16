@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -23,9 +24,11 @@ namespace FootStone.Kitchen
                 ref Translation translation,
                 ref Rotation rotation) =>
             {
+              //  predictedState.Position.y = 1.2f;
                 translation.Value = interpolatedData.Position;
-                translation.Value.y = 1.2f;
                 rotation.Value = interpolatedData.Rotation;
+
+                //FSLog.Info($"ApplyCharPresentationSystem:{translation.Value}");
 
                 //setup trigger entity color
                 if (predictedState.TriggeredEntity == Entity.Null)
