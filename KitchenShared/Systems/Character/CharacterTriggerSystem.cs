@@ -16,14 +16,14 @@ namespace FootStone.Kitchen
         private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
 
         private EntityQuery m_CharacterControllersGroup;
-        private ExportPhysicsWorld m_ExportPhysicsWorldSystem;
+        private MyExportPhysicsWorld m_ExportPhysicsWorldSystem;
 
         private EntityQuery m_TriggerVolumeGroup;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
+            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<MyExportPhysicsWorld>();
 
             var query = new EntityQueryDesc
             {

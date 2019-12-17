@@ -28,7 +28,7 @@ namespace FootStone.Kitchen
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalSimulationJobHandle);
+            JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
             var predictedStateType = GetArchetypeChunkComponentType<ItemPredictedState>();

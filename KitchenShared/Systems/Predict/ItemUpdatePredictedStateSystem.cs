@@ -8,7 +8,7 @@ using UnityEngine;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class UpdateItemParentSystem : ComponentSystem
+    public class ItemUpdatePredictedStateSystem : ComponentSystem
     {
         protected override void OnUpdate()
         {

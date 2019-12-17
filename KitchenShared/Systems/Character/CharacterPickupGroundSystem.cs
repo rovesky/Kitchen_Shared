@@ -62,7 +62,7 @@ namespace FootStone.Kitchen
                 FSLog.Info($"{entity} is ServerEntity!");
             }
 
-         //   EntityManager.AddComponentData(entity, itemPredictedState.Mass);
+           //EntityManager.AddComponentData(entity, itemPredictedState.Mass);
 
             characterState.PickupedEntity = Entity.Null;
         }
@@ -74,8 +74,8 @@ namespace FootStone.Kitchen
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
 
             //速度比较快不能pickup
-          //  if (math.distancesq(itemPredictedState.Velocity, float3.zero) > 2.0f)
-            //    return;
+            if (math.distancesq(itemPredictedState.Velocity, float3.zero) > 2.0f)
+                return;
 
             itemPredictedState.Position = new float3(0, -0.2f, 1.0f);
             itemPredictedState.Rotation = quaternion.identity;
