@@ -21,13 +21,14 @@ namespace FootStone.Kitchen
                     return;
 
                 var worldTick = GetSingleton<WorldTime>().Tick;
-             
+                FSLog.Info($"CharacterPickupGroundSystem:{predictData.PickupedEntity},{predictData.TriggeredEntity}");
                 if (predictData.PickupedEntity == Entity.Null && predictData.TriggeredEntity != Entity.Null)
                 {
                     var triggerData = EntityManager.GetComponentData<TriggerData>(predictData.TriggeredEntity);
-                    //   FSLog.Info($"CharacterPickupGroundSystem3:{triggerData.Type}");
+               //     FSLog.Info($"CharacterPickupGroundSystem3:{triggerData.Type}");
                     if ((triggerData.Type & (int)TriggerType.Item) == 0)
                         return;
+                    
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
                     PickUpItem(entity, ref predictData);
                 }
@@ -61,10 +62,9 @@ namespace FootStone.Kitchen
                 FSLog.Info($"{entity} is ServerEntity!");
             }
 
-            EntityManager.AddComponentData(entity, itemPredictedState.Mass);
+         //   EntityManager.AddComponentData(entity, itemPredictedState.Mass);
 
             characterState.PickupedEntity = Entity.Null;
-
         }
 
         private void PickUpItem(Entity owner, ref CharacterPredictedState characterState)
@@ -74,8 +74,8 @@ namespace FootStone.Kitchen
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
 
             //速度比较快不能pickup
-            if (math.distancesq(itemPredictedState.Velocity, float3.zero) > 2.0f)
-                return;
+          //  if (math.distancesq(itemPredictedState.Velocity, float3.zero) > 2.0f)
+            //    return;
 
             itemPredictedState.Position = new float3(0, -0.2f, 1.0f);
             itemPredictedState.Rotation = quaternion.identity;

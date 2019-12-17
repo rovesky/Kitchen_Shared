@@ -53,7 +53,7 @@ namespace FootStone.Kitchen
                 if (!EntityManager.HasComponent<ServerEntity>(pickupedEntity))
                     EntityManager.AddComponentData(pickupedEntity, new ServerEntity());
 
-                EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
+              //  EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
 
                 predictData.PickupedEntity = Entity.Null;
             });

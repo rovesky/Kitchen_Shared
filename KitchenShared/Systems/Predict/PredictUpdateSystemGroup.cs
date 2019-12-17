@@ -21,12 +21,13 @@ namespace FootStone.Kitchen
             //m_systemsToUpdate.Add(World.GetOrCreateSystem<StepPhysicsWorld>());
             //m_systemsToUpdate.Add(World.GetOrCreateSystem<MyExportPhysicsWorld>());
             //m_systemsToUpdate.Add(World.GetOrCreateSystem<EndFramePhysicsSystem>());
-
+         
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterTriggerSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
+        
 
         }
     }

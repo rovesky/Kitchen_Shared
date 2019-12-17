@@ -57,6 +57,21 @@ namespace FootStone.Kitchen
 
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
             ccJob.Schedule(inputDeps).Complete();
+
+            Entities.WithoutBurst().ForEach((Entity entity, ref CharacterPredictedState predictedState) =>
+            {
+                var triggerEntity = predictedState.TriggeredEntity;
+
+                if (!EntityManager.HasComponent<ItemPredictedState>(triggerEntity))
+                    return;
+
+                var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(triggerEntity);
+                if (itemPredictedState.Owner != entity)
+                    return;
+
+                predictedState.TriggeredEntity = Entity.Null;
+
+            }).Run();
             return inputDeps;
         }
 
@@ -71,6 +86,7 @@ namespace FootStone.Kitchen
                     continue;
 
                 var e = world.Bodies[hit.RigidBodyIndex].Entity;
+
                 if (!volumeEntities.Contains(e))
                     continue;
 
@@ -123,6 +139,8 @@ namespace FootStone.Kitchen
 
                     distanceHits.Clear();
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
+                  //  if (distanceHits.Length > 6)
+                    //    FSLog.Info($"distanceHits.Length:{distanceHits.Length}");
 
                     var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities,
                         selfRigidBodyIndex, distanceHits);
@@ -130,6 +148,9 @@ namespace FootStone.Kitchen
                     predictedState.TriggeredEntity = triggerIndex < 0
                         ? Entity.Null
                         : PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
+
+                    // if (predictedState.TriggeredEntity != Entity.Null)
+                    //  FSLog.Info($"triggerEntity:{predictedState.TriggeredEntity}");
 
                     PredictedStateGroup[entity] = predictedState;
                 }
