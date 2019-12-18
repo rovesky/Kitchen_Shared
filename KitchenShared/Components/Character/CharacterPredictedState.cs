@@ -11,6 +11,9 @@ namespace FootStone.Kitchen
         public Entity TriggeredEntity;
         public Entity PickupedEntity;
 
+
+        public float3 GravityVelocity;
+
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();

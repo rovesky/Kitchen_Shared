@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Math = System.Math;
@@ -14,11 +15,11 @@ using Math = System.Math;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterMoveSystem : JobComponentSystem
+    public class ItemMoveSystem : JobComponentSystem
     {
         private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
    
-        private EntityQuery m_CharacterControllersGroup;
+        private EntityQuery itemsGroup;
         private MyExportPhysicsWorld m_ExportPhysicsWorldSystem;
 
         protected override void OnCreate()
@@ -32,20 +33,17 @@ namespace FootStone.Kitchen
                 {
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
-                    typeof(CharacterMove),
-                    typeof(UserCommand),
-                    typeof(CharacterPredictedState)
+                    typeof(ItemPredictedState),
+                  
                 }
             };
-            m_CharacterControllersGroup = GetEntityQuery(query);
+            itemsGroup = GetEntityQuery(query);
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
-            var characterMoveType = GetArchetypeChunkComponentType<CharacterMove>();
-            var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
-            var predictDataType = GetArchetypeChunkComponentType<CharacterPredictedState>();
+            var predictDataType = GetArchetypeChunkComponentType<ItemPredictedState>();
             var entityType = GetArchetypeChunkEntityType();
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
 
@@ -53,8 +51,6 @@ namespace FootStone.Kitchen
             {
                 // Archetypes
                 PhysicsColliderType = physicsColliderType,
-                CharacterMoveType = characterMoveType,
-                UserCommandType = userCommandType,
                 PredictDataType = predictDataType,
                 EntityType = entityType,
                 // Input
@@ -63,7 +59,7 @@ namespace FootStone.Kitchen
             };
 
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
-            inputDeps = ccJob.Schedule(m_CharacterControllersGroup, inputDeps);
+            inputDeps = ccJob.Schedule(itemsGroup, inputDeps);
 
             return inputDeps;
         }
@@ -75,26 +71,21 @@ namespace FootStone.Kitchen
 
             [ReadOnly] public PhysicsWorld PhysicsWorld;
 
-            public ArchetypeChunkComponentType<CharacterPredictedState> PredictDataType;
+            public ArchetypeChunkComponentType<ItemPredictedState> PredictDataType;
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
-            [ReadOnly] public ArchetypeChunkComponentType<CharacterMove> CharacterMoveType;
-            [ReadOnly] public ArchetypeChunkComponentType<UserCommand> UserCommandType;
+           
           
             public unsafe void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
                 var chunkEntityData = chunk.GetNativeArray(EntityType);
                 var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);
-                var chunkCharacterMoveData = chunk.GetNativeArray(CharacterMoveType);
-                var chunkUserCommandData = chunk.GetNativeArray(UserCommandType);
                 var chunkPredictDataData = chunk.GetNativeArray(PredictDataType);
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
                     var entity = chunkEntityData[i];
                     var collider = chunkPhysicsColliderData[i];
-                    var characterMove = chunkCharacterMoveData[i];
-                    var userCommand = chunkUserCommandData[i];
                     var predictData = chunkPredictDataData[i];
 
                     // Collision filter must be valid
@@ -120,39 +111,24 @@ namespace FootStone.Kitchen
 
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
-                    var skinWidth = characterMove.SkinWidth;
-                    CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex, skinWidth,
+                 //   var skinWidth = characterMove.SkinWidth;
+                    CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex, 0.1f,
                         ref distanceHits,
                         ref constraints);
                     //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
-                    predictData.GravityVelocity =
-                        transform.pos.y > 1.3f ? predictData.GravityVelocity+ PhysicsStep.Default.Gravity * DeltaTime : float3.zero;
-
-                    FSLog.Info($"gravityVelocity:{predictData.GravityVelocity},transform.pos{transform.pos}");
-                    var desiredVelocity = (float3) userCommand.TargetDir * characterMove.Velocity;
-
+                    
                     // Solve
-                    var newVelocity = desiredVelocity + predictData.GravityVelocity;
+                    var newVelocity = predictData.LinearVelocity + PhysicsStep.Default.Gravity * DeltaTime;;
                     var newPosition = transform.pos;
-                 
+                    //   newPosition.y = 1.2f;
                     var remainingTime = DeltaTime;
                     var up = math.up();
                     SimplexSolver.Solve(PhysicsWorld, remainingTime,
-                        remainingTime, up, characterMove.Velocity,
+                        remainingTime, up, 11.0f,
                         constraints, ref newPosition, ref newVelocity, out var integratedTime);
 
-
-                    //旋转角度计算
-                    if (math.distancesq(desiredVelocity, float3.zero) > 0.0001f)
-                    {
-                        var fromRotation = predictData.Rotation;
-                        var toRotation = quaternion.LookRotationSafe(desiredVelocity, up);
-                        var angle = Quaternion.Angle(fromRotation, toRotation);
-                        predictData.Rotation = Quaternion.RotateTowards(fromRotation, toRotation,
-                            Math.Abs(angle - 180.0f) < float.Epsilon ? -22.5f : 22.5f);
-                    }
-
                     predictData.Position = newPosition;
+                    predictData.LinearVelocity = newVelocity;
                     chunkPredictDataData[i] = predictData;
                 }
             }

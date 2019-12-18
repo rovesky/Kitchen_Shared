@@ -15,7 +15,7 @@ namespace FootStone.Kitchen
                 {
                     interpolateData.Position = predictData.Position;
                     interpolateData.Rotation = predictData.Rotation;
-                    interpolateData.Velocity = predictData.Velocity;
+                    interpolateData.Velocity = predictData.LinearVelocity;
                     interpolateData.Owner = predictData.Owner;
 
                   //  FSLog.Info($"interpolateData.Velocity :{interpolateData.Velocity}");

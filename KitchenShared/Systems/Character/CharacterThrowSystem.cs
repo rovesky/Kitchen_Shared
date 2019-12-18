@@ -38,7 +38,7 @@ namespace FootStone.Kitchen
                 Vector3 linear = math.mul(predictData.Rotation, Vector3.forward);
                 linear.y = 0.3f;
                 linear.Normalize();
-                itemPredictedState.Velocity = linear * 15.0f;
+                itemPredictedState.LinearVelocity = linear * 7.0f;
 
                 itemPredictedState.Position =
                     predictData.Position + math.mul(predictData.Rotation, new float3(0, 0.2f, 0.8f));

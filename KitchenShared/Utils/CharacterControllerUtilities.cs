@@ -71,7 +71,7 @@ namespace FootStone.Kitchen
 			#endregion
 		}
 
-		public static void CheckSupport(PhysicsWorld world, int selfRigidBodyIndex, 
+		public static void CreateConstraints(PhysicsWorld world, int selfRigidBodyIndex, 
             float skinWidth,ref NativeList<DistanceHit> distanceHits,
             ref NativeList<SurfaceConstraintInfo> constraints)
         {

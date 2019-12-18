@@ -23,7 +23,8 @@ namespace FootStone.Kitchen
             {
                 translation.Value = predictedData.Position;
                 rotation.Value = predictedData.Rotation;
-                physicsVelocity.Linear = predictedData.Velocity;
+                physicsVelocity.Linear = predictedData.LinearVelocity;
+                physicsVelocity.Angular = predictedData.AngularVelocity;
                // FSLog.Info($"UpdateItemParentSystem:{predictedData.Owner}");
                 if (predictedData.Owner != Entity.Null)
                 {

@@ -1,7 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
+
 
 namespace FootStone.Kitchen
 {
@@ -9,15 +9,16 @@ namespace FootStone.Kitchen
     {
         public float3     Position;
         public quaternion Rotation;
-        public float3     Velocity;
-        public PhysicsMass Mass;
+        public float3     LinearVelocity;
+        public float3     AngularVelocity;
         public Entity     Owner;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
-            Velocity = reader.ReadVector3Q();
+            LinearVelocity = reader.ReadVector3Q();
+            AngularVelocity = reader.ReadVector3Q();
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
         }
 
@@ -25,7 +26,8 @@ namespace FootStone.Kitchen
         {
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
-            writer.WriteVector3Q("velocity", Velocity);
+            writer.WriteVector3Q("linearVelocity", LinearVelocity);
+            writer.WriteVector3Q("angularVelocity", AngularVelocity);
             context.RefSerializer.SerializeReference(ref writer, "owner", Owner);
         }
 
@@ -33,7 +35,8 @@ namespace FootStone.Kitchen
         {
             return Position.Equals(state.Position) &&
                    Rotation.Equals(state.Rotation) &&
-                   Velocity.Equals(state.Velocity) &&
+                   LinearVelocity.Equals(state.LinearVelocity) &&
+                   AngularVelocity.Equals(state.AngularVelocity) &&
                    Owner.Equals(state.Owner);
         }
 

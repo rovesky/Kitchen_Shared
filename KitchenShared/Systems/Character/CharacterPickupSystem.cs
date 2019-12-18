@@ -56,7 +56,7 @@ namespace FootStone.Kitchen
             //  FSLog.Info($"PutDownItem,pos:{slot.SlotPos}");
             itemPredictedState.Rotation = quaternion.identity;
             itemPredictedState.Owner = Entity.Null;
-            itemPredictedState.Velocity = float3.zero;
+            itemPredictedState.LinearVelocity = float3.zero;
             EntityManager.SetComponentData(entity, itemPredictedState);
 
             var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
@@ -79,7 +79,7 @@ namespace FootStone.Kitchen
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
             itemPredictedState.Position = new float3(0, -0.2f, 1.0f);
             itemPredictedState.Rotation = quaternion.identity;
-            itemPredictedState.Velocity = float3.zero;
+            itemPredictedState.LinearVelocity = float3.zero;
             itemPredictedState.Owner = owner;
             EntityManager.SetComponentData(entity, itemPredictedState);
 

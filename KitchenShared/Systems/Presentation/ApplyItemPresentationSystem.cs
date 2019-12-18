@@ -16,9 +16,7 @@ namespace FootStone.Kitchen
                 ref ItemInterpolatedState interpolatedData,
                 ref Translation translation,
                 ref Rotation rotation,
-                ref PhysicsVelocity physicsVelocity,
-                //    ref LocalToWorld localToWorld,
-                ref ReplicatedEntityData replicatedData
+                ref PhysicsVelocity physicsVelocity
             ) =>
             {
 

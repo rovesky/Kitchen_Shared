@@ -71,7 +71,8 @@ namespace FootStone.Kitchen
                     var predictState = chunkPredictedStates[i];
                     predictState.Position = worldFromBody.pos;
                     predictState.Rotation = worldFromBody.rot;
-                    predictState.Velocity = MotionVelocities[motionIndex].LinearVelocity;
+                    predictState.LinearVelocity = MotionVelocities[motionIndex].LinearVelocity;
+                    predictState.AngularVelocity = MotionVelocities[motionIndex].AngularVelocity;
                     chunkPredictedStates[i] = predictState;
                 
                 }

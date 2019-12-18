@@ -1,5 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -42,11 +44,30 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new CharacterMove
             {
+                Gravity = PhysicsStep.Default.Gravity,
                 SkinWidth = 0.02f,
-                Velocity = 7.0f
+                Velocity = 8.0f,
+                MaxVelocity = 8.0f,
+                RotationVelocity = 22.5f,
+                JumpUpwardsVelocity = 4.0f,
+                MaxSlope = 60.0f, 
+                MaxIterations = 5,
+                CharacterMass = 1.0f,
+                ContactTolerance = 0.1f,
+                AffectsPhysicsBodies = 1
             });
-            entityManager.AddComponentData(e, new CharacterPickupItem());
 
+
+            entityManager.AddComponentData(e, new CharacterMoveInternalState
+            {
+               Entity = Entity.Null,
+               UnsupportedVelocity = float3.zero,
+               LinearVelocity = float3.zero,
+               SupportedState = CharacterControllerUtilitiesNew.CharacterSupportState.Unsupported,
+               IsJumping = false
+            });
+
+            entityManager.AddComponentData(e, new CharacterPickupItem());
             entityManager.AddComponentData(e, new CharacterThrowItem
             {
                 Velocity = 10.0f

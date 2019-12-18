@@ -50,7 +50,7 @@ namespace FootStone.Kitchen
                                           math.mul(characterState.Rotation, new float3(0, -0.2f, 1.1f));
             itemPredictedState.Rotation = quaternion.identity;
             itemPredictedState.Owner = Entity.Null;
-            itemPredictedState.Velocity = float3.zero;
+            itemPredictedState.LinearVelocity = float3.zero;
             EntityManager.SetComponentData(entity, itemPredictedState);
 
             var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
@@ -74,12 +74,12 @@ namespace FootStone.Kitchen
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
 
             //速度比较快不能pickup
-            if (math.distancesq(itemPredictedState.Velocity, float3.zero) > 2.0f)
+            if (math.distancesq(itemPredictedState.LinearVelocity, float3.zero) > 2.0f)
                 return;
 
             itemPredictedState.Position = new float3(0, -0.2f, 1.0f);
             itemPredictedState.Rotation = quaternion.identity;
-            itemPredictedState.Velocity = float3.zero;
+            itemPredictedState.LinearVelocity = float3.zero;
             itemPredictedState.Owner = owner;
             EntityManager.SetComponentData(entity, itemPredictedState);
 
