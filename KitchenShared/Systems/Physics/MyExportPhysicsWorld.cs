@@ -38,10 +38,9 @@ namespace FootStone.Kitchen
                 MotionVelocities = world.MotionVelocities,
                 MotionDatas = world.MotionDatas,
 
-          
                 PredictedStateType = predictedStateType
             }.Schedule(m_BuildPhysicsWorldSystem.DynamicEntityGroup, handle);
-
+            
             FinalJobHandle = handle;
             return handle;
         }

@@ -1,4 +1,5 @@
 ﻿using Unity.Collections;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
@@ -118,5 +119,32 @@ namespace FootStone.Kitchen
 				Priority = bodyIsDynamic ? 1 : 0
 			};
 		}
-	}
+
+        public static unsafe void CollideAndIntegrate(ref PhysicsWorld physicsWorld,
+            float skinWith,float maxDistance,float maxVelocity,Collider* colliderPtr,float deltaTime,
+            RigidTransform transform, float3 up, Entity entity, ref float3 newPosition, ref float3 newVelocity)
+        {
+            var input = new ColliderDistanceInput
+            {
+                MaxDistance = maxDistance,
+                Transform = transform,
+                Collider = colliderPtr
+            };
+            var selfRigidBodyIndex = physicsWorld.GetRigidBodyIndex(entity);
+            var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
+            var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
+
+            physicsWorld.CalculateDistance(input, ref distanceHits);
+
+            CreateConstraints(physicsWorld, selfRigidBodyIndex,
+                skinWith, ref distanceHits, ref constraints);
+
+            SimplexSolver.Solve(physicsWorld, deltaTime, deltaTime, up, maxVelocity,
+                constraints, ref newPosition, ref newVelocity, out var integratedTime);
+
+
+            distanceHits.Dispose();
+            constraints.Dispose();
+        }
+    }
 }

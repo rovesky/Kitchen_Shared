@@ -8,11 +8,10 @@ namespace FootStone.Kitchen
     {
         public float3 Position;
         public quaternion Rotation;
+        public float3 LinearVelocity;
+
         public Entity TriggeredEntity;
         public Entity PickupedEntity;
-
-
-        public float3 GravityVelocity;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {

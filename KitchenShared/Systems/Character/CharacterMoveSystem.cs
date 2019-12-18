@@ -125,14 +125,14 @@ namespace FootStone.Kitchen
                         ref distanceHits,
                         ref constraints);
                     //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
-                    predictData.GravityVelocity =
-                        transform.pos.y > 1.3f ? predictData.GravityVelocity+ PhysicsStep.Default.Gravity * DeltaTime : float3.zero;
+                    predictData.LinearVelocity =
+                        transform.pos.y > 1.3f ? predictData.LinearVelocity+ PhysicsStep.Default.Gravity * DeltaTime : float3.zero;
 
-                    FSLog.Info($"gravityVelocity:{predictData.GravityVelocity},transform.pos{transform.pos}");
+                    FSLog.Info($"gravityVelocity:{predictData.LinearVelocity},transform.pos{transform.pos}");
                     var desiredVelocity = (float3) userCommand.TargetDir * characterMove.Velocity;
 
                     // Solve
-                    var newVelocity = desiredVelocity + predictData.GravityVelocity;
+                    var newVelocity = desiredVelocity + predictData.LinearVelocity;
                     var newPosition = transform.pos;
                  
                     var remainingTime = DeltaTime;

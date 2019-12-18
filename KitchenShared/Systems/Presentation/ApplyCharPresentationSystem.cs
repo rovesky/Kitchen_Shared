@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -16,11 +17,13 @@ namespace FootStone.Kitchen
               //  ref CharacterPredictedState predictedState,
                 ref CharacterInterpolatedState interpolatedData,
                 ref Translation translation,
-                ref Rotation rotation) =>
+                ref Rotation rotation,
+                ref PhysicsVelocity physicsVelocity) =>
             {
               //  predictedState.Position.y = 1.2f;
                 translation.Value = interpolatedData.Position;
                 rotation.Value = interpolatedData.Rotation;
+                physicsVelocity.Linear = interpolatedData.LinearVelocity;
             });
         }
     }

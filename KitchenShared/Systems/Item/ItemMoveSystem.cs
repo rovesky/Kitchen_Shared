@@ -98,34 +98,39 @@ namespace FootStone.Kitchen
                         rot = predictData.Rotation
                     };
 
-                    var input = new ColliderDistanceInput
-                    {
-                        MaxDistance = 0.5f,
-                        Transform = transform,
-                        Collider = collider.ColliderPtr
-                    };
-
-                    var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
-                    var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
-                    var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
-
-                    PhysicsWorld.CalculateDistance(input, ref distanceHits);
-
-                 //   var skinWidth = characterMove.SkinWidth;
-                    CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex, 0.1f,
-                        ref distanceHits,
-                        ref constraints);
-                    //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
-                    
-                    // Solve
-                    var newVelocity = predictData.LinearVelocity + PhysicsStep.Default.Gravity * DeltaTime;;
+                    var newVelocity = predictData.LinearVelocity + PhysicsStep.Default.Gravity * DeltaTime; ;
                     var newPosition = transform.pos;
-                    //   newPosition.y = 1.2f;
-                    var remainingTime = DeltaTime;
-                    var up = math.up();
-                    SimplexSolver.Solve(PhysicsWorld, remainingTime,
-                        remainingTime, up, 11.0f,
-                        constraints, ref newPosition, ref newVelocity, out var integratedTime);
+                    CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f,0.5f,11.0f,
+                        collider.ColliderPtr, DeltaTime, transform, math.up(), entity, ref newPosition, ref newVelocity);
+
+
+                 //   var input = new ColliderDistanceInput
+                 //   {
+                 //       MaxDistance = 0.5f,
+                 //       Transform = transform,
+                 //       Collider = collider.ColliderPtr
+                 //   };
+
+                 //   var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
+                 //   var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
+                 //   var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
+
+                 //   PhysicsWorld.CalculateDistance(input, ref distanceHits);
+
+                 ////   var skinWidth = characterMove.SkinWidth;
+                 //   CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex, 0.1f,
+                 //       ref distanceHits,
+                 //       ref constraints);
+                 //   //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
+                    
+                 //   // Solve
+             
+                 //   //   newPosition.y = 1.2f;
+                 //   var remainingTime = DeltaTime;
+                 //   var up = math.up();
+                 //   SimplexSolver.Solve(PhysicsWorld, remainingTime,
+                 //       remainingTime, up, 11.0f,
+                 //       constraints, ref newPosition, ref newVelocity, out var integratedTime);
 
                     predictData.Position = newPosition;
                     predictData.LinearVelocity = newVelocity;

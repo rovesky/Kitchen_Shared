@@ -141,10 +141,14 @@ namespace FootStone.Kitchen
                     //World collision + integrate
                     var newVelocity = desiredVelocity;
                     var newPosition = transform.pos;
-                    CollideAndIntegrate1(characterMove, collider.ColliderPtr, transform,up,entity,ref newPosition,ref newVelocity);
+
+                    CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld,characterMove.SkinWidth,
+                        characterMove.ContactTolerance,characterMove.MaxVelocity,
+                        collider.ColliderPtr, DeltaTime,transform,up,entity,ref newPosition,ref newVelocity);
 
                     // Write back and orientation integration
                     predictData.Position = newPosition;
+                    predictData.LinearVelocity = newVelocity;
                     // chracter rotate
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
@@ -167,31 +171,31 @@ namespace FootStone.Kitchen
                 DeferredImpulseWriter.EndForEachIndex();
             }
 
-            private unsafe void CollideAndIntegrate1(CharacterMove characterMove, Unity.Physics.Collider* colliderPtr,
-                RigidTransform transform, float3 up, Entity entity, ref float3 newPosition, ref float3 newVelocity)
-            {
-                var input = new ColliderDistanceInput
-                {
-                    MaxDistance = characterMove.ContactTolerance,
-                    Transform = transform,
-                    Collider = colliderPtr
-                };
-                var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
-                var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
-                var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
+            //private unsafe void CollideAndIntegrate1(CharacterMove characterMove, Unity.Physics.Collider* colliderPtr,
+            //    RigidTransform transform, float3 up, Entity entity, ref float3 newPosition, ref float3 newVelocity)
+            //{
+            //    var input = new ColliderDistanceInput
+            //    {
+            //        MaxDistance = characterMove.ContactTolerance,
+            //        Transform = transform,
+            //        Collider = colliderPtr
+            //    };
+            //    var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
+            //    var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
+            //    var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
 
-                PhysicsWorld.CalculateDistance(input, ref distanceHits);
+            //    PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
-                CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex,
-                    characterMove.SkinWidth, ref distanceHits, ref constraints);
+            //    CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex,
+            //        characterMove.SkinWidth, ref distanceHits, ref constraints);
 
-                SimplexSolver.Solve(PhysicsWorld, DeltaTime, DeltaTime, up, characterMove.Velocity,
-                    constraints, ref newPosition, ref newVelocity, out var integratedTime);
+            //    SimplexSolver.Solve(PhysicsWorld, DeltaTime, DeltaTime, up, characterMove.Velocity,
+            //        constraints, ref newPosition, ref newVelocity, out var integratedTime);
 
 
-                distanceHits.Dispose();
-                constraints.Dispose();
-            }
+            //    distanceHits.Dispose();
+            //    constraints.Dispose();
+            //}
 
             private void HandleUserInput(CharacterMove ccComponentData, UserCommand command, float3 up,
                 float3 surfaceVelocity,ref CharacterMoveInternalState ccInternalState, ref float3 linearVelocity)

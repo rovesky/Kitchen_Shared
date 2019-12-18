@@ -23,6 +23,8 @@ namespace FootStone.Kitchen
                 {
                     interpolateData.Position = predictData.Position;
                     interpolateData.Rotation = predictData.Rotation;
+                    interpolateData.LinearVelocity = predictData.LinearVelocity;
+
                     interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
                     interpolateData.MaterialId = replicatedEntityData.Id % 4 ;
 
