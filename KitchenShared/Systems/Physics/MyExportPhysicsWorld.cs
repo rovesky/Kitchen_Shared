@@ -32,6 +32,7 @@ namespace FootStone.Kitchen
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
             var predictedStateType = GetArchetypeChunkComponentType<ItemPredictedState>();
+            var predictedStateType1 = GetArchetypeChunkComponentType<CharacterPredictedState>();
 
             handle = new ExportDynamicBodiesJob
             {
@@ -40,7 +41,17 @@ namespace FootStone.Kitchen
 
                 PredictedStateType = predictedStateType
             }.Schedule(m_BuildPhysicsWorldSystem.DynamicEntityGroup, handle);
-            
+
+
+            //handle = new ExportDynamicBodiesJob1
+            //{
+            //    MotionVelocities = world.MotionVelocities,
+            //    MotionDatas = world.MotionDatas,
+
+            //    PredictedStateType = predictedStateType1
+            //}.Schedule(m_BuildPhysicsWorldSystem.DynamicEntityGroup, handle);
+
+
             FinalJobHandle = handle;
             return handle;
         }
@@ -61,7 +72,7 @@ namespace FootStone.Kitchen
 
                 var numItems =  chunkPredictedStates.Length;
 
-                //FSLog.Info($"chunk.Count:{chunk.Count},chunkPredictedStates.Length:{chunkPredictedStates.Length}");
+           //     FSLog.Info($"chunk.Count:{chunk.Count},chunkPredictedStates.Length:{chunkPredictedStates.Length}");
                 for (int i = 0, motionIndex = entityStartIndex; i < numItems; i++, motionIndex++)
                 {
                     var md = MotionDatas[motionIndex];
@@ -74,6 +85,41 @@ namespace FootStone.Kitchen
                     predictState.AngularVelocity = MotionVelocities[motionIndex].AngularVelocity;
                     chunkPredictedStates[i] = predictState;
                 
+                }
+            }
+        }
+
+
+
+        [BurstCompile]
+        internal struct ExportDynamicBodiesJob1 : IJobChunk
+        {
+            [ReadOnly] public NativeSlice<MotionVelocity> MotionVelocities;
+            [ReadOnly] public NativeSlice<MotionData> MotionDatas;
+
+
+            public ArchetypeChunkComponentType<CharacterPredictedState> PredictedStateType;
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int entityStartIndex)
+            {
+
+                var chunkPredictedStates = chunk.GetNativeArray(PredictedStateType);
+
+                var numItems = chunkPredictedStates.Length;
+
+                FSLog.Info($"chunk.Count:{chunk.Count},chunkPredictedStates.Length:{chunkPredictedStates.Length}");
+                for (int i = 0, motionIndex = entityStartIndex; i < numItems; i++, motionIndex++)
+                {
+                    var md = MotionDatas[motionIndex];
+                    var worldFromBody = math.mul(md.WorldFromMotion, math.inverse(md.BodyFromMotion));
+
+                    var predictState = chunkPredictedStates[i];
+                    predictState.Position = worldFromBody.pos;
+                    predictState.Rotation = worldFromBody.rot;
+                   // predictState.LinearVelocity = MotionVelocities[motionIndex].LinearVelocity;
+                   // predictState.AngularVelocity = MotionVelocities[motionIndex].AngularVelocity;
+                    chunkPredictedStates[i] = predictState;
+
                 }
             }
         }

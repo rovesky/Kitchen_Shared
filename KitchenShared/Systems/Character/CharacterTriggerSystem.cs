@@ -58,20 +58,20 @@ namespace FootStone.Kitchen
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
             ccJob.Schedule(inputDeps).Complete();
 
-            Entities.WithoutBurst().ForEach((Entity entity, ref CharacterPredictedState predictedState) =>
-            {
-                var triggerEntity = predictedState.TriggeredEntity;
+            //Entities.WithoutBurst().ForEach((Entity entity, ref CharacterPredictedState predictedState) =>
+            //{
+            //    var triggerEntity = predictedState.TriggeredEntity;
 
-                if (!EntityManager.HasComponent<ItemPredictedState>(triggerEntity))
-                    return;
+            //    if (!EntityManager.HasComponent<ItemPredictedState>(triggerEntity))
+            //        return;
 
-                var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(triggerEntity);
-                if (itemPredictedState.Owner != entity)
-                    return;
+            //    var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(triggerEntity);
+            //    if (itemPredictedState.Owner != entity)
+            //        return;
 
-                predictedState.TriggeredEntity = Entity.Null;
+            //    predictedState.TriggeredEntity = Entity.Null;
 
-            }).Run();
+            //}).Run();
             return inputDeps;
         }
 
