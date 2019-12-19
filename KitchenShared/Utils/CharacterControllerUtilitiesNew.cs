@@ -426,10 +426,10 @@ namespace FootStone.Kitchen
                 // Solve
                 float3 prevVelocity = newVelocity;
                 float3 prevPosition = newPosition;
-                FSLog.Info($"begin newVelocity£º{newVelocity} ");
+               // FSLog.Info($"begin newVelocity£º{newVelocity} ");
                 SimplexSolver.Solve(world, remainingTime, minDeltaTime, up, stepInput.MaxMovementSpeed, constraints,
                     ref newPosition, ref newVelocity, out float integratedTime);
-                FSLog.Info($"end newVelocity£º{newVelocity} ");
+              //  FSLog.Info($"end newVelocity£º{newVelocity} ");
                 // Apply impulses to hit bodies
                 if (affectBodies)
                 {

@@ -1,5 +1,4 @@
 ﻿using FootStone.ECS;
-using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -12,40 +11,158 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Assertions;
 using static FootStone.Kitchen.CharacterControllerUtilitiesNew;
-using static Unity.Physics.PhysicsStep;
 
 namespace FootStone.Kitchen
 {
-    public struct CharacterMoveInternalState : IComponentData
+    public struct CharacterMoveInternalState : IComponentData, IPredictedState<CharacterMoveInternalState>
     {
-      //  public float CurrentRotationAngle;
+    
         public CharacterSupportState SupportedState;
         public float3 UnsupportedVelocity;
         public float3 LinearVelocity;
-        public Entity Entity;
         public bool IsJumping;
+
+        public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
+        {
+            SupportedState = (CharacterSupportState)reader.ReadByte();
+            UnsupportedVelocity = reader.ReadVector3Q();
+            LinearVelocity = reader.ReadVector3Q();
+            IsJumping = reader.ReadBoolean();
+        }
+
+        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
+        {
+            writer.WriteByte("SupportedState",(byte)SupportedState);
+            writer.WriteVector3Q("UnsupportedVelocity", UnsupportedVelocity);
+            writer.WriteVector3Q("LinearVelocity", LinearVelocity);
+            writer.WriteBoolean("IsJumping", IsJumping);
+
+        }
+
+        public bool VerifyPrediction(ref CharacterMoveInternalState state)
+        {
+            return SupportedState.Equals(state.SupportedState) &&
+                   UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
+                   LinearVelocity.Equals(state.LinearVelocity) &&
+                   IsJumping.Equals(state.IsJumping);
+        }
+
+        public static IPredictedStateSerializerFactory CreateSerializerFactory()
+        {
+            return new PredictedStateSerializerFactory<CharacterMoveInternalState>();
+        }
     }
 
 
     [DisableAutoCreation]
     public class CharacterMoveSystemNew : JobComponentSystem
     {
-        const float k_DefaultTau = 0.4f;
-        const float k_DefaultDamping = 0.9f;
+        private const float k_DefaultTau = 0.4f;
+        private const float k_DefaultDamping = 0.9f;
+
+        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
+
+        private EntityQuery m_CharacterControllersGroup;
+        private EndFramePhysicsSystem m_EndFramePhysicsSystem;
+        private ExportPhysicsWorld m_ExportPhysicsWorldSystem;
+
+        protected override void OnCreate()
+        {
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
+            m_EndFramePhysicsSystem = World.GetOrCreateSystem<EndFramePhysicsSystem>();
+
+            var query = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(CharacterMove),
+                    typeof(UserCommand),
+                    typeof(CharacterMoveInternalState),
+                    typeof(EntityPredictedState),
+                    typeof(PhysicsCollider)
+                    //  typeof(Translation),
+                    //   typeof(Rotation),
+                }
+            };
+            m_CharacterControllersGroup = GetEntityQuery(query);
+        }
+
+        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        {
+            if (m_CharacterControllersGroup.CalculateEntityCount() == 0)
+                return inputDeps;
+
+            var chunks = m_CharacterControllersGroup.CreateArchetypeChunkArray(Allocator.TempJob);
+
+            var characterMoveType = GetArchetypeChunkComponentType<CharacterMove>();
+            var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
+            var characterMoveInternalType = GetArchetypeChunkComponentType<CharacterMoveInternalState>();
+            var predictType = GetArchetypeChunkComponentType<EntityPredictedState>();
+            var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
+            var entityType = GetArchetypeChunkEntityType();
+            // var translationType = GetArchetypeChunkComponentType<Translation>();
+            // var rotationType = GetArchetypeChunkComponentType<Rotation>();
+
+            var deferredImpulses = new NativeStream(chunks.Length, Allocator.TempJob);
+            var tickDuration = GetSingleton<WorldTime>().TickDuration;
+            var ccJob = new CharacterControllerJob
+            {
+                EntityType = entityType,
+                // Archetypes
+                CharacterMoveType = characterMoveType,
+                UserCommandComponentType = userCommandType,
+                CharacterMoveInternalType = characterMoveInternalType,
+                PhysicsColliderType = physicsColliderType,
+                PredictType = predictType,
+                //     TranslationType = translationType,
+                //      RotationType = rotationType,
+                // Input
+                DeltaTime = tickDuration,
+                PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
+                DeferredImpulseWriter = deferredImpulses.AsWriter()
+            };
+
+            inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
+            inputDeps = ccJob.Schedule(m_CharacterControllersGroup, inputDeps);
+
+            var applyJob = new ApplyDefferedPhysicsUpdatesJob
+            {
+                Chunks = chunks,
+                DeferredImpulseReader = deferredImpulses.AsReader(),
+              
+                PhysicsMassData = GetComponentDataFromEntity<PhysicsMass>(),
+                EntityPredictedData = GetComponentDataFromEntity<EntityPredictedState>(),
+
+                //PhysicsVelocityData = GetComponentDataFromEntity<PhysicsVelocity>(),
+                //TranslationData = GetComponentDataFromEntity<Translation>(),
+                //RotationData = GetComponentDataFromEntity<Rotation>()
+            };
+
+            inputDeps = applyJob.Schedule(inputDeps);
+            var disposeHandle = deferredImpulses.Dispose(inputDeps);
+
+            // Must finish all jobs before physics step end
+            m_EndFramePhysicsSystem.HandlesToWaitFor.Add(disposeHandle);
+
+            return inputDeps;
+        }
 
         [BurstCompile]
-        struct CharacterControllerJob : IJobChunk
+        private struct CharacterControllerJob : IJobChunk
         {
             public float DeltaTime;
 
             [ReadOnly] public PhysicsWorld PhysicsWorld;
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
 
-            public ArchetypeChunkComponentType<CharacterMoveInternalState> CharacterControllerInternalType;
+            public ArchetypeChunkComponentType<CharacterMoveInternalState> CharacterMoveInternalType;
+
             public ArchetypeChunkComponentType<EntityPredictedState> PredictType;
+
             //  public ArchetypeChunkComponentType<Translation> TranslationType;
             //  public ArchetypeChunkComponentType<Rotation> RotationType;
-            [ReadOnly] public ArchetypeChunkComponentType<CharacterMove> CharacterControllerComponentType;
+            [ReadOnly] public ArchetypeChunkComponentType<CharacterMove> CharacterMoveType;
             [ReadOnly] public ArchetypeChunkComponentType<UserCommand> UserCommandComponentType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
 
@@ -60,10 +177,10 @@ namespace FootStone.Kitchen
                 var up = math.up();
 
                 var chunkEntityData = chunk.GetNativeArray(EntityType);
-                var chunkCCData = chunk.GetNativeArray(CharacterControllerComponentType);
+                var chunkCharacterMoveData = chunk.GetNativeArray(CharacterMoveType);
                 var chunkPredictData = chunk.GetNativeArray(PredictType);
                 var chunkUserCommand = chunk.GetNativeArray(UserCommandComponentType);
-                var chunkCCInternalData = chunk.GetNativeArray(CharacterControllerInternalType);
+                var chunkCharacterMoveInternalData = chunk.GetNativeArray(CharacterMoveInternalType);
                 var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);
 
                 // var chunkTranslationData = chunk.GetNativeArray(TranslationType);
@@ -74,12 +191,11 @@ namespace FootStone.Kitchen
                 for (var i = 0; i < chunk.Count; i++)
                 {
                     var entity = chunkEntityData[i];
-                    var characterMove = chunkCCData[i];
+                    var characterMove = chunkCharacterMoveData[i];
                     var userCommand = chunkUserCommand[i];
-                    var ccInternalData = chunkCCInternalData[i];
+                    var characterMoveInternalData = chunkCharacterMoveInternalData[i];
                     var collider = chunkPhysicsColliderData[i];
                     var predictData = chunkPredictData[i];
-
 
                     // Collision filter must be valid
                     Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
@@ -97,8 +213,8 @@ namespace FootStone.Kitchen
                         SkinWidth = characterMove.SkinWidth,
                         ContactTolerance = characterMove.ContactTolerance,
                         MaxSlope = characterMove.MaxSlope,
-                        RigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(ccInternalData.Entity),
-                        CurrentVelocity = ccInternalData.LinearVelocity,
+                        RigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity),
+                        CurrentVelocity = characterMoveInternalData.LinearVelocity,
                         MaxMovementSpeed = characterMove.MaxVelocity
                     };
 
@@ -107,44 +223,41 @@ namespace FootStone.Kitchen
 
                     // Check support
                     CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform, characterMove.MaxSlope,
-                        out ccInternalData.SupportedState, out float3 surfaceNormal, out float3 surfaceVelocity);
+                        out characterMoveInternalData.SupportedState, out var surfaceNormal, out var surfaceVelocity);
 
                     // User input
-                    var desiredVelocity = ccInternalData.LinearVelocity;
-                    HandleUserInput(characterMove, userCommand, stepInput.Up, surfaceVelocity, ref ccInternalData,
+                    var desiredVelocity = characterMoveInternalData.LinearVelocity;
+                    HandleUserInput(characterMove, userCommand, stepInput.Up, surfaceVelocity, ref characterMoveInternalData,
                         ref desiredVelocity);
 
                     // Calculate actual velocity with respect to surface
-                    if (ccInternalData.SupportedState == CharacterSupportState.Supported)
-                    {
-
-                        CalculateMovement(predictData.Transform.rot, stepInput.Up, ccInternalData.IsJumping,
-                            ccInternalData.LinearVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
-                            out ccInternalData.LinearVelocity);
-                        // ccInternalData.LinearVelocity = desiredVelocity;
-                    }
+                    if (characterMoveInternalData.SupportedState == CharacterSupportState.Supported)
+                        CalculateMovement(predictData.Transform.rot, stepInput.Up, characterMoveInternalData.IsJumping,
+                            characterMoveInternalData.LinearVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
+                            out characterMoveInternalData.LinearVelocity);
+                    // ccInternalData.LinearVelocity = desiredVelocity;
                     else
-                    {
-                        ccInternalData.LinearVelocity = desiredVelocity;
-                    }
-
+                        characterMoveInternalData.LinearVelocity = desiredVelocity;
+                    
+                  
                     //// World collision + integrate
-                    //CollideAndIntegrate(stepInput, ccComponentData.CharacterMass,
-                    //    ccComponentData.AffectsPhysicsBodies > 0,
-                    //    collider.ColliderPtr, ref transform, ref ccInternalData.LinearVelocity,
-                    //    ref DeferredImpulseWriter);
+                    CollideAndIntegrate(stepInput, characterMove.CharacterMass,
+                        characterMove.AffectsPhysicsBodies > 0,
+                        collider.ColliderPtr, ref transform, ref characterMoveInternalData.LinearVelocity,
+                        ref DeferredImpulseWriter);
 
-                    //World collision + integrate
-                    var newVelocity = desiredVelocity;
+                   // var newVelocity = desiredVelocity;
                     var newPosition = transform.pos;
+                    //World collision + integrate
+                    //CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, characterMove.SkinWidth,
+                    //    characterMove.ContactTolerance, characterMove.MaxVelocity,
+                    //    collider.ColliderPtr, DeltaTime, transform, up, entity, ref newPosition, ref newVelocity);
 
-                    CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld,characterMove.SkinWidth,
-                        characterMove.ContactTolerance,characterMove.MaxVelocity,
-                        collider.ColliderPtr, DeltaTime,transform,up,entity,ref newPosition,ref newVelocity);
+                    //characterMoveInternalData.LinearVelocity = newVelocity;
+
 
                     // Write back and orientation integration
                     predictData.Transform.pos = newPosition;
-                    predictData.Velocity.Linear = newVelocity;
                     // chracter rotate
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
@@ -159,7 +272,7 @@ namespace FootStone.Kitchen
 
                     // Write back to chunk data
                     {
-                        chunkCCInternalData[i] = ccInternalData;
+                        chunkCharacterMoveInternalData[i] = characterMoveInternalData;
                         chunkPredictData[i] = predictData;
                     }
                 }
@@ -167,10 +280,9 @@ namespace FootStone.Kitchen
                 DeferredImpulseWriter.EndForEachIndex();
             }
 
-          
 
             private void HandleUserInput(CharacterMove ccComponentData, UserCommand command, float3 up,
-                float3 surfaceVelocity,ref CharacterMoveInternalState ccInternalState, ref float3 linearVelocity)
+                float3 surfaceVelocity, ref CharacterMoveInternalState ccInternalState, ref float3 linearVelocity)
             {
                 // Reset jumping state and unsupported velocity
                 if (ccInternalState.SupportedState == CharacterSupportState.Supported)
@@ -179,7 +291,7 @@ namespace FootStone.Kitchen
                     ccInternalState.UnsupportedVelocity = float3.zero;
                 }
 
-          
+
                 var shouldJump = command.Buttons.IsSet(UserCommand.Button.Jump) &&
                                  ccInternalState.SupportedState == CharacterSupportState.Supported;
 
@@ -197,11 +309,10 @@ namespace FootStone.Kitchen
                 }
 
                 // If unsupported then keep jump and surface momentum
-                linearVelocity = (float3)command.TargetDir * ccComponentData.MaxVelocity +
+                linearVelocity = (float3) command.TargetDir * ccComponentData.MaxVelocity +
                                  (ccInternalState.SupportedState != CharacterSupportState.Supported
                                      ? ccInternalState.UnsupportedVelocity
                                      : float3.zero);
-
             }
 
             private void CalculateMovement(quaternion currentRotationAngle, float3 up, bool isJumping,
@@ -216,7 +327,7 @@ namespace FootStone.Kitchen
                     binorm = math.cross(forward, up);
                     binorm = math.normalize(binorm);
 
-                    float3 tangent = math.cross(binorm, surfaceNormal);
+                    var tangent = math.cross(binorm, surfaceNormal);
                     tangent = math.normalize(tangent);
 
                     binorm = math.cross(tangent, surfaceNormal);
@@ -225,16 +336,16 @@ namespace FootStone.Kitchen
                     surfaceFrame.Value = new quaternion(new float3x3(binorm, tangent, surfaceNormal));
                 }
 
-                float3 relative = currentVelocity - surfaceVelocity;
+                var relative = currentVelocity - surfaceVelocity;
                 relative = math.rotate(math.inverse(surfaceFrame.Value), relative);
 
                 float3 diff;
                 {
-                    float3 sideVec = math.cross(forward, up);
-                    float fwd = math.dot(desiredVelocity, forward);
-                    float side = math.dot(desiredVelocity, sideVec);
-                    float len = math.length(desiredVelocity);
-                    float3 desiredVelocitySF = new float3(-side, -fwd, 0.0f);
+                    var sideVec = math.cross(forward, up);
+                    var fwd = math.dot(desiredVelocity, forward);
+                    var side = math.dot(desiredVelocity, sideVec);
+                    var len = math.length(desiredVelocity);
+                    var desiredVelocitySF = new float3(-side, -fwd, 0.0f);
                     desiredVelocitySF = math.normalizesafe(desiredVelocitySF, float3.zero);
                     desiredVelocitySF *= len;
                     diff = desiredVelocitySF - relative;
@@ -248,138 +359,60 @@ namespace FootStone.Kitchen
         }
 
         [BurstCompile]
-        struct ApplyDefferedPhysicsUpdatesJob : IJob
+        private struct ApplyDefferedPhysicsUpdatesJob : IJob
         {
             // Chunks can be deallocated at this point
             [DeallocateOnJobCompletion] public NativeArray<ArchetypeChunk> Chunks;
 
             public NativeStream.Reader DeferredImpulseReader;
 
-            public ComponentDataFromEntity<PhysicsVelocity> PhysicsVelocityData;
+          
             public ComponentDataFromEntity<PhysicsMass> PhysicsMassData;
-            public ComponentDataFromEntity<Translation> TranslationData;
-            public ComponentDataFromEntity<Rotation> RotationData;
+            public ComponentDataFromEntity<EntityPredictedState> EntityPredictedData;
+
+            //public ComponentDataFromEntity<PhysicsVelocity> PhysicsVelocityData;
+            //public ComponentDataFromEntity<Translation> TranslationData;
+            //public ComponentDataFromEntity<Rotation> RotationData;
 
             public void Execute()
             {
-                int index = 0;
-                int maxIndex = DeferredImpulseReader.ForEachCount;
+                var index = 0;
+                var maxIndex = DeferredImpulseReader.ForEachCount;
                 DeferredImpulseReader.BeginForEachIndex(index++);
                 while (DeferredImpulseReader.RemainingItemCount == 0 && index < maxIndex)
-                {
                     DeferredImpulseReader.BeginForEachIndex(index++);
-                }
 
                 while (DeferredImpulseReader.RemainingItemCount > 0)
                 {
                     // Read the data
                     var impulse = DeferredImpulseReader.Read<DeferredCharacterControllerImpulse>();
                     while (DeferredImpulseReader.RemainingItemCount == 0 && index < maxIndex)
-                    {
                         DeferredImpulseReader.BeginForEachIndex(index++);
-                    }
 
-                    PhysicsVelocity pv = PhysicsVelocityData[impulse.Entity];
-                    PhysicsMass pm = PhysicsMassData[impulse.Entity];
-                    Translation t = TranslationData[impulse.Entity];
-                    Rotation r = RotationData[impulse.Entity];
+                    var pm = PhysicsMassData[impulse.Entity];
+                    var ep = EntityPredictedData[impulse.Entity];
+                    //var pv = PhysicsVelocityData[impulse.Entity];
+                    //var t = TranslationData[impulse.Entity];
+                    //var r = RotationData[impulse.Entity];
 
+                   // FSLog.Info($"impulse.Entity:{impulse.Entity},pm.InverseMass:{pm.InverseMass}");
                     // Don't apply on kinematic bodies
                     if (pm.InverseMass > 0.0f)
                     {
                         // Apply impulse
-                        pv.ApplyImpulse(pm, t, r, impulse.Impulse, impulse.Point);
+                        ep.Velocity.ApplyImpulse(pm, new Translation(){Value = ep.Transform.pos}
+                            , new Rotation(){Value = ep.Transform.rot}, impulse.Impulse, impulse.Point);
+                     
+                        ep.Velocity.Linear.y = 0.0f;
+
+                        FSLog.Info($"impulse.Entity:{impulse.Entity}," +
+                                   $"Velocity.Linear:{ep.Velocity.Linear},Velocity.Angular:{ep.Velocity.Angular}");
 
                         // Write back
-                        PhysicsVelocityData[impulse.Entity] = pv;
+                        EntityPredictedData[impulse.Entity] = ep;
                     }
                 }
             }
-        }
-
-        BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        ExportPhysicsWorld m_ExportPhysicsWorldSystem;
-        EndFramePhysicsSystem m_EndFramePhysicsSystem;
-
-        EntityQuery m_CharacterControllersGroup;
-
-        protected override void OnCreate()
-        {
-            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<ExportPhysicsWorld>();
-            m_EndFramePhysicsSystem = World.GetOrCreateSystem<EndFramePhysicsSystem>();
-
-            EntityQueryDesc query = new EntityQueryDesc
-            {
-                All = new ComponentType[]
-                {
-                    typeof(CharacterMove),
-                    typeof(UserCommand),
-                    typeof(CharacterMoveInternalState),
-                    typeof(CharacterPredictedState),
-                    typeof(PhysicsCollider),
-                  //  typeof(Translation),
-                 //   typeof(Rotation),
-                }
-            };
-            m_CharacterControllersGroup = GetEntityQuery(query);
-        }
-
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
-        {
-            if (m_CharacterControllersGroup.CalculateEntityCount() == 0)
-                return inputDeps;
-
-            var chunks = m_CharacterControllersGroup.CreateArchetypeChunkArray(Allocator.TempJob);
-
-            var ccComponentType = GetArchetypeChunkComponentType<CharacterMove>();
-            var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
-            var ccInternalType = GetArchetypeChunkComponentType<CharacterMoveInternalState>();
-            var predictType = GetArchetypeChunkComponentType<EntityPredictedState>();
-            var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
-            var entityType = GetArchetypeChunkEntityType();
-            // var translationType = GetArchetypeChunkComponentType<Translation>();
-            // var rotationType = GetArchetypeChunkComponentType<Rotation>();
-
-            var deferredImpulses = new NativeStream(chunks.Length, Allocator.TempJob);
-            var tickDuration = GetSingleton<WorldTime>().TickDuration;
-            var ccJob = new CharacterControllerJob
-            {
-                EntityType = entityType,
-                // Archetypes
-                CharacterControllerComponentType = ccComponentType,
-                UserCommandComponentType = userCommandType,
-                CharacterControllerInternalType = ccInternalType,
-                PhysicsColliderType = physicsColliderType,
-                PredictType = predictType,
-           //     TranslationType = translationType,
-           //      RotationType = rotationType,
-           // Input
-                DeltaTime = tickDuration,
-                PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
-                DeferredImpulseWriter = deferredImpulses.AsWriter()
-            };
-
-            inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
-            inputDeps = ccJob.Schedule(m_CharacterControllersGroup, inputDeps);
-
-            var applyJob = new ApplyDefferedPhysicsUpdatesJob()
-            {
-                Chunks = chunks,
-                DeferredImpulseReader = deferredImpulses.AsReader(),
-                PhysicsVelocityData = GetComponentDataFromEntity<PhysicsVelocity>(),
-                PhysicsMassData = GetComponentDataFromEntity<PhysicsMass>(),
-                TranslationData = GetComponentDataFromEntity<Translation>(),
-                RotationData = GetComponentDataFromEntity<Rotation>()
-            };
-
-            inputDeps = applyJob.Schedule(inputDeps);
-            var disposeHandle = deferredImpulses.Dispose(inputDeps);
-
-            // Must finish all jobs before physics step end
-            m_EndFramePhysicsSystem.HandlesToWaitFor.Add(disposeHandle);
-
-            return inputDeps;
         }
     }
 }

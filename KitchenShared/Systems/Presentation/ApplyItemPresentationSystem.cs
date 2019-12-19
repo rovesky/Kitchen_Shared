@@ -15,15 +15,21 @@ namespace FootStone.Kitchen
             Entities.ForEach((Entity entity,
                 ref ItemInterpolatedState interpolatedData,
                 ref Translation translation,
-                ref Rotation rotation,
-                ref PhysicsVelocity physicsVelocity
+                ref Rotation rotation
+               // ref PhysicsVelocity physicsVelocity
             ) =>
             {
 
                 translation.Value = interpolatedData.Position;
                 rotation.Value = interpolatedData.Rotation;
-                physicsVelocity.Linear = interpolatedData.Velocity;
-             //   FSLog.Info($"physicsVelocity.Linear:{physicsVelocity.Linear}");
+
+                if (EntityManager.HasComponent<PhysicsVelocity>(entity))
+                {
+                    var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
+                    physicsVelocity.Linear = interpolatedData.Velocity;
+                    EntityManager.SetComponentData<PhysicsVelocity>(entity,physicsVelocity);
+                }
+                //   FSLog.Info($"physicsVelocity.Linear:{physicsVelocity.Linear}");
 
                 if (interpolatedData.Owner != Entity.Null)
                 {

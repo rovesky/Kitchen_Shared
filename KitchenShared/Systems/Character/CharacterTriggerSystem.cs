@@ -58,21 +58,7 @@ namespace FootStone.Kitchen
 
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
             ccJob.Schedule(inputDeps).Complete();
-
-            //Entities.WithoutBurst().ForEach((Entity entity, ref CharacterPredictedState predictedState) =>
-            //{
-            //    var triggerEntity = predictedState.TriggeredEntity;
-
-            //    if (!EntityManager.HasComponent<ItemPredictedState>(triggerEntity))
-            //        return;
-
-            //    var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(triggerEntity);
-            //    if (itemPredictedState.Owner != entity)
-            //        return;
-
-            //    predictedState.TriggeredEntity = Entity.Null;
-
-            //}).Run();
+         
             return inputDeps;
         }
 
@@ -138,6 +124,7 @@ namespace FootStone.Kitchen
 
                     distanceHits.Clear();
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
+
                     //  if (distanceHits.Length > 6)
                     //    FSLog.Info($"distanceHits.Length:{distanceHits.Length}");
 

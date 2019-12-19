@@ -17,7 +17,8 @@ namespace FootStone.Kitchen
                 ref CharacterPickupItem pickupItem,
                 ref UserCommand command,
                 ref CharacterPredictedState predictData,
-                ref EntityPredictedState entityPredictData) =>
+                ref EntityPredictedState entityPredictData,
+                ref CharacterMoveInternalState characterMoveInternalState) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
@@ -37,12 +38,13 @@ namespace FootStone.Kitchen
                 else if(predictData.PickupedEntity != Entity.Null && predictData.TriggeredEntity == Entity.Null)
                 {
                     FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
-                    PutDownItem(ref predictData,ref entityPredictData);
+                    PutDownItem(ref predictData,ref entityPredictData, characterMoveInternalState);
                 }
             });
         }
 
-        private void PutDownItem(ref CharacterPredictedState characterState,ref EntityPredictedState entityPredictedState)
+        private void PutDownItem(ref CharacterPredictedState characterState,
+            ref EntityPredictedState entityPredictedState, CharacterMoveInternalState characterMoveInternalState)
         {
             var entity = characterState.PickupedEntity;
        
@@ -61,12 +63,12 @@ namespace FootStone.Kitchen
             replicatedEntityData.PredictingPlayerId = -1;
             EntityManager.SetComponentData(entity, replicatedEntityData);
 
-            if (EntityManager.HasComponent<ServerEntity>(entity))
-            {
-                FSLog.Info($"{entity} is ServerEntity!");
-            }
-
-           //EntityManager.AddComponentData(entity, itemPredictedState.Mass);
+            //if (EntityManager.HasComponent<ServerEntity>(entity))
+            //{
+            //    FSLog.Info($"{entity} is ServerEntity!");
+            //}
+            EntityManager.AddComponentData(entity,new PhysicsVelocity());
+            //    EntityManager.AddComponentData(entity, itemPredictedState.Mass);
 
             characterState.PickupedEntity = Entity.Null;
         }
@@ -90,10 +92,10 @@ namespace FootStone.Kitchen
             itemPredictedState.Owner = owner;
             EntityManager.SetComponentData(entity, itemPredictedState);
 
-            //变成 Kinematic
-            if (EntityManager.HasComponent<PhysicsMass>(entity))
+            //变成 Static
+            if (EntityManager.HasComponent<PhysicsVelocity>(entity))
             {
-                EntityManager.RemoveComponent<PhysicsMass>(entity);
+                EntityManager.RemoveComponent<PhysicsVelocity>(entity);
             }
 
             var ownerReplicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(owner);

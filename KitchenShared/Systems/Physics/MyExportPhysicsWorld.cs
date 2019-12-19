@@ -51,7 +51,6 @@ namespace FootStone.Kitchen
         {
             [ReadOnly] public NativeSlice<MotionVelocity> MotionVelocities;
             [ReadOnly] public NativeSlice<MotionData> MotionDatas;
-
        
             public ArchetypeChunkComponentType<EntityPredictedState> PredictedStateType;
 
@@ -60,9 +59,9 @@ namespace FootStone.Kitchen
 
                 var chunkPredictedStates = chunk.GetNativeArray(PredictedStateType);
 
-                var numItems = chunk.Count;
+                var numItems = chunkPredictedStates.Length;
 
-                FSLog.Info($"chunk.Count:{chunk.Count},chunkPredictedStates.Length:{chunkPredictedStates.Length}");
+             //   FSLog.Info($"chunk.Count:{chunk.Count},chunkPredictedStates.Length:{chunkPredictedStates.Length}");
                 for (int i = 0, motionIndex = entityStartIndex; i < numItems; i++, motionIndex++)
                 {
                     var md = MotionDatas[motionIndex];

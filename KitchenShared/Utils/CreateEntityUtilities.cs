@@ -60,7 +60,7 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new CharacterMoveInternalState
             {
-               Entity = Entity.Null,
+           //    Entity = Entity.Null,
                UnsupportedVelocity = float3.zero,
                LinearVelocity = float3.zero,
                SupportedState = CharacterControllerUtilitiesNew.CharacterSupportState.Unsupported,

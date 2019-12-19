@@ -66,6 +66,8 @@ namespace FootStone.Kitchen
             replicatedEntityData.PredictingPlayerId = -1;
             EntityManager.SetComponentData(entity, replicatedEntityData);
 
+            //EntityManager.RemoveComponent<PhysicsVelocity>(entity);
+
             characterState.PickupedEntity = Entity.Null;
 
             var slot = EntityManager.GetComponentData<SlotPredictedState>(overlapping);
@@ -89,10 +91,10 @@ namespace FootStone.Kitchen
             itemEntityPredictedState.Velocity.Linear = float3.zero;
             EntityManager.SetComponentData(entity, itemEntityPredictedState);
 
-            //变成 Kinematic
-            if (EntityManager.HasComponent<PhysicsMass>(entity))
+            //变成 Static
+            if (EntityManager.HasComponent<PhysicsVelocity>(entity))
             {
-                EntityManager.RemoveComponent<PhysicsMass>(entity);
+                EntityManager.RemoveComponent<PhysicsVelocity>(entity);
             }
 
             var ownerReplicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(owner);

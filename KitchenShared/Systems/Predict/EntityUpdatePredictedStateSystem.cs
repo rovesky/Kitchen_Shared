@@ -12,12 +12,14 @@ namespace FootStone.Kitchen
             Entities.ForEach((Entity entity,
                 ref EntityPredictedState predictedState,
                 ref Translation translation,
-                ref Rotation rotation,
-                ref PhysicsVelocity physicsVelocity) =>
+                ref Rotation rotation) =>
             {
                 translation.Value = predictedState.Transform.pos;
                 rotation.Value = predictedState.Transform.rot;
-                physicsVelocity = predictedState.Velocity;
+                if (EntityManager.HasComponent<PhysicsVelocity>(entity))
+                {
+                    EntityManager.SetComponentData(entity, predictedState.Velocity);
+                }
             });
         }
     }
