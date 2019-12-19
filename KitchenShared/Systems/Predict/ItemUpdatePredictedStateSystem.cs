@@ -1,9 +1,5 @@
-﻿using FootStone.ECS;
-using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Physics;
+﻿using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -13,19 +9,10 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.ForEach((Entity entity,
-                ref ItemPredictedState predictedData,
-                ref Translation translation,
-                ref Rotation rotation,
-                ref PhysicsVelocity physicsVelocity
-
-
+                ref ItemPredictedState predictedData
             ) =>
             {
-                translation.Value = predictedData.Position;
-                rotation.Value = predictedData.Rotation;
-                physicsVelocity.Linear = predictedData.LinearVelocity;
-                physicsVelocity.Angular = predictedData.AngularVelocity;
-               // FSLog.Info($"UpdateItemParentSystem:{predictedData.Owner}");
+                // FSLog.Info($"UpdateItemParentSystem:{predictedData.Owner}");
                 if (predictedData.Owner != Entity.Null)
                 {
                     if (!EntityManager.HasComponent<Parent>(entity))

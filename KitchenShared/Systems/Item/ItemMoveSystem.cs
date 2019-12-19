@@ -5,45 +5,44 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
-using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
-using Unity.Transforms;
-using UnityEngine;
 using UnityEngine.Assertions;
-using Math = System.Math;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class ItemMoveSystem : JobComponentSystem
     {
-        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-   
         private EntityQuery itemsGroup;
+        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
         private MyExportPhysicsWorld m_ExportPhysicsWorldSystem;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
             m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<MyExportPhysicsWorld>();
-     
+
             var query = new EntityQueryDesc
             {
                 All = new ComponentType[]
                 {
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
-                    typeof(ItemPredictedState),
-                  
+                    typeof(EntityPredictedState)
+                },
+                None = new ComponentType[]
+                {
+                    typeof(Character),
                 }
             };
             itemsGroup = GetEntityQuery(query);
         }
 
+
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
-            var predictDataType = GetArchetypeChunkComponentType<ItemPredictedState>();
+            var predictDataType = GetArchetypeChunkComponentType<EntityPredictedState>();
             var entityType = GetArchetypeChunkEntityType();
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
 
@@ -71,11 +70,11 @@ namespace FootStone.Kitchen
 
             [ReadOnly] public PhysicsWorld PhysicsWorld;
 
-            public ArchetypeChunkComponentType<ItemPredictedState> PredictDataType;
+            public ArchetypeChunkComponentType<EntityPredictedState> PredictDataType;
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
-           
-          
+
+
             public unsafe void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
                 var chunkEntityData = chunk.GetNativeArray(EntityType);
@@ -94,46 +93,48 @@ namespace FootStone.Kitchen
                     // Character transform
                     var transform = new RigidTransform
                     {
-                        pos = predictData.Position,
-                        rot = predictData.Rotation
+                        pos = predictData.Transform.pos,
+                        rot = predictData.Transform.rot
                     };
 
-                    var newVelocity = predictData.LinearVelocity + PhysicsStep.Default.Gravity * DeltaTime; ;
+                    var newVelocity = predictData.Velocity.Linear + PhysicsStep.Default.Gravity * DeltaTime;
+
                     var newPosition = transform.pos;
-                    CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f,0.5f,11.0f,
-                        collider.ColliderPtr, DeltaTime, transform, math.up(), entity, ref newPosition, ref newVelocity);
+                    CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f, 0.5f, 11.0f,
+                        collider.ColliderPtr, DeltaTime, transform, math.up(), entity, ref newPosition,
+                        ref newVelocity);
 
 
-                 //   var input = new ColliderDistanceInput
-                 //   {
-                 //       MaxDistance = 0.5f,
-                 //       Transform = transform,
-                 //       Collider = collider.ColliderPtr
-                 //   };
+                    //   var input = new ColliderDistanceInput
+                    //   {
+                    //       MaxDistance = 0.5f,
+                    //       Transform = transform,
+                    //       Collider = collider.ColliderPtr
+                    //   };
 
-                 //   var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
-                 //   var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
-                 //   var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
+                    //   var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
+                    //   var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
+                    //   var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
 
-                 //   PhysicsWorld.CalculateDistance(input, ref distanceHits);
+                    //   PhysicsWorld.CalculateDistance(input, ref distanceHits);
 
-                 ////   var skinWidth = characterMove.SkinWidth;
-                 //   CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex, 0.1f,
-                 //       ref distanceHits,
-                 //       ref constraints);
-                 //   //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
-                    
-                 //   // Solve
-             
-                 //   //   newPosition.y = 1.2f;
-                 //   var remainingTime = DeltaTime;
-                 //   var up = math.up();
-                 //   SimplexSolver.Solve(PhysicsWorld, remainingTime,
-                 //       remainingTime, up, 11.0f,
-                 //       constraints, ref newPosition, ref newVelocity, out var integratedTime);
+                    ////   var skinWidth = characterMove.SkinWidth;
+                    //   CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex, 0.1f,
+                    //       ref distanceHits,
+                    //       ref constraints);
+                    //   //  FSLog.Info($"targetPos:{userCommand.targetPos.x},{userCommand.targetPos.y},{userCommand.targetPos.z}");
 
-                    predictData.Position = newPosition;
-                    predictData.LinearVelocity = newVelocity;
+                    //   // Solve
+
+                    //   //   newPosition.y = 1.2f;
+                    //   var remainingTime = DeltaTime;
+                    //   var up = math.up();
+                    //   SimplexSolver.Solve(PhysicsWorld, remainingTime,
+                    //       remainingTime, up, 11.0f,
+                    //       constraints, ref newPosition, ref newVelocity, out var integratedTime);
+
+                    predictData.Transform.pos = newPosition;
+                    predictData.Velocity.Linear = newVelocity;
                     chunkPredictDataData[i] = predictData;
                 }
             }

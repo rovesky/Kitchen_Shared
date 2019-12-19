@@ -2,6 +2,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
@@ -15,7 +16,8 @@ namespace FootStone.Kitchen
             Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
                 ref CharacterPickupItem pickupItem,
                 ref UserCommand command,
-                ref CharacterPredictedState predictData) =>
+                ref CharacterPredictedState predictData,
+                ref EntityPredictedState entityPredictData) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
@@ -35,22 +37,24 @@ namespace FootStone.Kitchen
                 else if(predictData.PickupedEntity != Entity.Null && predictData.TriggeredEntity == Entity.Null)
                 {
                     FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
-                    PutDownItem(ref predictData);
+                    PutDownItem(ref predictData,ref entityPredictData);
                 }
             });
         }
 
-        private void PutDownItem(ref CharacterPredictedState characterState)
+        private void PutDownItem(ref CharacterPredictedState characterState,ref EntityPredictedState entityPredictedState)
         {
             var entity = characterState.PickupedEntity;
        
+            var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(entity);
+            itemEntityPredictedState.Transform.pos = entityPredictedState.Transform.pos + 
+                                          math.mul(entityPredictedState.Transform.rot, new float3(0, -0.2f, 1.1f));
+            itemEntityPredictedState.Transform.rot = quaternion.identity;
+            itemEntityPredictedState.Velocity.Linear = float3.zero;
+            EntityManager.SetComponentData(entity, itemEntityPredictedState);
+
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
-           
-            itemPredictedState.Position = characterState.Position + 
-                                          math.mul(characterState.Rotation, new float3(0, -0.2f, 1.1f));
-            itemPredictedState.Rotation = quaternion.identity;
             itemPredictedState.Owner = Entity.Null;
-            itemPredictedState.LinearVelocity = float3.zero;
             EntityManager.SetComponentData(entity, itemPredictedState);
 
             var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
@@ -71,15 +75,18 @@ namespace FootStone.Kitchen
         {
      
             var entity = characterState.TriggeredEntity;
-            var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
+            var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(entity);
 
             //速度比较快不能pickup
-            if (math.distancesq(itemPredictedState.LinearVelocity, float3.zero) > 2.0f)
+            if (math.distancesq(itemEntityPredictedState.Velocity.Linear, float3.zero) > 2.0f)
                 return;
 
-            itemPredictedState.Position = new float3(0, -0.2f, 1.0f);
-            itemPredictedState.Rotation = quaternion.identity;
-            itemPredictedState.LinearVelocity = float3.zero;
+            itemEntityPredictedState.Transform.pos = new float3(0, -0.2f, 1.0f);
+            itemEntityPredictedState.Transform.rot = quaternion.identity;
+            itemEntityPredictedState.Velocity.Linear = float3.zero;
+            EntityManager.SetComponentData(entity, itemEntityPredictedState);
+
+            var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
             itemPredictedState.Owner = owner;
             EntityManager.SetComponentData(entity, itemPredictedState);
 

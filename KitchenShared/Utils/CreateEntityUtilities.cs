@@ -26,10 +26,10 @@ namespace FootStone.Kitchen
                 PredictingPlayerId = -1
             });
 
+            entityManager.AddComponentData(e, new EntityPredictedState());
+
             entityManager.AddComponentData(e, new CharacterPredictedState
             {
-                Position = position,
-                Rotation = rotation,
                 TriggeredEntity = Entity.Null,
                 PickupedEntity = Entity.Null
             });

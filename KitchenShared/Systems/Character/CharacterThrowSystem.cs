@@ -1,8 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
@@ -10,20 +8,13 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterThrowSystem : ComponentSystem
     {
-      //  private EntityQuery plateQuery;
-
-        //protected override void OnCreate()
-        //{
-        //    base.OnCreate();
-        //  //  plateQuery = GetEntityQuery(typeof(Plate));
-        //}
-
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<Character>().ForEach((Entity entity,
                 ref CharacterThrowItem pickupItem,
                 ref UserCommand command,
-                ref CharacterPredictedState predictData) =>
+                ref CharacterPredictedState predictData,
+                ref EntityPredictedState entityPredictData) =>
             {
                 //  FSLog.Info("PickSystem Update");
                 if (!command.Buttons.IsSet(UserCommand.Button.Throw))
@@ -33,16 +24,18 @@ namespace FootStone.Kitchen
                     return;
 
                 var pickupedEntity = predictData.PickupedEntity;
-                var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(pickupedEntity);
+                var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(pickupedEntity);
 
-                Vector3 linear = math.mul(predictData.Rotation, Vector3.forward);
+                Vector3 linear = math.mul(entityPredictData.Transform.rot, Vector3.forward);
                 linear.y = 0.3f;
                 linear.Normalize();
-                itemPredictedState.LinearVelocity = linear * 7.0f;
+                itemEntityPredictedState.Velocity.Linear = linear * 7.0f;
+                itemEntityPredictedState.Transform.pos =
+                    entityPredictData.Transform.pos +
+                    math.mul(entityPredictData.Transform.rot, new float3(0, 0.2f, 0.8f));
+                EntityManager.SetComponentData(pickupedEntity, itemEntityPredictedState);
 
-                itemPredictedState.Position =
-                    predictData.Position + math.mul(predictData.Rotation, new float3(0, 0.2f, 0.8f));
-
+                var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(pickupedEntity);
                 itemPredictedState.Owner = Entity.Null;
                 EntityManager.SetComponentData(pickupedEntity, itemPredictedState);
 
@@ -53,7 +46,7 @@ namespace FootStone.Kitchen
                 if (!EntityManager.HasComponent<ServerEntity>(pickupedEntity))
                     EntityManager.AddComponentData(pickupedEntity, new ServerEntity());
 
-              //  EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
+                //  EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
 
                 predictData.PickupedEntity = Entity.Null;
             });

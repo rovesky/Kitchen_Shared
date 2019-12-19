@@ -42,7 +42,7 @@ namespace FootStone.Kitchen
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
 
             public ArchetypeChunkComponentType<CharacterMoveInternalState> CharacterControllerInternalType;
-            public ArchetypeChunkComponentType<CharacterPredictedState> PredictType;
+            public ArchetypeChunkComponentType<EntityPredictedState> PredictType;
             //  public ArchetypeChunkComponentType<Translation> TranslationType;
             //  public ArchetypeChunkComponentType<Rotation> RotationType;
             [ReadOnly] public ArchetypeChunkComponentType<CharacterMove> CharacterControllerComponentType;
@@ -103,11 +103,7 @@ namespace FootStone.Kitchen
                     };
 
                     // Character transform
-                    var transform = new RigidTransform
-                    {
-                        pos = predictData.Position,
-                        rot = predictData.Rotation
-                    };
+                    var transform = predictData.Transform;
 
                     // Check support
                     CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform, characterMove.MaxSlope,
@@ -122,7 +118,7 @@ namespace FootStone.Kitchen
                     if (ccInternalData.SupportedState == CharacterSupportState.Supported)
                     {
 
-                        CalculateMovement(predictData.Rotation, stepInput.Up, ccInternalData.IsJumping,
+                        CalculateMovement(predictData.Transform.rot, stepInput.Up, ccInternalData.IsJumping,
                             ccInternalData.LinearVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out ccInternalData.LinearVelocity);
                         // ccInternalData.LinearVelocity = desiredVelocity;
@@ -147,15 +143,15 @@ namespace FootStone.Kitchen
                         collider.ColliderPtr, DeltaTime,transform,up,entity,ref newPosition,ref newVelocity);
 
                     // Write back and orientation integration
-                    predictData.Position = newPosition;
-                    predictData.LinearVelocity = newVelocity;
+                    predictData.Transform.pos = newPosition;
+                    predictData.Velocity.Linear = newVelocity;
                     // chracter rotate
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
-                        var fromRotation = predictData.Rotation;
+                        var fromRotation = predictData.Transform.rot;
                         var toRotation = quaternion.LookRotationSafe(userCommand.TargetDir, up);
                         var angle = Quaternion.Angle(fromRotation, toRotation);
-                        predictData.Rotation = Quaternion.RotateTowards(fromRotation, toRotation,
+                        predictData.Transform.rot = Quaternion.RotateTowards(fromRotation, toRotation,
                             math.abs(angle - 180.0f) < float.Epsilon
                                 ? -characterMove.RotationVelocity
                                 : characterMove.RotationVelocity);
@@ -171,31 +167,7 @@ namespace FootStone.Kitchen
                 DeferredImpulseWriter.EndForEachIndex();
             }
 
-            //private unsafe void CollideAndIntegrate1(CharacterMove characterMove, Unity.Physics.Collider* colliderPtr,
-            //    RigidTransform transform, float3 up, Entity entity, ref float3 newPosition, ref float3 newVelocity)
-            //{
-            //    var input = new ColliderDistanceInput
-            //    {
-            //        MaxDistance = characterMove.ContactTolerance,
-            //        Transform = transform,
-            //        Collider = colliderPtr
-            //    };
-            //    var selfRigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity);
-            //    var distanceHits = new NativeList<DistanceHit>(8, Allocator.Temp);
-            //    var constraints = new NativeList<SurfaceConstraintInfo>(16, Allocator.Temp);
-
-            //    PhysicsWorld.CalculateDistance(input, ref distanceHits);
-
-            //    CharacterControllerUtilities.CreateConstraints(PhysicsWorld, selfRigidBodyIndex,
-            //        characterMove.SkinWidth, ref distanceHits, ref constraints);
-
-            //    SimplexSolver.Solve(PhysicsWorld, DeltaTime, DeltaTime, up, characterMove.Velocity,
-            //        constraints, ref newPosition, ref newVelocity, out var integratedTime);
-
-
-            //    distanceHits.Dispose();
-            //    constraints.Dispose();
-            //}
+          
 
             private void HandleUserInput(CharacterMove ccComponentData, UserCommand command, float3 up,
                 float3 surfaceVelocity,ref CharacterMoveInternalState ccInternalState, ref float3 linearVelocity)
@@ -363,7 +335,7 @@ namespace FootStone.Kitchen
             var ccComponentType = GetArchetypeChunkComponentType<CharacterMove>();
             var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
             var ccInternalType = GetArchetypeChunkComponentType<CharacterMoveInternalState>();
-            var predictType = GetArchetypeChunkComponentType<CharacterPredictedState>();
+            var predictType = GetArchetypeChunkComponentType<EntityPredictedState>();
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
             var entityType = GetArchetypeChunkEntityType();
             // var translationType = GetArchetypeChunkComponentType<Translation>();

@@ -51,13 +51,16 @@ namespace FootStone.Kitchen
             var entity = characterState.PickupedEntity;
   
             var triggerData = EntityManager.GetComponentData<TriggerData>(overlapping);
+
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
-            itemPredictedState.Position = triggerData.SlotPos;
-            //  FSLog.Info($"PutDownItem,pos:{slot.SlotPos}");
-            itemPredictedState.Rotation = quaternion.identity;
             itemPredictedState.Owner = Entity.Null;
-            itemPredictedState.LinearVelocity = float3.zero;
             EntityManager.SetComponentData(entity, itemPredictedState);
+
+            var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(entity);
+            itemEntityPredictedState.Transform.pos = triggerData.SlotPos;
+            itemEntityPredictedState.Transform.rot = quaternion.identity;
+            itemEntityPredictedState.Velocity.Linear = float3.zero;
+            EntityManager.SetComponentData(entity, itemEntityPredictedState);
 
             var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
             replicatedEntityData.PredictingPlayerId = -1;
@@ -77,11 +80,14 @@ namespace FootStone.Kitchen
             var entity = slot.FilledInEntity;
 
             var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
-            itemPredictedState.Position = new float3(0, -0.2f, 1.0f);
-            itemPredictedState.Rotation = quaternion.identity;
-            itemPredictedState.LinearVelocity = float3.zero;
             itemPredictedState.Owner = owner;
             EntityManager.SetComponentData(entity, itemPredictedState);
+
+            var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(entity);
+            itemEntityPredictedState.Transform.pos = new float3(0, -0.2f, 1.0f);
+            itemEntityPredictedState.Transform.rot = quaternion.identity;
+            itemEntityPredictedState.Velocity.Linear = float3.zero;
+            EntityManager.SetComponentData(entity, itemEntityPredictedState);
 
             //变成 Kinematic
             if (EntityManager.HasComponent<PhysicsMass>(entity))

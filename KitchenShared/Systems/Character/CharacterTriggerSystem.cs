@@ -2,7 +2,6 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
@@ -31,6 +30,7 @@ namespace FootStone.Kitchen
                 {
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
+                    typeof(EntityPredictedState),
                     typeof(CharacterPredictedState)
                 }
             };
@@ -44,15 +44,16 @@ namespace FootStone.Kitchen
 
             var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
             var predictedStateGroup = GetComponentDataFromEntity<CharacterPredictedState>();
+            var entityPredictedStateGroup = GetComponentDataFromEntity<EntityPredictedState>();
 
             var ccJob = new GetTriggerOverlappingJob
             {
                 Entities = entities,
                 PhysicsColliderGroup = physicsColliderGroup,
                 PredictedStateGroup = predictedStateGroup,
-
+                EntityPredictedStateGroup = entityPredictedStateGroup,
                 PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
-                VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob),
+                VolumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob)
             };
 
             inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
@@ -106,27 +107,25 @@ namespace FootStone.Kitchen
             [ReadOnly] public PhysicsWorld PhysicsWorld;
             [ReadOnly] public ComponentDataFromEntity<PhysicsCollider> PhysicsColliderGroup;
             public ComponentDataFromEntity<CharacterPredictedState> PredictedStateGroup;
+            [ReadOnly] public ComponentDataFromEntity<EntityPredictedState> EntityPredictedStateGroup;
+
             [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> VolumeEntities;
 
 
             public unsafe void Execute()
             {
-
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
                 foreach (var entity in Entities)
                 {
                     var collider = PhysicsColliderGroup[entity];
                     var predictedState = PredictedStateGroup[entity];
+                    var entityPredictedState = EntityPredictedStateGroup[entity];
                     // Collision filter must be valid
                     Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
 
                     // Character transform
-                    var transform = new RigidTransform
-                    {
-                        pos = predictedState.Position,
-                        rot = predictedState.Rotation
-                    };
+                    var transform = entityPredictedState.Transform;
 
                     var input = new ColliderDistanceInput
                     {
@@ -139,7 +138,7 @@ namespace FootStone.Kitchen
 
                     distanceHits.Clear();
                     PhysicsWorld.CalculateDistance(input, ref distanceHits);
-                  //  if (distanceHits.Length > 6)
+                    //  if (distanceHits.Length > 6)
                     //    FSLog.Info($"distanceHits.Length:{distanceHits.Length}");
 
                     var triggerIndex = CheckTrigger(PhysicsWorld, VolumeEntities,
@@ -158,6 +157,5 @@ namespace FootStone.Kitchen
                 distanceHits.Dispose();
             }
         }
-  
     }
 }

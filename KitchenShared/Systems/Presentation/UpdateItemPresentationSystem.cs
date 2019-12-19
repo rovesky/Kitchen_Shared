@@ -9,13 +9,14 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>()
-                .ForEach((Entity entity, 
+                .ForEach((Entity entity,
+                    ref EntityPredictedState entityPredictData,
                     ref ItemPredictedState predictData,
                     ref ItemInterpolatedState interpolateData) =>
                 {
-                    interpolateData.Position = predictData.Position;
-                    interpolateData.Rotation = predictData.Rotation;
-                    interpolateData.Velocity = predictData.LinearVelocity;
+                    interpolateData.Position = entityPredictData.Transform.pos;
+                    interpolateData.Rotation = entityPredictData.Transform.rot;
+                    interpolateData.Velocity = entityPredictData.Velocity.Linear;
                     interpolateData.Owner = predictData.Owner;
 
                   //  FSLog.Info($"interpolateData.Velocity :{interpolateData.Velocity}");

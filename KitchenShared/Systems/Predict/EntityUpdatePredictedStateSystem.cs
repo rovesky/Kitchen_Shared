@@ -5,19 +5,19 @@ using Unity.Transforms;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterUpdatePredictedStateSystem : ComponentSystem
+    public class EntityUpdatePredictedStateSystem : ComponentSystem
     {
         protected override void OnUpdate()
         {
             Entities.ForEach((Entity entity,
-                ref CharacterPredictedState predictedState,
+                ref EntityPredictedState predictedState,
                 ref Translation translation,
                 ref Rotation rotation,
                 ref PhysicsVelocity physicsVelocity) =>
             {
-                translation.Value = predictedState.Position;
-                rotation.Value = predictedState.Rotation;
-                physicsVelocity.Linear = predictedState.LinearVelocity;
+                translation.Value = predictedState.Transform.pos;
+                rotation.Value = predictedState.Transform.rot;
+                physicsVelocity = predictedState.Velocity;
             });
         }
     }

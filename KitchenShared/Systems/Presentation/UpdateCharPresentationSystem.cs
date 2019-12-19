@@ -16,14 +16,15 @@ namespace FootStone.Kitchen
             Entities.WithAllReadOnly<ServerEntity>()
                 .ForEach((Entity entity,
                     ref ReplicatedEntityData replicatedEntityData,
+                    ref EntityPredictedState entityPredictData,
                     ref CharacterPredictedState predictData,
                     ref CharacterInterpolatedState interpolateData,
                     ref UserCommand command,
                     ref LocalToWorld localToWorld) =>
                 {
-                    interpolateData.Position = predictData.Position;
-                    interpolateData.Rotation = predictData.Rotation;
-                    interpolateData.LinearVelocity = predictData.LinearVelocity;
+                    interpolateData.Position = entityPredictData.Transform.pos;
+                    interpolateData.Rotation = entityPredictData.Transform.rot;
+                    interpolateData.LinearVelocity = entityPredictData.Velocity.Linear;
 
                     interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
                     interpolateData.MaterialId = replicatedEntityData.Id % 4 ;
