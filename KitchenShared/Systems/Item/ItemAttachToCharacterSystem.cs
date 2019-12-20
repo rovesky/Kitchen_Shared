@@ -1,28 +1,26 @@
 ﻿using FootStone.ECS;
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
-using Unity.Physics.Systems;
-using UnityEditor.UIElements;
-using UnityEngine.Assertions;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ItemToCharacterSystem : ComponentSystem
+    public class ItemAttachToCharacterSystem : ComponentSystem
     {
-
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<Plate>().ForEach((Entity entity,
-                ref PickUpRequest        pickupRequest, 
+                ref AttachToCharacterRequest pickupRequest,
                 ref EntityPredictedState entityPredictedState,
-                ref ItemPredictedState   itemPredictedState,
+                ref ItemPredictedState itemPredictedState,
                 ref ReplicatedEntityData replicatedEntityData) =>
             {
+                FSLog.Info("ItemAttachToCharacterSystem OnUpdate!");
+                //速度比较快不能pickup
+                if (math.distancesq(entityPredictedState.Velocity.Linear, float3.zero) > 2.0f)
+                    return;
+
                 itemPredictedState.Owner = pickupRequest.Owner;
 
                 entityPredictedState.Transform.pos = new float3(0, -0.2f, 1.0f);
@@ -33,10 +31,9 @@ namespace FootStone.Kitchen
 
                 //变成 Static
                 if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-                {
                     EntityManager.RemoveComponent<PhysicsVelocity>(entity);
-                }
-                EntityManager.RemoveComponent<PickUpRequest>(entity);
+
+                EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
             });
         }
     }

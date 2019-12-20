@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -34,15 +35,15 @@ namespace FootStone.Kitchen
     }
 
 
-    public struct PickUpRequest : IComponentData
+    public struct AttachToCharacterRequest : IComponentData
     {
         public Entity Owner;
         public int PredictingPlayerId;
 
     }
-    public struct PickDownRequest : IComponentData
+    public struct DetachFromCharacterRequest : IComponentData
     {
-
+        public float3 Pos;
     }
 
 }

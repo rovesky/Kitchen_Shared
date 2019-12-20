@@ -27,8 +27,11 @@ namespace FootStone.Kitchen
             var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
 
-            Entities.ForEach((Entity entity, ref TriggerPredictedState predictedState,
-                in TriggerSetting setting, in EntityPredictedState entityState, in PhysicsCollider collider) =>
+            Entities.WithAll<PhysicsVelocity>().ForEach((Entity entity,
+                ref TriggerPredictedState predictedState,
+                in TriggerSetting setting, 
+                in EntityPredictedState entityState,
+                in PhysicsCollider collider) =>
             {
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
