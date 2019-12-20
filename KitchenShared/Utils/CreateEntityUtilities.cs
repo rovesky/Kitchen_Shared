@@ -37,7 +37,7 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, UserCommand.DefaultCommand);
 
-            entityManager.AddComponentData(e, new CharacterMove
+            entityManager.AddComponentData(e, new CharacterMoveSetting
             {
                 Gravity = PhysicsStep.Default.Gravity,
                 SkinWidth = 0.02f,
@@ -70,7 +70,7 @@ namespace FootStone.Kitchen
                TriggeredEntity = Entity.Null
             });
 
-            entityManager.AddComponentData(e, new CharacterPickup());
+            entityManager.AddComponentData(e, new PickupSetting());
             entityManager.AddComponentData(e, new PickupPredictedState
             {
                 PickupedEntity = Entity.Null

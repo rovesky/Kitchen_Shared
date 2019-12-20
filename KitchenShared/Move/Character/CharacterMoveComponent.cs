@@ -4,7 +4,7 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-	public struct CharacterMove : IComponentData
+	public struct CharacterMoveSetting : IComponentData
 	{
         public float3 Gravity;
         public float Velocity;

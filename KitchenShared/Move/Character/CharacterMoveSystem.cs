@@ -40,7 +40,7 @@ namespace FootStone.Kitchen
                 All = new ComponentType[]
                 {
                     typeof(ServerEntity),
-                    typeof(CharacterMove),
+                    typeof(CharacterMoveSetting),
                     typeof(UserCommand),
                     typeof(CharacterMovePredictedState),
                     typeof(EntityPredictedState),
@@ -59,7 +59,7 @@ namespace FootStone.Kitchen
 
             var chunks = m_CharacterControllersGroup.CreateArchetypeChunkArray(Allocator.TempJob);
 
-            var characterMoveType = GetArchetypeChunkComponentType<CharacterMove>();
+            var characterMoveType = GetArchetypeChunkComponentType<CharacterMoveSetting>();
             var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
             var movePredictedType = GetArchetypeChunkComponentType<CharacterMovePredictedState>();
             var predictType = GetArchetypeChunkComponentType<EntityPredictedState>();
@@ -120,7 +120,7 @@ namespace FootStone.Kitchen
 
             //  public ArchetypeChunkComponentType<Translation> TranslationType;
             //  public ArchetypeChunkComponentType<Rotation> RotationType;
-            [ReadOnly] public ArchetypeChunkComponentType<CharacterMove>   CharacterMoveType;
+            [ReadOnly] public ArchetypeChunkComponentType<CharacterMoveSetting>   CharacterMoveType;
             [ReadOnly] public ArchetypeChunkComponentType<UserCommand>     UserCommandComponentType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
 
@@ -235,7 +235,7 @@ namespace FootStone.Kitchen
             }
 
 
-            private void HandleUserInput(CharacterMove ccComponentData, UserCommand command, float3 up,
+            private void HandleUserInput(CharacterMoveSetting ccComponentData, UserCommand command, float3 up,
                 float3 surfaceVelocity, ref CharacterMovePredictedState ccPredictedState, ref float3 linearVelocity)
             {
                 // Reset jumping state and unsupported velocity

@@ -13,7 +13,7 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
-                ref CharacterPickup setting,
+                ref PickupSetting setting,
                 ref UserCommand command,
                 ref PickupPredictedState pickupState,
                 ref TriggerPredictedState triggerState) =>
@@ -32,7 +32,8 @@ namespace FootStone.Kitchen
                 var worldTick = GetSingleton<WorldTime>().Tick;
                 var isEmpty = pickupState.PickupedEntity == Entity.Null;
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
-                FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FilledInEntity}");
+                FSLog.Info($"TriggerOperationSystem Update,PickupedEntity:{pickupState.PickupedEntity}," +
+                           $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledInEntity}");
 
                 if (isEmpty && slot.FilledInEntity != Entity.Null)
                 {
@@ -76,36 +77,24 @@ namespace FootStone.Kitchen
             EntityManager.SetComponentData(overlapping, slot);
         }
 
-        private void PickUpItem(Entity owner, Entity overlapping, ref PickupPredictedState characterState)
+        private void PickUpItem(Entity owner, Entity triggerEntity, ref PickupPredictedState characterState)
         {
-            var slot = EntityManager.GetComponentData<SlotPredictedState>(overlapping);
+            var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
             var entity = slot.FilledInEntity;
 
-            var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(entity);
-            itemPredictedState.Owner = owner;
-            EntityManager.SetComponentData(entity, itemPredictedState);
-
-            var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(entity);
-            itemEntityPredictedState.Transform.pos = new float3(0, -0.2f, 1.0f);
-            itemEntityPredictedState.Transform.rot = quaternion.identity;
-            itemEntityPredictedState.Velocity.Linear = float3.zero;
-            EntityManager.SetComponentData(entity, itemEntityPredictedState);
-
-            //变成 Static
-            if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-            {
-                EntityManager.RemoveComponent<PhysicsVelocity>(entity);
-            }
-
             var ownerReplicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(owner);
-            var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
-            replicatedEntityData.PredictingPlayerId = ownerReplicatedEntityData.PredictingPlayerId;
-            EntityManager.SetComponentData(entity, replicatedEntityData);
-
+            EntityManager.AddComponentData(entity, new PickUpRequest()
+            {
+                PredictingPlayerId = ownerReplicatedEntityData.PredictingPlayerId,
+                Owner =  owner
+            });
+          
             characterState.PickupedEntity = entity;
             slot.FilledInEntity = Entity.Null;
-            EntityManager.SetComponentData(overlapping, slot);
+
+            EntityManager.SetComponentData(triggerEntity, slot);
+            FSLog.Info($"triggerEntity:{triggerEntity}, slot: {slot.FilledInEntity}");
         }
     }
 }

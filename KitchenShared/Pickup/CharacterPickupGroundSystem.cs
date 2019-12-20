@@ -14,7 +14,7 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
-                ref CharacterPickup setting,
+                ref PickupSetting setting,
                 ref UserCommand command,
                 ref PickupPredictedState pickupState,
                 ref TriggerPredictedState triggerState,

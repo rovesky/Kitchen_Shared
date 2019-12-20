@@ -24,8 +24,8 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
 
-       
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemTriggerSystem>());
+
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemToCharacterSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemToTableSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<PredictRollbackStateSystemGroup>());

@@ -17,13 +17,15 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, ref EntityPredictedState entityPredictedState,
-                ref ItemPredictedState itemPredictedState) =>
+            Entities.WithAllReadOnly<Plate>().ForEach((Entity entity, 
+                ref EntityPredictedState entityPredictedState,
+                ref TriggerPredictedState triggerState,
+                ref PhysicsVelocity velocity) =>
             {
-                if (itemPredictedState.TriggeredEntity == Entity.Null)
+                if (triggerState.TriggeredEntity == Entity.Null)
                     return;
 
-                var triggeredEntity = itemPredictedState.TriggeredEntity;
+                var triggeredEntity = triggerState.TriggeredEntity;
                 if (!EntityManager.HasComponent<TriggerData>(triggeredEntity))
                     return;
 

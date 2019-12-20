@@ -27,7 +27,7 @@ namespace FootStone.Kitchen
                 {
                     var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
                     physicsVelocity.Linear = interpolatedData.Velocity;
-                    EntityManager.SetComponentData<PhysicsVelocity>(entity,physicsVelocity);
+                    EntityManager.SetComponentData(entity,physicsVelocity);
                 }
                 //   FSLog.Info($"physicsVelocity.Linear:{physicsVelocity.Linear}");
 

@@ -3,8 +3,9 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-    public struct CharacterPickup : IComponentData
+    public struct PickupSetting : IComponentData
     {
+
     }
 
     public struct PickupPredictedState : IComponentData, IPredictedState<PickupPredictedState>
@@ -32,5 +33,16 @@ namespace FootStone.Kitchen
         }
     }
 
+
+    public struct PickUpRequest : IComponentData
+    {
+        public Entity Owner;
+        public int PredictingPlayerId;
+
+    }
+    public struct PickDownRequest : IComponentData
+    {
+
+    }
 
 }
