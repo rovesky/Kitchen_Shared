@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 
 namespace FootStone.Kitchen
 {
-	public static class CharacterControllerUtilities
+	public static class ItemMoveUtilities
 	{
 		// A collector which stores every hit up to the length of the provided native array.
 		// To filter out self hits, it stores the rigid body index of the body representing
@@ -140,7 +140,7 @@ namespace FootStone.Kitchen
                 skinWith, ref distanceHits, ref constraints);
 
             SimplexSolver.Solve(physicsWorld, deltaTime, deltaTime, up, maxVelocity,
-                constraints, ref newPosition, ref newVelocity, out var integratedTime);
+                constraints, ref newPosition, ref newVelocity, out _);
 
 
             distanceHits.Dispose();

@@ -100,7 +100,7 @@ namespace FootStone.Kitchen
                     var newVelocity = predictData.Velocity.Linear + PhysicsStep.Default.Gravity * DeltaTime;
                     var newPosition = transform.pos;
 
-                    CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f, 0.5f, 11.0f,
+                    ItemMoveUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f, 0.5f, 11.0f,
                         collider.ColliderPtr, DeltaTime, transform, math.up(), entity, ref newPosition,
                         ref newVelocity);
 

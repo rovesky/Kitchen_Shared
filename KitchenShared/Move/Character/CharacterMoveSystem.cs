@@ -10,47 +10,11 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static FootStone.Kitchen.CharacterControllerUtilitiesNew;
+using static FootStone.Kitchen.CharacterMoveUtilities;
 
 namespace FootStone.Kitchen
 {
-    public struct CharacterMovePredictedState : IComponentData, IPredictedState<CharacterMovePredictedState>
-    {
-
-        public CharacterSupportState SupportedState;
-        public float3 UnsupportedVelocity;
-        public float3 LinearVelocity;
-        public bool IsJumping;
-
-        public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
-        {
-            SupportedState = (CharacterSupportState) reader.ReadByte();
-            UnsupportedVelocity = reader.ReadVector3Q();
-            LinearVelocity = reader.ReadVector3Q();
-            IsJumping = reader.ReadBoolean();
-        }
-
-        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
-        {
-            writer.WriteByte("SupportedState", (byte) SupportedState);
-            writer.WriteVector3Q("UnsupportedVelocity", UnsupportedVelocity);
-            writer.WriteVector3Q("LinearVelocity", LinearVelocity);
-            writer.WriteBoolean("IsJumping", IsJumping);
-        }
-
-        public bool VerifyPrediction(ref CharacterMovePredictedState state)
-        {
-            return SupportedState.Equals(state.SupportedState) &&
-                   UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
-                   LinearVelocity.Equals(state.LinearVelocity) &&
-                   IsJumping.Equals(state.IsJumping);
-        }
-
-        public static IPredictedStateSerializerFactory CreateSerializerFactory()
-        {
-            return new PredictedStateSerializerFactory<CharacterMovePredictedState>();
-        }
-    }
+ 
 
 
     [DisableAutoCreation]

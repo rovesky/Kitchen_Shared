@@ -1,4 +1,3 @@
-using FootStone.ECS;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -16,167 +15,15 @@ namespace FootStone.Kitchen
         public float3 Point;
     }
 
-    public static class CharacterControllerUtilitiesNew
+    public static class CharacterMoveUtilities
     {
-        const float k_SimplexSolverEpsilon = 0.0001f;
-        const float k_SimplexSolverEpsilonSq = k_SimplexSolverEpsilon * k_SimplexSolverEpsilon;
+      
 
-        const int k_DefaultQueryHitsCapacity = 8;
-        const int k_DefaultConstraintsCapacity = 2 * k_DefaultQueryHitsCapacity;
+        private const float KSimplexSolverEpsilon = 0.0001f;
+        private const float KSimplexSolverEpsilonSq = KSimplexSolverEpsilon * KSimplexSolverEpsilon;
 
-        public enum CharacterSupportState : byte
-        {
-            Unsupported = 0,
-            Sliding,
-            Supported
-        }
-
-        public struct CharacterControllerStepInput
-        {
-            public PhysicsWorld World;
-            public float DeltaTime;
-            public float3 Gravity;
-            public float3 Up;
-            public int MaxIterations;
-            public float Tau;
-            public float Damping;
-            public float SkinWidth;
-            public float ContactTolerance;
-            public float MaxSlope;
-            public int RigidBodyIndex;
-            public float3 CurrentVelocity;
-            public float MaxMovementSpeed;
-        }
-
-        // A collector which stores every hit up to the length of the provided native array.
-        // To filter out self hits, it stores the rigid body index of the body representing
-        // the character controller. Unfortunately, it needs to do this in TransformNewHits
-        // since during AddHit rigid body index is not exposed.
-        // https://github.com/Unity-Technologies/Unity.Physics/issues/256
-        public struct SelfFilteringAllHitsCollector<T> : ICollector<T> where T : struct, IQueryResult
-        {
-            private int m_selfRBIndex;
-
-            public bool EarlyOutOnFirstHit => false;
-            public float MaxFraction { get; }
-            public int NumHits => AllHits.Length;
-
-            public NativeList<T> AllHits;
-
-            public SelfFilteringAllHitsCollector(int rbIndex, float maxFraction, ref NativeList<T> allHits)
-            {
-                MaxFraction = maxFraction;
-                AllHits = allHits;
-                m_selfRBIndex = rbIndex;
-            }
-
-            #region IQueryResult implementation
-
-            public bool AddHit(T hit)
-            {
-                Assert.IsTrue(hit.Fraction < MaxFraction);
-                AllHits.Add(hit);
-                return true;
-            }
-
-            public void TransformNewHits(int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform,
-                uint numSubKeyBits, uint subKey)
-            {
-                for (int i = oldNumHits; i < NumHits; i++)
-                {
-                    T hit = AllHits[i];
-                    hit.Transform(transform, numSubKeyBits, subKey);
-                    AllHits[i] = hit;
-                }
-            }
-
-            public void TransformNewHits(int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform,
-                int rigidBodyIndex)
-            {
-                if (rigidBodyIndex == m_selfRBIndex)
-                {
-                    for (int i = oldNumHits; i < NumHits; i++)
-                    {
-                        AllHits.RemoveAtSwapBack(oldNumHits);
-                    }
-
-                    return;
-                }
-
-                for (int i = oldNumHits; i < NumHits; i++)
-                {
-                    T hit = AllHits[i];
-                    hit.Transform(transform, rigidBodyIndex);
-                    AllHits[i] = hit;
-                }
-            }
-
-            #endregion
-        }
-
-        // A collector which stores only the closest hit different from itself.
-        public struct SelfFilteringClosestHitCollector<T> : ICollector<T> where T : struct, IQueryResult
-        {
-            public bool EarlyOutOnFirstHit => false;
-            public float MaxFraction { get; private set; }
-            public int NumHits { get; private set; }
-
-            private T m_OldHit;
-            private T m_ClosestHit;
-            public T ClosestHit => m_ClosestHit;
-
-            private int m_selfRBIndex;
-
-            public SelfFilteringClosestHitCollector(int rbIndex, float maxFraction)
-            {
-                MaxFraction = maxFraction;
-                m_OldHit = default(T);
-                m_ClosestHit = default(T);
-                NumHits = 0;
-                m_selfRBIndex = rbIndex;
-            }
-
-            #region ICollector
-
-            public bool AddHit(T hit)
-            {
-                Assert.IsTrue(hit.Fraction <= MaxFraction);
-                MaxFraction = hit.Fraction;
-                m_OldHit = m_ClosestHit;
-                m_ClosestHit = hit;
-                NumHits = 1;
-                return true;
-            }
-
-            public void TransformNewHits(int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform,
-                uint numSubKeyBits, uint subKey)
-            {
-                if (m_ClosestHit.Fraction < oldFraction)
-                {
-                    m_ClosestHit.Transform(transform, numSubKeyBits, subKey);
-                }
-            }
-
-            public void TransformNewHits(int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform,
-                int rigidBodyIndex)
-            {
-                if (rigidBodyIndex == m_selfRBIndex)
-                {
-                    m_ClosestHit = m_OldHit;
-                    NumHits = 0;
-                    MaxFraction = oldFraction;
-                    m_OldHit = default(T);
-                    return;
-                }
-
-                if (m_ClosestHit.Fraction < oldFraction)
-                {
-                    m_ClosestHit.Transform(transform, rigidBodyIndex);
-                }
-            }
-
-            #endregion
-        }
+        private const int KDefaultQueryHitsCapacity = 8;
+        private const int KDefaultConstraintsCapacity = 2 * KDefaultQueryHitsCapacity;
 
         public static unsafe void CheckSupport(
             ref PhysicsWorld world, ref PhysicsCollider collider, CharacterControllerStepInput stepInput,
@@ -187,13 +34,13 @@ namespace FootStone.Kitchen
             surfaceVelocity = float3.zero;
 
             // Query the world
-            NativeList<DistanceHit> distanceHits =
-                new NativeList<DistanceHit>(k_DefaultQueryHitsCapacity, Allocator.Temp);
-            SelfFilteringAllHitsCollector<DistanceHit> distanceHitsCollector =
+            var distanceHits =
+                new NativeList<DistanceHit>(KDefaultQueryHitsCapacity, Allocator.Temp);
+            var distanceHitsCollector =
                 new SelfFilteringAllHitsCollector<DistanceHit>(
                     stepInput.RigidBodyIndex, stepInput.ContactTolerance, ref distanceHits);
             {
-                ColliderDistanceInput input = new ColliderDistanceInput()
+                var input = new ColliderDistanceInput
                 {
                     MaxDistance = stepInput.ContactTolerance,
                     Transform = transform,
@@ -210,17 +57,17 @@ namespace FootStone.Kitchen
             }
 
             // Downwards direction must be normalized
-            float3 downwardsDirection = -stepInput.Up;
-            Assert.IsTrue(Unity.Physics.Math.IsNormalized(downwardsDirection));
+            var downwardsDirection = -stepInput.Up;
+            Assert.IsTrue(Math.IsNormalized(downwardsDirection));
 
-            float maxSlopeCos = math.cos(maxSlope);
+            var maxSlopeCos = math.cos(maxSlope);
 
             // Iterate over distance hits and create constraints from them
-            NativeList<SurfaceConstraintInfo> constraints =
-                new NativeList<SurfaceConstraintInfo>(k_DefaultConstraintsCapacity, Allocator.Temp);
-            for (int i = 0; i < distanceHitsCollector.NumHits; i++)
+            var constraints =
+                new NativeList<SurfaceConstraintInfo>(KDefaultConstraintsCapacity, Allocator.Temp);
+            for (var i = 0; i < distanceHitsCollector.NumHits; i++)
             {
-                DistanceHit hit = distanceHitsCollector.AllHits[i];
+                var hit = distanceHitsCollector.AllHits[i];
                 CreateConstraint(stepInput.World, stepInput.Up,
                     hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,
                     stepInput.SkinWidth, maxSlopeCos, ref constraints);
@@ -228,11 +75,11 @@ namespace FootStone.Kitchen
 
             float3 initialVelocity;
             {
-                float velAlongDownwardsDir = math.dot(stepInput.CurrentVelocity, downwardsDirection);
-                bool velocityIsAlongDownwardsDirection = velAlongDownwardsDir > 0.0f;
+                var velAlongDownwardsDir = math.dot(stepInput.CurrentVelocity, downwardsDirection);
+                var velocityIsAlongDownwardsDirection = velAlongDownwardsDir > 0.0f;
                 if (velocityIsAlongDownwardsDirection)
                 {
-                    float3 downwardsVelocity = velAlongDownwardsDir * downwardsDirection;
+                    var downwardsVelocity = velAlongDownwardsDir * downwardsDirection;
                     initialVelocity =
                         math.select(downwardsVelocity, downwardsDirection, math.abs(velAlongDownwardsDir) > 1.0f) +
                         stepInput.Gravity * stepInput.DeltaTime;
@@ -244,16 +91,16 @@ namespace FootStone.Kitchen
             }
 
             // Solve downwards (don't use min delta time, try to solve full step)
-            float3 outVelocity = initialVelocity;
-            float3 outPosition = transform.pos;
+            var outVelocity = initialVelocity;
+            var outPosition = transform.pos;
             SimplexSolver.Solve(stepInput.World, stepInput.DeltaTime, stepInput.DeltaTime, stepInput.Up,
                 stepInput.MaxMovementSpeed,
-                constraints, ref outPosition, ref outVelocity, out float integratedTime, false);
+                constraints, ref outPosition, ref outVelocity, out _, false);
 
             // Get info on surface
             {
-                int numSupportingPlanes = 0;
-                for (int j = 0; j < constraints.Length; j++)
+                var numSupportingPlanes = 0;
+                for (var j = 0; j < constraints.Length; j++)
                 {
                     var constraint = constraints[j];
                     if (constraint.Touched && !constraint.IsTooSteep)
@@ -266,7 +113,7 @@ namespace FootStone.Kitchen
 
                 if (numSupportingPlanes > 0)
                 {
-                    float invNumSupportingPlanes = 1.0f / numSupportingPlanes;
+                    var invNumSupportingPlanes = 1.0f / numSupportingPlanes;
                     surfaceNormal *= invNumSupportingPlanes;
                     surfaceVelocity *= invNumSupportingPlanes;
 
@@ -276,12 +123,12 @@ namespace FootStone.Kitchen
 
             // Check support state
             {
-                if (math.lengthsq(initialVelocity - outVelocity) < k_SimplexSolverEpsilonSq)
+                if (math.lengthsq(initialVelocity - outVelocity) < KSimplexSolverEpsilonSq)
                 {
                     // If velocity hasn't changed significantly, declare unsupported state
                     characterState = CharacterSupportState.Unsupported;
                 }
-                else if (math.lengthsq(outVelocity) < k_SimplexSolverEpsilonSq)
+                else if (math.lengthsq(outVelocity) < KSimplexSolverEpsilonSq)
                 {
                     // If velocity is very small, declare supported state
                     characterState = CharacterSupportState.Supported;
@@ -290,16 +137,12 @@ namespace FootStone.Kitchen
                 {
                     // Check if sliding or supported
                     outVelocity = math.normalize(outVelocity);
-                    float slopeAngleSin = math.max(0.0f, math.dot(outVelocity, downwardsDirection));
-                    float slopeAngleCosSq = 1 - slopeAngleSin * slopeAngleSin;
+                    var slopeAngleSin = math.max(0.0f, math.dot(outVelocity, downwardsDirection));
+                    var slopeAngleCosSq = 1 - slopeAngleSin * slopeAngleSin;
                     if (slopeAngleCosSq < maxSlopeCos * maxSlopeCos)
-                    {
                         characterState = CharacterSupportState.Sliding;
-                    }
                     else
-                    {
                         characterState = CharacterSupportState.Supported;
-                    }
                 }
             }
         }
@@ -324,15 +167,16 @@ namespace FootStone.Kitchen
             const float timeEpsilon = 0.000001f;
             for (var i = 0; i < stepInput.MaxIterations && remainingTime > timeEpsilon; i++)
             {
-                var constraints = new NativeList<SurfaceConstraintInfo>(k_DefaultConstraintsCapacity, Allocator.Temp);
+                var constraints = new NativeList<SurfaceConstraintInfo>(KDefaultConstraintsCapacity, Allocator.Temp);
 
                 // Do a collider cast
                 {
                     var displacement = newVelocity * remainingTime;
-                    var castHits = new NativeList<ColliderCastHit>(k_DefaultQueryHitsCapacity, Allocator.Temp);
+                    var castHits = new NativeList<ColliderCastHit>(KDefaultQueryHitsCapacity, Allocator.Temp);
                     var collector =
-                        new SelfFilteringAllHitsCollector<ColliderCastHit>(stepInput.RigidBodyIndex, 1.0f,ref castHits);
-                    var input = new ColliderCastInput()
+                        new SelfFilteringAllHitsCollector<ColliderCastHit>(stepInput.RigidBodyIndex, 1.0f,
+                            ref castHits);
+                    var input = new ColliderCastInput
                     {
                         Collider = collider,
                         Orientation = orientation,
@@ -342,7 +186,7 @@ namespace FootStone.Kitchen
                     world.CastCollider(input, ref collector);
 
                     // Iterate over hits and create constraints from them
-                    for (int hitIndex = 0; hitIndex < collector.NumHits; hitIndex++)
+                    for (var hitIndex = 0; hitIndex < collector.NumHits; hitIndex++)
                     {
                         var hit = collector.AllHits[hitIndex];
                         CreateConstraint(stepInput.World, stepInput.Up,
@@ -356,11 +200,11 @@ namespace FootStone.Kitchen
                 // but only fix up penetrating hits
                 {
                     // Collider distance query
-                    var distanceHits = new NativeList<DistanceHit>(k_DefaultQueryHitsCapacity, Allocator.Temp);
+                    var distanceHits = new NativeList<DistanceHit>(KDefaultQueryHitsCapacity, Allocator.Temp);
                     var distanceHitsCollector = new SelfFilteringAllHitsCollector<DistanceHit>(
-                            stepInput.RigidBodyIndex, stepInput.ContactTolerance, ref distanceHits);
+                        stepInput.RigidBodyIndex, stepInput.ContactTolerance, ref distanceHits);
                     {
-                        var input = new ColliderDistanceInput()
+                        var input = new ColliderDistanceInput
                         {
                             MaxDistance = stepInput.ContactTolerance,
                             Transform = transform,
@@ -373,15 +217,15 @@ namespace FootStone.Kitchen
                     var numConstraints = constraints.Length;
                     for (var hitIndex = 0; hitIndex < distanceHitsCollector.NumHits; hitIndex++)
                     {
-                        DistanceHit hit = distanceHitsCollector.AllHits[hitIndex];
+                        var hit = distanceHitsCollector.AllHits[hitIndex];
                         if (hit.Distance < stepInput.SkinWidth)
                         {
-                            bool found = false;
+                            var found = false;
 
                             // Iterate backwards to locate the original constraint before the max slope constraint
-                            for (int constraintIndex = numConstraints - 1; constraintIndex >= 0; constraintIndex--)
+                            for (var constraintIndex = numConstraints - 1; constraintIndex >= 0; constraintIndex--)
                             {
-                                SurfaceConstraintInfo constraint = constraints[constraintIndex];
+                                var constraint = constraints[constraintIndex];
                                 if (constraint.RigidBodyIndex == hit.RigidBodyIndex &&
                                     constraint.ColliderKey.Equals(hit.ColliderKey))
                                 {
@@ -390,7 +234,7 @@ namespace FootStone.Kitchen
                                         // Create new constraint
                                         CreateConstraintFromHit(world, hit.RigidBodyIndex, hit.ColliderKey,
                                             hit.Position, hit.SurfaceNormal, hit.Distance,
-                                            stepInput.SkinWidth, out SurfaceConstraintInfo newConstraint);
+                                            stepInput.SkinWidth, out var newConstraint);
 
                                         // Resolve its penetration
                                         ResolveConstraintPenetration(ref newConstraint);
@@ -406,48 +250,42 @@ namespace FootStone.Kitchen
 
                             // Add penetrating hit not caught by collider cast
                             if (!found)
-                            {
                                 CreateConstraint(stepInput.World, stepInput.Up,
                                     hit.RigidBodyIndex, hit.ColliderKey, hit.Position, hit.SurfaceNormal, hit.Distance,
                                     stepInput.SkinWidth, maxSlopeCos, ref constraints);
-                            }
                         }
                     }
                 }
 
                 // Min delta time for solver to break
-                float minDeltaTime = 0.0f;
-                if (math.lengthsq(newVelocity) > k_SimplexSolverEpsilonSq)
-                {
+                var minDeltaTime = 0.0f;
+                if (math.lengthsq(newVelocity) > KSimplexSolverEpsilonSq)
                     // Min delta time to travel at least 1cm
                     minDeltaTime = 0.01f / math.length(newVelocity);
-                }
 
                 // Solve
-                float3 prevVelocity = newVelocity;
-                float3 prevPosition = newPosition;
-               // FSLog.Info($"begin newVelocity£º{newVelocity} ");
+                var prevVelocity = newVelocity;
+                var prevPosition = newPosition;
+                // FSLog.Info($"begin newVelocity£º{newVelocity} ");
                 SimplexSolver.Solve(world, remainingTime, minDeltaTime, up, stepInput.MaxMovementSpeed, constraints,
-                    ref newPosition, ref newVelocity, out float integratedTime);
-              //  FSLog.Info($"end newVelocity£º{newVelocity} ");
+                    ref newPosition, ref newVelocity, out var integratedTime);
+                //  FSLog.Info($"end newVelocity£º{newVelocity} ");
                 // Apply impulses to hit bodies
                 if (affectBodies)
-                {
                     CalculateAndStoreDeferredImpulses(stepInput, characterMass, prevVelocity, ref constraints,
                         ref deferredImpulseWriter);
-                }
 
                 // Calculate new displacement
-                float3 newDisplacement = newPosition - prevPosition;
+                var newDisplacement = newPosition - prevPosition;
 
                 // If simplex solver moved the character we need to re-cast to make sure it can move to new position
-                if (math.lengthsq(newDisplacement) > k_SimplexSolverEpsilon)
+                if (math.lengthsq(newDisplacement) > KSimplexSolverEpsilon)
                 {
                     // Check if we can walk to the position simplex solver has suggested
                     var newCollector =
                         new SelfFilteringClosestHitCollector<ColliderCastHit>(stepInput.RigidBodyIndex, 1.0f);
 
-                    ColliderCastInput input = new ColliderCastInput()
+                    var input = new ColliderCastInput
                     {
                         Collider = collider,
                         Orientation = orientation,
@@ -459,12 +297,12 @@ namespace FootStone.Kitchen
 
                     if (newCollector.NumHits > 0)
                     {
-                        ColliderCastHit hit = newCollector.ClosestHit;
+                        var hit = newCollector.ClosestHit;
 
-                        bool found = false;
-                        for (int constraintIndex = 0; constraintIndex < constraints.Length; constraintIndex++)
+                        var found = false;
+                        for (var constraintIndex = 0; constraintIndex < constraints.Length; constraintIndex++)
                         {
-                            SurfaceConstraintInfo constraint = constraints[constraintIndex];
+                            var constraint = constraints[constraintIndex];
                             if (constraint.RigidBodyIndex == hit.RigidBodyIndex &&
                                 constraint.ColliderKey.Equals(hit.ColliderKey))
                             {
@@ -496,13 +334,13 @@ namespace FootStone.Kitchen
         private static void CreateConstraintFromHit(PhysicsWorld world, int rigidBodyIndex, ColliderKey colliderKey,
             float3 hitPosition, float3 normal, float distance, float skinWidth, out SurfaceConstraintInfo constraint)
         {
-            bool bodyIsDynamic = 0 <= rigidBodyIndex && rigidBodyIndex < world.NumDynamicBodies;
-            constraint = new SurfaceConstraintInfo()
+            var bodyIsDynamic = 0 <= rigidBodyIndex && rigidBodyIndex < world.NumDynamicBodies;
+            constraint = new SurfaceConstraintInfo
             {
                 Plane = new Plane
                 {
                     Normal = normal,
-                    Distance = distance - skinWidth,
+                    Distance = distance - skinWidth
                 },
                 RigidBodyIndex = rigidBodyIndex,
                 ColliderKey = colliderKey,
@@ -515,12 +353,12 @@ namespace FootStone.Kitchen
         private static void CreateMaxSlopeConstraint(float3 up, ref SurfaceConstraintInfo constraint,
             out SurfaceConstraintInfo maxSlopeConstraint)
         {
-            float verticalComponent = math.dot(constraint.Plane.Normal, up);
+            var verticalComponent = math.dot(constraint.Plane.Normal, up);
 
-            SurfaceConstraintInfo newConstraint = constraint;
+            var newConstraint = constraint;
             newConstraint.Plane.Normal = math.normalize(newConstraint.Plane.Normal - verticalComponent * up);
 
-            float distance = newConstraint.Plane.Distance;
+            var distance = newConstraint.Plane.Distance;
 
             // Calculate distance to the original plane along the new normal.
             // Clamp the new distance to 2x the old distance to avoid penetration recovery explosions.
@@ -545,7 +383,7 @@ namespace FootStone.Kitchen
             // Fix up the velocity to enable penetration recovery
             if (constraint.Plane.Distance < 0.0f)
             {
-                float3 newVel = constraint.Velocity - constraint.Plane.Normal * constraint.Plane.Distance;
+                var newVel = constraint.Velocity - constraint.Plane.Normal * constraint.Plane.Distance;
                 constraint.Velocity = newVel;
                 constraint.Plane.Distance = 0.0f;
             }
@@ -557,15 +395,15 @@ namespace FootStone.Kitchen
             float skinWidth, float maxSlopeCos, ref NativeList<SurfaceConstraintInfo> constraints)
         {
             CreateConstraintFromHit(world, hitRigidBodyIndex, hitColliderKey, hitPosition,
-                hitSurfaceNormal, hitDistance, skinWidth, out SurfaceConstraintInfo constraint);
+                hitSurfaceNormal, hitDistance, skinWidth, out var constraint);
 
             // Check if max slope plane is required
-            float verticalComponent = math.dot(constraint.Plane.Normal, up);
-            bool shouldAddPlane = verticalComponent > k_SimplexSolverEpsilon && verticalComponent < maxSlopeCos;
+            var verticalComponent = math.dot(constraint.Plane.Normal, up);
+            var shouldAddPlane = verticalComponent > KSimplexSolverEpsilon && verticalComponent < maxSlopeCos;
             if (shouldAddPlane)
             {
                 constraint.IsTooSteep = true;
-                CreateMaxSlopeConstraint(up, ref constraint, out SurfaceConstraintInfo maxSlopeConstraint);
+                CreateMaxSlopeConstraint(up, ref constraint, out var maxSlopeConstraint);
                 constraints.Add(maxSlopeConstraint);
             }
 
@@ -576,47 +414,42 @@ namespace FootStone.Kitchen
             constraints.Add(constraint);
         }
 
-        private static unsafe void CalculateAndStoreDeferredImpulses(
+        private static void CalculateAndStoreDeferredImpulses(
             CharacterControllerStepInput stepInput, float characterMass, float3 linearVelocity,
             ref NativeList<SurfaceConstraintInfo> constraints, ref NativeStream.Writer deferredImpulseWriter)
         {
-            PhysicsWorld world = stepInput.World;
-            for (int i = 0; i < constraints.Length; i++)
+            var world = stepInput.World;
+            for (var i = 0; i < constraints.Length; i++)
             {
-                SurfaceConstraintInfo constraint = constraints[i];
+                var constraint = constraints[i];
 
-                int rigidBodyIndex = constraint.RigidBodyIndex;
+                var rigidBodyIndex = constraint.RigidBodyIndex;
                 if (rigidBodyIndex < 0 || rigidBodyIndex >= world.NumDynamicBodies)
-                {
                     // Invalid and static bodies should be skipped
                     continue;
-                }
 
-                RigidBody body = world.Bodies[rigidBodyIndex];
+                var body = world.Bodies[rigidBodyIndex];
 
-                float3 pointRelVel = world.GetLinearVelocity(rigidBodyIndex, constraint.HitPosition);
+                var pointRelVel = world.GetLinearVelocity(rigidBodyIndex, constraint.HitPosition);
                 pointRelVel -= linearVelocity;
 
-                float projectedVelocity = math.dot(pointRelVel, constraint.Plane.Normal);
+                var projectedVelocity = math.dot(pointRelVel, constraint.Plane.Normal);
 
                 // Required velocity change
-                float deltaVelocity = -projectedVelocity * stepInput.Damping;
+                var deltaVelocity = -projectedVelocity * stepInput.Damping;
 
-                float distance = constraint.Plane.Distance;
-                if (distance < 0.0f)
-                {
-                    deltaVelocity += (distance / stepInput.DeltaTime) * stepInput.Tau;
-                }
+                var distance = constraint.Plane.Distance;
+                if (distance < 0.0f) deltaVelocity += distance / stepInput.DeltaTime * stepInput.Tau;
 
                 // Calculate impulse
-                MotionVelocity mv = world.MotionVelocities[rigidBodyIndex];
-                float3 impulse = float3.zero;
+                var mv = world.MotionVelocities[rigidBodyIndex];
+                var impulse = float3.zero;
                 if (deltaVelocity < 0.0f)
                 {
                     // Impulse magnitude
-                    float impulseMagnitude = 0.0f;
+                    float impulseMagnitude;
                     {
-                        float objectMassInv =
+                        var objectMassInv =
                             GetInvMassAtPoint(constraint.HitPosition, constraint.Plane.Normal, body, mv);
                         impulseMagnitude = deltaVelocity / objectMassInv;
                     }
@@ -627,20 +460,20 @@ namespace FootStone.Kitchen
                 // Add gravity
                 {
                     // Effect of gravity on character velocity in the normal direction
-                    float3 charVelDown = stepInput.Gravity * stepInput.DeltaTime;
-                    float relVelN = math.dot(charVelDown, constraint.Plane.Normal);
+                    var charVelDown = stepInput.Gravity * stepInput.DeltaTime;
+                    var relVelN = math.dot(charVelDown, constraint.Plane.Normal);
 
                     // Subtract separation velocity if separating contact
                     {
-                        bool isSeparatingContact = projectedVelocity < 0.0f;
-                        float newRelVelN = relVelN - projectedVelocity;
+                        var isSeparatingContact = projectedVelocity < 0.0f;
+                        var newRelVelN = relVelN - projectedVelocity;
                         relVelN = math.select(relVelN, newRelVelN, isSeparatingContact);
                     }
 
                     // If resulting velocity is negative, an impulse is applied to stop the character
                     // from falling into the body
                     {
-                        float3 newImpulse = impulse;
+                        var newImpulse = impulse;
                         newImpulse += relVelN * characterMass * constraint.Plane.Normal;
                         impulse = math.select(impulse, newImpulse, relVelN < 0.0f);
                     }
@@ -648,7 +481,7 @@ namespace FootStone.Kitchen
 
                 // Store impulse
                 deferredImpulseWriter.Write(
-                    new DeferredCharacterControllerImpulse()
+                    new DeferredCharacterControllerImpulse
                     {
                         Entity = body.Entity,
                         Impulse = impulse,
@@ -666,14 +499,152 @@ namespace FootStone.Kitchen
                     body.Collider->MassProperties.MassDistribution.Transform.pos);
             }
 
-            float3 arm = point - massCenter;
-            float3 jacAng = math.cross(arm, normal);
-            float3 armC = jacAng * mv.InverseInertiaAndMass.xyz;
+            var arm = point - massCenter;
+            var jacAng = math.cross(arm, normal);
+            var armC = jacAng * mv.InverseInertiaAndMass.xyz;
 
-            float objectMassInv = math.dot(armC, jacAng);
+            var objectMassInv = math.dot(armC, jacAng);
             objectMassInv += mv.InverseInertiaAndMass.w;
 
             return objectMassInv;
+        }
+
+        public struct CharacterControllerStepInput
+        {
+            public PhysicsWorld World;
+            public float DeltaTime;
+            public float3 Gravity;
+            public float3 Up;
+            public int MaxIterations;
+            public float Tau;
+            public float Damping;
+            public float SkinWidth;
+            public float ContactTolerance;
+            public float MaxSlope;
+            public int RigidBodyIndex;
+            public float3 CurrentVelocity;
+            public float MaxMovementSpeed;
+        }
+
+        // A collector which stores every hit up to the length of the provided native array.
+        // To filter out self hits, it stores the rigid body index of the body representing
+        // the character controller. Unfortunately, it needs to do this in TransformNewHits
+        // since during AddHit rigid body index is not exposed.
+        // https://github.com/Unity-Technologies/Unity.Physics/issues/256
+        public struct SelfFilteringAllHitsCollector<T> : ICollector<T> where T : struct, IQueryResult
+        {
+            private readonly int selfRbIndex;
+
+            public bool EarlyOutOnFirstHit => false;
+            public float MaxFraction { get; }
+            public int NumHits => AllHits.Length;
+
+            public NativeList<T> AllHits;
+
+            public SelfFilteringAllHitsCollector(int rbIndex, float maxFraction, ref NativeList<T> allHits)
+            {
+                MaxFraction = maxFraction;
+                AllHits = allHits;
+                selfRbIndex = rbIndex;
+            }
+
+            #region IQueryResult implementation
+
+            public bool AddHit(T hit)
+            {
+                Assert.IsTrue(hit.Fraction < MaxFraction);
+                AllHits.Add(hit);
+                return true;
+            }
+
+            public void TransformNewHits(int oldNumHits, float oldFraction, Math.MTransform transform,
+                uint numSubKeyBits, uint subKey)
+            {
+                for (var i = oldNumHits; i < NumHits; i++)
+                {
+                    var hit = AllHits[i];
+                    hit.Transform(transform, numSubKeyBits, subKey);
+                    AllHits[i] = hit;
+                }
+            }
+
+            public void TransformNewHits(int oldNumHits, float oldFraction, Math.MTransform transform,
+                int rigidBodyIndex)
+            {
+                if (rigidBodyIndex == selfRbIndex)
+                {
+                    for (var i = oldNumHits; i < NumHits; i++) AllHits.RemoveAtSwapBack(oldNumHits);
+
+                    return;
+                }
+
+                for (var i = oldNumHits; i < NumHits; i++)
+                {
+                    var hit = AllHits[i];
+                    hit.Transform(transform, rigidBodyIndex);
+                    AllHits[i] = hit;
+                }
+            }
+
+            #endregion
+        }
+
+        // A collector which stores only the closest hit different from itself.
+        public struct SelfFilteringClosestHitCollector<T> : ICollector<T> where T : struct, IQueryResult
+        {
+            public bool EarlyOutOnFirstHit => false;
+            public float MaxFraction { get; private set; }
+            public int NumHits { get; private set; }
+
+            private T m_OldHit;
+            private T m_ClosestHit;
+            public T ClosestHit => m_ClosestHit;
+
+            private readonly int selfRbIndex;
+
+            public SelfFilteringClosestHitCollector(int rbIndex, float maxFraction)
+            {
+                MaxFraction = maxFraction;
+                m_OldHit = default;
+                m_ClosestHit = default;
+                NumHits = 0;
+                selfRbIndex = rbIndex;
+            }
+
+            #region ICollector
+
+            public bool AddHit(T hit)
+            {
+                Assert.IsTrue(hit.Fraction <= MaxFraction);
+                MaxFraction = hit.Fraction;
+                m_OldHit = m_ClosestHit;
+                m_ClosestHit = hit;
+                NumHits = 1;
+                return true;
+            }
+
+            public void TransformNewHits(int oldNumHits, float oldFraction, Math.MTransform transform,
+                uint numSubKeyBits, uint subKey)
+            {
+                if (m_ClosestHit.Fraction < oldFraction) m_ClosestHit.Transform(transform, numSubKeyBits, subKey);
+            }
+
+            public void TransformNewHits(int oldNumHits, float oldFraction, Math.MTransform transform,
+                int rigidBodyIndex)
+            {
+                if (rigidBodyIndex == selfRbIndex)
+                {
+                    m_ClosestHit = m_OldHit;
+                    NumHits = 0;
+                    MaxFraction = oldFraction;
+                    m_OldHit = default;
+                    return;
+                }
+
+                if (m_ClosestHit.Fraction < oldFraction) m_ClosestHit.Transform(transform, rigidBodyIndex);
+            }
+
+            #endregion
         }
     }
 }
