@@ -10,7 +10,7 @@ using UnityEngine.Assertions;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterTriggerSystem : JobComponentSystem
+    public class ItemTriggerSystem : JobComponentSystem
     {
         private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
 
@@ -31,7 +31,8 @@ namespace FootStone.Kitchen
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
                     typeof(EntityPredictedState),
-                    typeof(CharacterPredictedState)
+                    typeof(ItemPredictedState),
+                    typeof(PhysicsVelocity)
                 }
             };
             m_CharacterControllersGroup = GetEntityQuery(query);
@@ -43,7 +44,7 @@ namespace FootStone.Kitchen
             var entities = m_CharacterControllersGroup.ToEntityArray(Allocator.TempJob);
 
             var physicsColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(true);
-            var predictedStateGroup = GetComponentDataFromEntity<CharacterPredictedState>();
+            var predictedStateGroup = GetComponentDataFromEntity<ItemPredictedState>();
             var entityPredictedStateGroup = GetComponentDataFromEntity<EntityPredictedState>();
 
             var ccJob = new GetTriggerOverlappingJob
@@ -92,7 +93,7 @@ namespace FootStone.Kitchen
             [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> Entities;
             [ReadOnly] public PhysicsWorld PhysicsWorld;
             [ReadOnly] public ComponentDataFromEntity<PhysicsCollider> PhysicsColliderGroup;
-            public ComponentDataFromEntity<CharacterPredictedState> PredictedStateGroup;
+            public ComponentDataFromEntity<ItemPredictedState> PredictedStateGroup;
             [ReadOnly] public ComponentDataFromEntity<EntityPredictedState> EntityPredictedStateGroup;
 
             [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<Entity> VolumeEntities;
@@ -115,7 +116,7 @@ namespace FootStone.Kitchen
 
                     var input = new ColliderDistanceInput
                     {
-                        MaxDistance = 0.7f,
+                        MaxDistance = 0.1f,
                         Transform = transform,
                         Collider = collider.ColliderPtr
                     };
@@ -135,8 +136,8 @@ namespace FootStone.Kitchen
                         ? Entity.Null
                         : PhysicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
 
-                    // if (predictedState.TriggeredEntity != Entity.Null)
-                    //  FSLog.Info($"triggerEntity:{predictedState.TriggeredEntity}");
+                     if (predictedState.TriggeredEntity != Entity.Null)
+                      FSLog.Info($"item triggerEntity:{predictedState.TriggeredEntity}");
 
                     PredictedStateGroup[entity] = predictedState;
                 }

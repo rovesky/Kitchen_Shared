@@ -18,7 +18,7 @@ namespace FootStone.Kitchen
                 ref UserCommand command,
                 ref CharacterPredictedState predictData,
                 ref EntityPredictedState entityPredictData,
-                ref CharacterMoveInternalState characterMoveInternalState) =>
+                ref CharacterMovePredictedState characterMoveInternalState) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
@@ -44,7 +44,7 @@ namespace FootStone.Kitchen
         }
 
         private void PutDownItem(ref CharacterPredictedState characterState,
-            ref EntityPredictedState entityPredictedState, CharacterMoveInternalState characterMoveInternalState)
+            ref EntityPredictedState entityPredictedState, CharacterMovePredictedState characterMovePredictedState)
         {
             var entity = characterState.PickupedEntity;
        

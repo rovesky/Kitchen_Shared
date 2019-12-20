@@ -1,6 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using UnityEngine;
 
 namespace FootStone.Kitchen
@@ -29,15 +30,16 @@ namespace FootStone.Kitchen
                 Vector3 linear = math.mul(entityPredictData.Transform.rot, Vector3.forward);
                 linear.y = 0.3f;
                 linear.Normalize();
-                itemEntityPredictedState.Velocity.Linear = linear * 7.0f;
-                itemEntityPredictedState.Transform.pos =
-                    entityPredictData.Transform.pos +
+                itemEntityPredictedState.Velocity.Linear = linear * 11.0f;
+                itemEntityPredictedState.Transform.pos = entityPredictData.Transform.pos +
                     math.mul(entityPredictData.Transform.rot, new float3(0, 0.2f, 0.8f));
                 EntityManager.SetComponentData(pickupedEntity, itemEntityPredictedState);
 
                 var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(pickupedEntity);
                 itemPredictedState.Owner = Entity.Null;
                 EntityManager.SetComponentData(pickupedEntity, itemPredictedState);
+
+                EntityManager.AddComponentData(pickupedEntity, new PhysicsVelocity());
 
                 var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(pickupedEntity);
                 replicatedEntityData.PredictingPlayerId = -1;
@@ -47,7 +49,7 @@ namespace FootStone.Kitchen
                     EntityManager.AddComponentData(pickupedEntity, new ServerEntity());
 
                 //  EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
-
+            
                 predictData.PickupedEntity = Entity.Null;
             });
         }

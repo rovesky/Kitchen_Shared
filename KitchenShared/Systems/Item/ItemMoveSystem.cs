@@ -15,12 +15,12 @@ namespace FootStone.Kitchen
     {
         private EntityQuery itemsGroup;
         private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        private MyExportPhysicsWorld m_ExportPhysicsWorldSystem;
+        private KitchenExportPhysicsWorld m_ExportPhysicsWorldSystem;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<MyExportPhysicsWorld>();
+            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<KitchenExportPhysicsWorld>();
 
             var query = new EntityQueryDesc
             {
@@ -98,8 +98,8 @@ namespace FootStone.Kitchen
                     };
 
                     var newVelocity = predictData.Velocity.Linear + PhysicsStep.Default.Gravity * DeltaTime;
-
                     var newPosition = transform.pos;
+
                     CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f, 0.5f, 11.0f,
                         collider.ColliderPtr, DeltaTime, transform, math.up(), entity, ref newPosition,
                         ref newVelocity);

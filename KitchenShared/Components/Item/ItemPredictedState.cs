@@ -8,6 +8,7 @@ namespace FootStone.Kitchen
     public struct ItemPredictedState : IComponentData, IPredictedState<ItemPredictedState>
     {
         public Entity Owner;
+        public Entity TriggeredEntity;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {

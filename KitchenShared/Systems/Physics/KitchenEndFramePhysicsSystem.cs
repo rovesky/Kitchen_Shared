@@ -8,7 +8,7 @@ namespace FootStone.Kitchen
     // A system which combines the dependencies of all other physics jobs created during this frame into a single handle,
     // so that any system which depends on all physics work to be finished can just depend on this single handle.
     [DisableAutoCreation]
-    public class MyEndFramePhysicsSystem : JobComponentSystem
+    public class KitchenEndFramePhysicsSystem : JobComponentSystem
     {
         // Extra physics jobs added by user systems
         public NativeList<JobHandle> HandlesToWaitFor;

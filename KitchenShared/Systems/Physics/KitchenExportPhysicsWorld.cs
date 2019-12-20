@@ -1,5 +1,4 @@
-﻿using FootStone.ECS;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -13,7 +12,7 @@ namespace FootStone.Kitchen
     // A system which copies transforms and velocities from the physics world back to the original entity components.
     // CK: We make sure we update before CopyTransformToGameObjectSystem so that hybrid GameObjects can work with this OK, even if that path is slow.
     [DisableAutoCreation]
-    public class MyExportPhysicsWorld : JobComponentSystem
+    public class KitchenExportPhysicsWorld : JobComponentSystem
     {
         public JobHandle FinalJobHandle { get; private set; }
 
@@ -29,6 +28,7 @@ namespace FootStone.Kitchen
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
+           // JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
             var predictedStateType = GetArchetypeChunkComponentType<EntityPredictedState>();

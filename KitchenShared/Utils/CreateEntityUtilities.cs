@@ -58,7 +58,7 @@ namespace FootStone.Kitchen
             });
 
 
-            entityManager.AddComponentData(e, new CharacterMoveInternalState
+            entityManager.AddComponentData(e, new CharacterMovePredictedState
             {
            //    Entity = Entity.Null,
                UnsupportedVelocity = float3.zero,
