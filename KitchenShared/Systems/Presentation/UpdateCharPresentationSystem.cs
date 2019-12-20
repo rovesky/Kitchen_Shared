@@ -17,7 +17,7 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     ref ReplicatedEntityData replicatedEntityData,
                     ref EntityPredictedState entityPredictData,
-                    ref CharacterPredictedState predictData,
+                    ref TriggerPredictedState predictData,
                     ref CharacterInterpolatedState interpolateData,
                     ref UserCommand command,
                     ref LocalToWorld localToWorld) =>

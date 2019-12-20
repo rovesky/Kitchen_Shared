@@ -14,9 +14,10 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
-                ref CharacterPickupItem pickupItem,
+                ref CharacterPickup setting,
                 ref UserCommand command,
-                ref CharacterPredictedState predictData,
+                ref PickupPredictedState pickupState,
+                ref TriggerPredictedState triggerState,
                 ref EntityPredictedState entityPredictData,
                 ref CharacterMovePredictedState characterMoveInternalState) =>
             {
@@ -24,26 +25,26 @@ namespace FootStone.Kitchen
                     return;
 
                 var worldTick = GetSingleton<WorldTime>().Tick;
-                FSLog.Info($"CharacterPickupGroundSystem:{predictData.PickupedEntity},{predictData.TriggeredEntity}");
-                if (predictData.PickupedEntity == Entity.Null && predictData.TriggeredEntity != Entity.Null)
+                FSLog.Info($"CharacterPickupGroundSystem:{pickupState.PickupedEntity},{triggerState.TriggeredEntity}");
+                if (pickupState.PickupedEntity == Entity.Null && triggerState.TriggeredEntity != Entity.Null)
                 {
-                    var triggerData = EntityManager.GetComponentData<TriggerData>(predictData.TriggeredEntity);
+                    var triggerData = EntityManager.GetComponentData<TriggerData>(triggerState.TriggeredEntity);
                //     FSLog.Info($"CharacterPickupGroundSystem3:{triggerData.Type}");
                     if ((triggerData.Type & (int)TriggerType.Item) == 0)
                         return;
                     
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                    PickUpItem(entity, ref predictData);
+                    PickUpItem(entity,ref triggerState, ref pickupState);
                 }
-                else if(predictData.PickupedEntity != Entity.Null && predictData.TriggeredEntity == Entity.Null)
+                else if(pickupState.PickupedEntity != Entity.Null && triggerState.TriggeredEntity == Entity.Null)
                 {
                     FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
-                    PutDownItem(ref predictData,ref entityPredictData, characterMoveInternalState);
+                    PutDownItem(ref pickupState, ref entityPredictData, characterMoveInternalState);
                 }
             });
         }
 
-        private void PutDownItem(ref CharacterPredictedState characterState,
+        private void PutDownItem(ref PickupPredictedState characterState,
             ref EntityPredictedState entityPredictedState, CharacterMovePredictedState characterMovePredictedState)
         {
             var entity = characterState.PickupedEntity;
@@ -73,10 +74,10 @@ namespace FootStone.Kitchen
             characterState.PickupedEntity = Entity.Null;
         }
 
-        private void PickUpItem(Entity owner, ref CharacterPredictedState characterState)
+        private void PickUpItem(Entity owner, ref TriggerPredictedState triggerState, ref PickupPredictedState pickupState)
         {
      
-            var entity = characterState.TriggeredEntity;
+            var entity = triggerState.TriggeredEntity;
             var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(entity);
 
             //速度比较快不能pickup
@@ -103,7 +104,7 @@ namespace FootStone.Kitchen
             replicatedEntityData.PredictingPlayerId = ownerReplicatedEntityData.PredictingPlayerId;
             EntityManager.SetComponentData(entity, replicatedEntityData);
 
-            characterState.PickupedEntity = entity;
+            pickupState.PickupedEntity = entity;
           
         }
     }

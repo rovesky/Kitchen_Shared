@@ -14,7 +14,7 @@ namespace FootStone.Kitchen
             Entities.WithAllReadOnly<Character>().ForEach((Entity entity,
                 ref CharacterThrowItem pickupItem,
                 ref UserCommand command,
-                ref CharacterPredictedState predictData,
+                ref PickupPredictedState predictData,
                 ref EntityPredictedState entityPredictData) =>
             {
                 //  FSLog.Info("PickSystem Update");

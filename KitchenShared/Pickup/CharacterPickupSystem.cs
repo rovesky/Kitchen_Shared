@@ -13,14 +13,15 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
-                ref CharacterPickupItem pickupItem,
+                ref CharacterPickup setting,
                 ref UserCommand command,
-                ref CharacterPredictedState predictData) =>
+                ref PickupPredictedState pickupState,
+                ref TriggerPredictedState triggerState) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
 
-                var triggerEntity = predictData.TriggeredEntity;
+                var triggerEntity = triggerState.TriggeredEntity;
                 if (triggerEntity == Entity.Null)
                     return;
 
@@ -29,24 +30,24 @@ namespace FootStone.Kitchen
                     return;
 
                 var worldTick = GetSingleton<WorldTime>().Tick;
-                var isEmpty = predictData.PickupedEntity == Entity.Null;
+                var isEmpty = pickupState.PickupedEntity == Entity.Null;
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
                 FSLog.Info($"TriggerOperationSystem Update,isEmpty:{isEmpty},slot.FiltInEntity:{slot.FilledInEntity}");
 
                 if (isEmpty && slot.FilledInEntity != Entity.Null)
                 {
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                    PickUpItem(entity, triggerEntity, ref predictData);
+                    PickUpItem(entity, triggerEntity, ref pickupState);
                 }
                 else if (!isEmpty && slot.FilledInEntity == Entity.Null)
                 {
                     FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
-                    PutDownItem(triggerEntity, ref predictData );
+                    PutDownItem(triggerEntity, ref pickupState);
                 }
             });
         }
 
-        private void PutDownItem(Entity overlapping,ref CharacterPredictedState characterState)
+        private void PutDownItem(Entity overlapping,ref PickupPredictedState characterState)
         {
             var entity = characterState.PickupedEntity;
   
@@ -75,7 +76,7 @@ namespace FootStone.Kitchen
             EntityManager.SetComponentData(overlapping, slot);
         }
 
-        private void PickUpItem(Entity owner, Entity overlapping, ref CharacterPredictedState characterState)
+        private void PickUpItem(Entity owner, Entity overlapping, ref PickupPredictedState characterState)
         {
             var slot = EntityManager.GetComponentData<SlotPredictedState>(overlapping);
 

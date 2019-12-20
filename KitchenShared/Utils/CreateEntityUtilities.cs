@@ -28,12 +28,7 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new EntityPredictedState());
 
-            entityManager.AddComponentData(e, new CharacterPredictedState
-            {
-                TriggeredEntity = Entity.Null,
-                PickupedEntity = Entity.Null
-            });
-
+          
             entityManager.AddComponentData(e, new CharacterInterpolatedState
             {
                 Position = position,
@@ -57,7 +52,6 @@ namespace FootStone.Kitchen
                 AffectsPhysicsBodies = 1
             });
 
-
             entityManager.AddComponentData(e, new CharacterMovePredictedState
             {
                UnsupportedVelocity = float3.zero,
@@ -66,7 +60,23 @@ namespace FootStone.Kitchen
                IsJumping = false
             });
 
-            entityManager.AddComponentData(e, new CharacterPickupItem());
+            entityManager.AddComponentData(e, new TriggerSetting()
+            {
+                Distance = 0.7f
+            });
+
+            entityManager.AddComponentData(e, new TriggerPredictedState()
+            {
+               TriggeredEntity = Entity.Null
+            });
+
+            entityManager.AddComponentData(e, new CharacterPickup());
+            entityManager.AddComponentData(e, new PickupPredictedState
+            {
+                PickupedEntity = Entity.Null
+            });
+
+
             entityManager.AddComponentData(e, new CharacterThrowItem
             {
                 Velocity = 10.0f
