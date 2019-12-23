@@ -10,13 +10,14 @@ namespace FootStone.Kitchen
         {
             Entities.WithAllReadOnly<ServerEntity>()
                 .ForEach((Entity entity,
-                    ref EntityPredictedState entityPredictData,
+                    ref TransformPredictedState transformPredictData,
+                    ref VelocityPredictedState velocityPredictData,
                     ref ItemPredictedState predictData,
                     ref ItemInterpolatedState interpolateData) =>
                 {
-                    interpolateData.Position = entityPredictData.Transform.pos;
-                    interpolateData.Rotation = entityPredictData.Transform.rot;
-                    interpolateData.Velocity = entityPredictData.Velocity.Linear;
+                    interpolateData.Position = transformPredictData.Position;
+                    interpolateData.Rotation = transformPredictData.Rotation;
+                    interpolateData.Velocity = velocityPredictData.Linear;
                     interpolateData.Owner = predictData.Owner;
 
                   //  FSLog.Info($"interpolateData.Velocity :{interpolateData.Velocity}");

@@ -26,9 +26,14 @@ namespace FootStone.Kitchen
                 PredictingPlayerId = -1
             });
 
-            entityManager.AddComponentData(e, new EntityPredictedState());
+            entityManager.AddComponentData(e, new TransformPredictedState()
+            {
+                Position = position,
+                Rotation = rotation
+            });
+            entityManager.AddComponentData(e, new VelocityPredictedState());
 
-          
+
             entityManager.AddComponentData(e, new CharacterInterpolatedState
             {
                 Position = position,
@@ -79,7 +84,7 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ThrowSetting
             {
-                Velocity = 10.0f
+                Velocity = 14.0f
             });
         }
     }

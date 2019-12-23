@@ -17,28 +17,30 @@ namespace FootStone.Kitchen
         public JobHandle FinalJobHandle { get; private set; }
 
         BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        StepPhysicsWorld m_StepPhysicsWorldSystem;
+     //   StepPhysicsWorld m_StepPhysicsWorldSystem;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+          //  m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
+            var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
            // JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
-            var predictedStateType = GetArchetypeChunkComponentType<EntityPredictedState>();
-          
+            var transformPredictedStateType = GetArchetypeChunkComponentType<TransformPredictedState>();
+            var velocityPredictedStateType = GetArchetypeChunkComponentType<VelocityPredictedState>();
+
             handle = new ExportDynamicBodiesJob
             {
                 MotionVelocities = world.MotionVelocities,
                 MotionDatas = world.MotionDatas,
 
-                PredictedStateType = predictedStateType
+                TransformPredictedStateType = transformPredictedStateType,
+                VelocityPredictedStateType = velocityPredictedStateType
             }.Schedule(m_BuildPhysicsWorldSystem.DynamicEntityGroup, handle);
 
 
@@ -52,14 +54,16 @@ namespace FootStone.Kitchen
             [ReadOnly] public NativeSlice<MotionVelocity> MotionVelocities;
             [ReadOnly] public NativeSlice<MotionData> MotionDatas;
        
-            public ArchetypeChunkComponentType<EntityPredictedState> PredictedStateType;
+            public ArchetypeChunkComponentType<TransformPredictedState> TransformPredictedStateType;
+            public ArchetypeChunkComponentType<VelocityPredictedState> VelocityPredictedStateType;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int entityStartIndex)
             {
 
-                var chunkPredictedStates = chunk.GetNativeArray(PredictedStateType);
+                var chunkTransformPredictedStates = chunk.GetNativeArray(TransformPredictedStateType);
+                var chunkVelocityPredictedStates = chunk.GetNativeArray(VelocityPredictedStateType);
 
-                var numItems = chunkPredictedStates.Length;
+                var numItems = chunkTransformPredictedStates.Length;
 
              //   FSLog.Info($"chunk.Count:{chunk.Count},chunkPredictedStates.Length:{chunkPredictedStates.Length}");
                 for (int i = 0, motionIndex = entityStartIndex; i < numItems; i++, motionIndex++)
@@ -67,13 +71,17 @@ namespace FootStone.Kitchen
                     var md = MotionDatas[motionIndex];
                     var worldFromBody = math.mul(md.WorldFromMotion, math.inverse(md.BodyFromMotion));
 
-                    var predictState = chunkPredictedStates[i];
-                    predictState.Transform.pos = worldFromBody.pos;
-                    predictState.Transform.rot = worldFromBody.rot;
-                    predictState.Velocity.Linear = MotionVelocities[motionIndex].LinearVelocity;
-                    predictState.Velocity.Angular = MotionVelocities[motionIndex].AngularVelocity;
-                    chunkPredictedStates[i] = predictState;
-                
+                    var transformPredictState = chunkTransformPredictedStates[i];
+                    var velocityPredictState = chunkVelocityPredictedStates[i];
+
+
+                    transformPredictState.Position = worldFromBody.pos;
+                    transformPredictState.Rotation = worldFromBody.rot;
+                    velocityPredictState.Linear = MotionVelocities[motionIndex].LinearVelocity;
+                    velocityPredictState.Angular = MotionVelocities[motionIndex].AngularVelocity;
+                    chunkTransformPredictedStates[i] = transformPredictState;
+                    chunkVelocityPredictedStates[i] = velocityPredictState;
+
                 }
             }
         }

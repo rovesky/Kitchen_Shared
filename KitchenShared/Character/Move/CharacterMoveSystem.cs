@@ -43,7 +43,7 @@ namespace FootStone.Kitchen
                     typeof(CharacterMoveSetting),
                     typeof(UserCommand),
                     typeof(CharacterMovePredictedState),
-                    typeof(EntityPredictedState),
+                    typeof(TransformPredictedState),
                     typeof(PhysicsCollider)
                     //  typeof(Translation),
                     //   typeof(Rotation),
@@ -62,12 +62,10 @@ namespace FootStone.Kitchen
             var characterMoveType = GetArchetypeChunkComponentType<CharacterMoveSetting>();
             var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
             var movePredictedType = GetArchetypeChunkComponentType<CharacterMovePredictedState>();
-            var predictType = GetArchetypeChunkComponentType<EntityPredictedState>();
+            var predictType = GetArchetypeChunkComponentType<TransformPredictedState>();
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
             var entityType = GetArchetypeChunkEntityType();
-            // var translationType = GetArchetypeChunkComponentType<Translation>();
-            // var rotationType = GetArchetypeChunkComponentType<Rotation>();
-
+         
             var deferredImpulses = new NativeStream(chunks.Length, Allocator.TempJob);
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
             var ccJob = new CharacterControllerJob
@@ -79,8 +77,7 @@ namespace FootStone.Kitchen
                 CharacterMovePredictedType = movePredictedType,
                 PhysicsColliderType = physicsColliderType,
                 EntityPredictedType = predictType,
-                //     TranslationType = translationType,
-                //      RotationType = rotationType,
+        
                 // Input
                 DeltaTime = tickDuration,
                 PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
@@ -95,7 +92,8 @@ namespace FootStone.Kitchen
                 Chunks = chunks,
                 DeferredImpulseReader = deferredImpulses.AsReader(),
                 PhysicsMassData = GetComponentDataFromEntity<PhysicsMass>(),
-                EntityPredictedData = GetComponentDataFromEntity<EntityPredictedState>(),
+                TransformPredictedData = GetComponentDataFromEntity<TransformPredictedState>(),
+                VelocityPredictedData = GetComponentDataFromEntity<VelocityPredictedState>(),
             };
 
             inputDeps = applyJob.Schedule(inputDeps);
@@ -116,7 +114,7 @@ namespace FootStone.Kitchen
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
 
             public ArchetypeChunkComponentType<CharacterMovePredictedState> CharacterMovePredictedType;
-            public ArchetypeChunkComponentType<EntityPredictedState> EntityPredictedType;
+            public ArchetypeChunkComponentType<TransformPredictedState> EntityPredictedType;
 
             //  public ArchetypeChunkComponentType<Translation> TranslationType;
             //  public ArchetypeChunkComponentType<Rotation> RotationType;
@@ -176,7 +174,11 @@ namespace FootStone.Kitchen
                     };
 
                     // Character transform
-                    var transform = predictData.Transform;
+                    var transform = new RigidTransform()
+                    {
+                        pos = predictData.Position,
+                        rot = predictData.Rotation
+                    };
 
                     // Check support
                     CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform, characterMove.MaxSlope,
@@ -189,7 +191,7 @@ namespace FootStone.Kitchen
 
                     // Calculate actual velocity with respect to surface
                     if (movePredictedData.SupportedState == CharacterSupportState.Supported)
-                        CalculateMovement(predictData.Transform.rot, stepInput.Up, movePredictedData.IsJumping,
+                        CalculateMovement(predictData.Rotation, stepInput.Up, movePredictedData.IsJumping,
                             movePredictedData.LinearVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out movePredictedData.LinearVelocity);
                     else
@@ -211,14 +213,14 @@ namespace FootStone.Kitchen
                     //characterMoveInternalData.LinearVelocity = newVelocity;
 
                     // Write back and orientation integration
-                    predictData.Transform.pos = newPosition;
+                    predictData.Position = newPosition;
                     // chracter rotate
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
-                        var fromRotation = predictData.Transform.rot;
+                        var fromRotation = predictData.Rotation;
                         var toRotation = quaternion.LookRotationSafe(userCommand.TargetDir, up);
                         var angle = Quaternion.Angle(fromRotation, toRotation);
-                        predictData.Transform.rot = Quaternion.RotateTowards(fromRotation, toRotation,
+                        predictData.Rotation = Quaternion.RotateTowards(fromRotation, toRotation,
                             math.abs(angle - 180.0f) < float.Epsilon
                                 ? -characterMove.RotationVelocity
                                 : characterMove.RotationVelocity);
@@ -318,7 +320,8 @@ namespace FootStone.Kitchen
             [DeallocateOnJobCompletion] public NativeArray<ArchetypeChunk> Chunks;
             public NativeStream.Reader DeferredImpulseReader;
             public ComponentDataFromEntity<PhysicsMass> PhysicsMassData;
-            public ComponentDataFromEntity<EntityPredictedState> EntityPredictedData;
+            public ComponentDataFromEntity<VelocityPredictedState> VelocityPredictedData;
+            public ComponentDataFromEntity<TransformPredictedState> TransformPredictedData;
 
             public void Execute()
             {
@@ -336,26 +339,35 @@ namespace FootStone.Kitchen
                         DeferredImpulseReader.BeginForEachIndex(index++);
 
                     var pm = PhysicsMassData[impulse.Entity];
-                    var ep = EntityPredictedData[impulse.Entity];
+                    var ep = VelocityPredictedData[impulse.Entity];
+                    var transform = TransformPredictedData[impulse.Entity];
 
                     // Don't apply on kinematic bodies
                     if (!(pm.InverseMass > 0.0f))
                         continue;
 
-                    if(ep.Velocity.Linear.y > 0.01f)
+                    if(ep.Linear.y > 0.01f)
                         continue;
 
+                    var rigidTransform = new PhysicsVelocity()
+                    {
+                        Linear = ep.Linear,
+                        Angular = ep.Angular
+                    };
                     // Apply impulse
-                    ep.Velocity.ApplyImpulse(pm, new Translation() {Value = ep.Transform.pos}
-                        , new Rotation() {Value = ep.Transform.rot}, impulse.Impulse, impulse.Point);
+                    rigidTransform.ApplyImpulse(pm, new Translation() {Value = transform.Position}
+                        , new Rotation() {Value = transform.Rotation}, impulse.Impulse, impulse.Point);
 
-                    ep.Velocity.Linear.y = 0.0f;
-                    ep.Velocity.Linear /= 1.5f;
+                    ep.Linear = rigidTransform.Linear;
+                    ep.Linear.y = 0.0f;
+                    ep.Linear /= 1.5f;
+
+                    ep.Angular = rigidTransform.Angular;
 
                     FSLog.Info($"impulse.Entity:{impulse.Entity}," +
-                               $"Velocity.Linear:{ep.Velocity.Linear},Velocity.Angular:{ep.Velocity.Angular}");
+                               $"Velocity.Linear:{ep.Linear},Velocity.Angular:{ep.Angular}");
                     // Write back
-                    EntityPredictedData[impulse.Entity] = ep;
+                    VelocityPredictedData[impulse.Entity] = ep;
                 }
             }
         }

@@ -28,7 +28,7 @@ namespace FootStone.Kitchen
                 {
                     typeof(ServerEntity),
                     typeof(PhysicsCollider),
-                    typeof(EntityPredictedState)
+                    typeof(TransformPredictedState)
                 },
                 None = new ComponentType[]
                 {
@@ -42,7 +42,8 @@ namespace FootStone.Kitchen
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
-            var predictDataType = GetArchetypeChunkComponentType<EntityPredictedState>();
+            var transformPredictDataType = GetArchetypeChunkComponentType<TransformPredictedState>();
+            var velocityPredictedDataType = GetArchetypeChunkComponentType<VelocityPredictedState>();
             var entityType = GetArchetypeChunkEntityType();
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
 
@@ -50,7 +51,8 @@ namespace FootStone.Kitchen
             {
                 // Archetypes
                 PhysicsColliderType = physicsColliderType,
-                PredictDataType = predictDataType,
+                TransformPredictDataType = transformPredictDataType,
+                VelocityPredictDataType = velocityPredictedDataType,
                 EntityType = entityType,
                 // Input
                 DeltaTime = tickDuration,
@@ -70,7 +72,8 @@ namespace FootStone.Kitchen
 
             [ReadOnly] public PhysicsWorld PhysicsWorld;
 
-            public ArchetypeChunkComponentType<EntityPredictedState> PredictDataType;
+            public ArchetypeChunkComponentType<TransformPredictedState> TransformPredictDataType;
+            public ArchetypeChunkComponentType<VelocityPredictedState> VelocityPredictDataType;
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
 
@@ -79,13 +82,15 @@ namespace FootStone.Kitchen
             {
                 var chunkEntityData = chunk.GetNativeArray(EntityType);
                 var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);
-                var chunkPredictDataData = chunk.GetNativeArray(PredictDataType);
+                var chunkTransformPredictData = chunk.GetNativeArray(TransformPredictDataType);
+                var chunkVelocityPredictData = chunk.GetNativeArray(VelocityPredictDataType);
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
                     var entity = chunkEntityData[i];
                     var collider = chunkPhysicsColliderData[i];
-                    var predictData = chunkPredictDataData[i];
+                    var transformPredictData = chunkTransformPredictData[i];
+                    var velocityPredictData = chunkVelocityPredictData[i];
 
                     // Collision filter must be valid
                     Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
@@ -93,11 +98,11 @@ namespace FootStone.Kitchen
                     // Character transform
                     var transform = new RigidTransform
                     {
-                        pos = predictData.Transform.pos,
-                        rot = predictData.Transform.rot
+                        pos = transformPredictData.Position,
+                        rot = transformPredictData.Rotation
                     };
 
-                    var newVelocity = predictData.Velocity.Linear + PhysicsStep.Default.Gravity * DeltaTime;
+                    var newVelocity = velocityPredictData.Linear + PhysicsStep.Default.Gravity * DeltaTime;
                     var newPosition = transform.pos;
 
                     ItemMoveUtilities.CollideAndIntegrate(ref PhysicsWorld, 0.1f, 0.5f, 11.0f,
@@ -105,9 +110,10 @@ namespace FootStone.Kitchen
                         ref newVelocity);
 
 
-                    predictData.Transform.pos = newPosition;
-                    predictData.Velocity.Linear = newVelocity;
-                    chunkPredictDataData[i] = predictData;
+                    transformPredictData.Position = newPosition;
+                    velocityPredictData.Linear = newVelocity;
+                    chunkTransformPredictData[i] = transformPredictData;
+                    chunkVelocityPredictData[i] = velocityPredictData;
                 }
             }
         }

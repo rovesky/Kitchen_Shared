@@ -14,25 +14,25 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>()
-                .ForEach((Entity entity,
-                    ref ReplicatedEntityData replicatedEntityData,
-                    ref EntityPredictedState entityPredictData,
-                    ref TriggerPredictedState predictData,
-                    ref CharacterInterpolatedState interpolateData,
+                .ForEach((ref ReplicatedEntityData replicatedEntityData,
+                    ref TransformPredictedState transformPredictData,
+                    ref VelocityPredictedState velocityPredictData,
+                    ref TriggerPredictedState triggerPredictedData,
                     ref UserCommand command,
-                    ref LocalToWorld localToWorld) =>
+                    ref CharacterInterpolatedState interpolateData
+                    ) =>
                 {
-                    interpolateData.Position = entityPredictData.Transform.pos;
-                    interpolateData.Rotation = entityPredictData.Transform.rot;
-                    interpolateData.LinearVelocity = entityPredictData.Velocity.Linear;
+                    interpolateData.Position = transformPredictData.Position;
+                    interpolateData.Rotation = transformPredictData.Rotation;
+                    interpolateData.LinearVelocity = velocityPredictData.Linear;
 
                     interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
                     interpolateData.MaterialId = replicatedEntityData.Id % 4 ;
 
                     //setup trigger entity color
-                    if (predictData.TriggeredEntity == Entity.Null)
+                    if (triggerPredictedData.TriggeredEntity == Entity.Null)
                         return;
-                    var triggerEntity = predictData.TriggeredEntity;
+                    var triggerEntity = triggerPredictedData.TriggeredEntity;
                     var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(triggerEntity);
 
                     if (material == null)

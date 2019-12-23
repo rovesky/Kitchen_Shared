@@ -12,7 +12,8 @@ namespace FootStone.Kitchen
         {
             Entities.WithAllReadOnly<Plate>().ForEach((Entity entity,
                 ref DetachFromCharacterRequest request,
-                ref EntityPredictedState entityPredictedState,
+                ref TransformPredictedState transformPredictedState,
+                ref VelocityPredictedState velocityPredictedState,
                 ref ItemPredictedState itemPredictedState,
                 ref ReplicatedEntityData replicatedEntityData) =>
             {
@@ -20,9 +21,9 @@ namespace FootStone.Kitchen
               
                 itemPredictedState.Owner = Entity.Null;
 
-                entityPredictedState.Transform.pos = request.Pos;
-                entityPredictedState.Transform.rot = quaternion.identity;
-                entityPredictedState.Velocity.Linear = request.LinearVelocity;
+                transformPredictedState.Position = request.Pos;
+                transformPredictedState.Rotation = quaternion.identity;
+                velocityPredictedState.Linear = request.LinearVelocity;
          
                 replicatedEntityData.PredictingPlayerId = -1;
 

@@ -12,20 +12,21 @@ namespace FootStone.Kitchen
         {
             Entities.WithAllReadOnly<Plate>().ForEach((Entity entity,
                 ref AttachToCharacterRequest pickupRequest,
-                ref EntityPredictedState entityPredictedState,
+                ref TransformPredictedState transformPredictedState,
+                ref VelocityPredictedState velocityPredictedState,
                 ref ItemPredictedState itemPredictedState,
                 ref ReplicatedEntityData replicatedEntityData) =>
             {
                 FSLog.Info("ItemAttachToCharacterSystem OnUpdate!");
                 //速度比较快不能pickup
-                if (math.distancesq(entityPredictedState.Velocity.Linear, float3.zero) > 2.0f)
+                if (math.distancesq(velocityPredictedState.Linear, float3.zero) > 2.0f)
                     return;
 
                 itemPredictedState.Owner = pickupRequest.Owner;
 
-                entityPredictedState.Transform.pos = new float3(0, -0.2f, 1.0f);
-                entityPredictedState.Transform.rot = quaternion.identity;
-                entityPredictedState.Velocity.Linear = float3.zero;
+                transformPredictedState.Position = new float3(0, -0.2f, 1.0f);
+                transformPredictedState.Rotation = quaternion.identity;
+                velocityPredictedState.Linear = float3.zero;
 
                 replicatedEntityData.PredictingPlayerId = pickupRequest.PredictingPlayerId;
 

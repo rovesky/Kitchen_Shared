@@ -1,6 +1,7 @@
 ﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
@@ -29,14 +30,18 @@ namespace FootStone.Kitchen
 
             Entities.WithAll<PhysicsVelocity>().ForEach((Entity entity,
                 ref TriggerPredictedState predictedState,
-                in TriggerSetting setting, 
-                in EntityPredictedState entityState,
+                in TriggerSetting setting,
+                in TransformPredictedState entityState,
                 in PhysicsCollider collider) =>
             {
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
                 // Character transform
-                var transform = entityState.Transform;
+                var transform = new RigidTransform()
+                {
+                    pos = entityState.Position,
+                    rot = entityState.Rotation
+                };
 
                 var input = new ColliderDistanceInput
                 {

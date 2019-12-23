@@ -47,16 +47,17 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<Plate>().ForEach((Entity entity,
-                ref EntityPredictedState entityPredictedState,
+                ref TransformPredictedState transformPredictedState,
+                ref VelocityPredictedState  velocityPredictedState,
                 ref TriggerPredictedState triggerState,
                 ref AttachToTableRequest request) =>
             {
                 triggerState.TriggeredEntity = Entity.Null;
 
                 FSLog.Info("ItemAttachToTableSystem OnUpdate!");
-                entityPredictedState.Transform.pos = request.SlotPos;
-                entityPredictedState.Transform.rot = quaternion.identity;
-                entityPredictedState.Velocity.Linear = float3.zero;
+                transformPredictedState.Position = request.SlotPos;
+                transformPredictedState.Rotation = quaternion.identity;
+                velocityPredictedState.Linear = float3.zero;
 
                 //变成 Static
                 if (EntityManager.HasComponent<PhysicsVelocity>(entity))

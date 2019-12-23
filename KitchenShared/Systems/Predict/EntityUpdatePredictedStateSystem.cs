@@ -10,17 +10,23 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.ForEach((Entity entity,
-                ref EntityPredictedState predictedState,
+                ref TransformPredictedState transformPredictedState,
+                ref VelocityPredictedState velocityPredictedState,
                 ref Translation translation,
                 ref Rotation rotation) =>
             {
-                translation.Value = predictedState.Transform.pos;
-                rotation.Value = predictedState.Transform.rot;
+                translation.Value = transformPredictedState.Position;
+                rotation.Value = transformPredictedState.Rotation;
                 if (EntityManager.HasComponent<PhysicsVelocity>(entity))
                 {
-                    EntityManager.SetComponentData(entity, predictedState.Velocity);
+                    EntityManager.SetComponentData(entity, new PhysicsVelocity()
+                    {
+                        Linear = velocityPredictedState.Linear,
+                        Angular = velocityPredictedState.Angular
+                    });
                 }
             });
         }
     }
 }
+
