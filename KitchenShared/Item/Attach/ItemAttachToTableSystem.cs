@@ -5,11 +5,7 @@ using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
-    public struct AttachToTableRequest : IComponentData
-    {
-        public Entity ItemEntity;
-        public float3 SlotPos;
-    }
+   
 
     [DisableAutoCreation]
     public class ItemToTableSystem : ComponentSystem

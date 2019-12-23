@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
 
                 entityPredictedState.Transform.pos = request.Pos;
                 entityPredictedState.Transform.rot = quaternion.identity;
-                entityPredictedState.Velocity.Linear = float3.zero;
+                entityPredictedState.Velocity.Linear = request.LinearVelocity;
          
                 replicatedEntityData.PredictingPlayerId = -1;
 

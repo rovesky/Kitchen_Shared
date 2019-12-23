@@ -2,7 +2,7 @@
 
 namespace FootStone.Kitchen
 {
-    public struct CharacterThrowItem : IComponentData
+    public struct ThrowSetting : IComponentData
     {
         public float Velocity;
     }

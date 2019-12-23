@@ -77,7 +77,7 @@ namespace FootStone.Kitchen
             });
 
 
-            entityManager.AddComponentData(e, new CharacterThrowItem
+            entityManager.AddComponentData(e, new ThrowSetting
             {
                 Velocity = 10.0f
             });

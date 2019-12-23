@@ -1,6 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -47,7 +48,9 @@ namespace FootStone.Kitchen
                     EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest()
                     {
                         Pos = entityPredictData.Transform.pos +
-                              math.mul(entityPredictData.Transform.rot, new float3(0, -0.2f, 1.1f))
+                              math.mul(entityPredictData.Transform.rot, new float3(0, -0.2f, 1.1f)),
+                        LinearVelocity = float3.zero
+                            
                     });
 
                     pickupState.PickupedEntity = Entity.Null;

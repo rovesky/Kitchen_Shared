@@ -3,11 +3,6 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-    public struct DetachFromTableRequest : IComponentData
-    {
-    }
-
-
     [DisableAutoCreation]
     public class DetachFromTableSystem : ComponentSystem
     {

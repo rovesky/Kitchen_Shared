@@ -1,6 +1,5 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -33,17 +32,4 @@ namespace FootStone.Kitchen
             return new PredictedStateSerializerFactory<PickupPredictedState>();
         }
     }
-
-
-    public struct AttachToCharacterRequest : IComponentData
-    {
-        public Entity Owner;
-        public int PredictingPlayerId;
-
-    }
-    public struct DetachFromCharacterRequest : IComponentData
-    {
-        public float3 Pos;
-    }
-
 }

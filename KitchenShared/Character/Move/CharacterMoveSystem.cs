@@ -341,12 +341,16 @@ namespace FootStone.Kitchen
                     // Don't apply on kinematic bodies
                     if (!(pm.InverseMass > 0.0f))
                         continue;
+
+                    if(ep.Velocity.Linear.y > 0.01f)
+                        continue;
+
                     // Apply impulse
                     ep.Velocity.ApplyImpulse(pm, new Translation() {Value = ep.Transform.pos}
                         , new Rotation() {Value = ep.Transform.rot}, impulse.Impulse, impulse.Point);
 
                     ep.Velocity.Linear.y = 0.0f;
-                    ep.Velocity.Linear /= 2;
+                    ep.Velocity.Linear /= 1.5f;
 
                     FSLog.Info($"impulse.Entity:{impulse.Entity}," +
                                $"Velocity.Linear:{ep.Velocity.Linear},Velocity.Angular:{ep.Velocity.Angular}");

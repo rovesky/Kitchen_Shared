@@ -7,8 +7,6 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterPickupTableSystem : ComponentSystem
     {
-      
-
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
@@ -56,7 +54,8 @@ namespace FootStone.Kitchen
 
                     EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest()
                     {
-                        Pos = float3.zero
+                        Pos = float3.zero,
+                        LinearVelocity = float3.zero
                     });
 
                     var request = new AttachToTableRequest()
