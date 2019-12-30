@@ -31,7 +31,7 @@ namespace FootStone.Kitchen
                 var isEmpty = pickupState.PickupedEntity == Entity.Null;
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
-                FSLog.Info($"TriggerOperationSystem Update,PickupedEntity:{pickupState.PickupedEntity}," +
+                FSLog.Info($"worldTick:{worldTick},TriggerOperationSystem Update,PickupedEntity:{pickupState.PickupedEntity}," +
                            $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledInEntity}");
 
                 if (isEmpty && slot.FilledInEntity != Entity.Null)

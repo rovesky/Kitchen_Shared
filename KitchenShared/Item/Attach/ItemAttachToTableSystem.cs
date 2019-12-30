@@ -12,7 +12,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Plate, PhysicsVelocity>().ForEach((Entity entity,
+            Entities.WithAllReadOnly<Item, PhysicsVelocity>().ForEach((Entity entity,
                 ref TriggerPredictedState triggerState) =>
             {
              
@@ -46,7 +46,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Plate>().ForEach((Entity entity,
+            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState  velocityPredictedState,
                 ref TriggerPredictedState triggerState,

@@ -1,9 +1,6 @@
-﻿using FootStone.ECS;
-using Unity.Entities;
-using Unity.Mathematics;
+﻿using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -16,10 +13,9 @@ namespace FootStone.Kitchen
                 ref ItemInterpolatedState interpolatedData,
                 ref Translation translation,
                 ref Rotation rotation
-               // ref PhysicsVelocity physicsVelocity
+                // ref PhysicsVelocity physicsVelocity
             ) =>
             {
-
                 translation.Value = interpolatedData.Position;
                 rotation.Value = interpolatedData.Rotation;
 
@@ -27,7 +23,7 @@ namespace FootStone.Kitchen
                 {
                     var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
                     physicsVelocity.Linear = interpolatedData.Velocity;
-                    EntityManager.SetComponentData(entity,physicsVelocity);
+                    EntityManager.SetComponentData(entity, physicsVelocity);
                 }
                 //   FSLog.Info($"physicsVelocity.Linear:{physicsVelocity.Linear}");
 

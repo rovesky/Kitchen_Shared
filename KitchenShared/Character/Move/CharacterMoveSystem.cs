@@ -45,8 +45,6 @@ namespace FootStone.Kitchen
                     typeof(CharacterMovePredictedState),
                     typeof(TransformPredictedState),
                     typeof(PhysicsCollider)
-                    //  typeof(Translation),
-                    //   typeof(Rotation),
                 }
             };
             m_CharacterControllersGroup = GetEntityQuery(query);
@@ -337,17 +335,24 @@ namespace FootStone.Kitchen
                     var impulse = DeferredImpulseReader.Read<DeferredCharacterControllerImpulse>();
                     while (DeferredImpulseReader.RemainingItemCount == 0 && index < maxIndex)
                         DeferredImpulseReader.BeginForEachIndex(index++);
-
+                    
+                  
                     var pm = PhysicsMassData[impulse.Entity];
                     var ep = VelocityPredictedData[impulse.Entity];
                     var transform = TransformPredictedData[impulse.Entity];
 
+                 //   FSLog.Info($"impulse.Entity:{impulse.Entity},pm:{pm.InverseMass}");
+
                     // Don't apply on kinematic bodies
                     if (!(pm.InverseMass > 0.0f))
-                        continue;
+                       continue;
 
                     if(ep.Linear.y > 0.01f)
                         continue;
+                    FSLog.Info($"impulse.Entity:{impulse.Entity},Linear SqrMagnitude:{Vector3.SqrMagnitude(ep.Linear)}");
+                    if (Vector3.SqrMagnitude(ep.Linear) > 10)
+                        continue;
+                    
 
                     var rigidTransform = new PhysicsVelocity()
                     {
@@ -364,8 +369,7 @@ namespace FootStone.Kitchen
 
                     ep.Angular = rigidTransform.Angular;
 
-                    FSLog.Info($"impulse.Entity:{impulse.Entity}," +
-                               $"Velocity.Linear:{ep.Linear},Velocity.Angular:{ep.Angular}");
+                    FSLog.Info($"impulse.Entity:{impulse.Entity},Linear:{ep.Linear}");
                     // Write back
                     VelocityPredictedData[impulse.Entity] = ep;
                 }

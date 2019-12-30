@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public static class CreateEntityUtilities
+    public static class CreateCharacterUtilities
     {
         public static void CreateCharacterComponent(EntityManager entityManager, Entity e, Vector3 position,
             Quaternion rotation)

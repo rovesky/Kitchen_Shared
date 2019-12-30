@@ -10,7 +10,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Plate>().ForEach((Entity entity,
+            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
                 ref AttachToCharacterRequest pickupRequest,
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState velocityPredictedState,
