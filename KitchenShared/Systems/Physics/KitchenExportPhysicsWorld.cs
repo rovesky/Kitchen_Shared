@@ -17,18 +17,18 @@ namespace FootStone.Kitchen
         public JobHandle FinalJobHandle { get; private set; }
 
         BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-     //   StepPhysicsWorld m_StepPhysicsWorldSystem;
+        StepPhysicsWorld m_StepPhysicsWorldSystem;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-          //  m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+            m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
-           // JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
+           // var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
+            JobHandle handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
             var transformPredictedStateType = GetArchetypeChunkComponentType<TransformPredictedState>();

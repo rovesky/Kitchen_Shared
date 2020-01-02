@@ -1,8 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Physics.Systems;
-using Unity.Transforms;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -13,11 +11,11 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BuildPhysicsWorld>());
-          //  m_systemsToUpdate.Add(World.GetOrCreateSystem<StepPhysicsWorld>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<StepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
          
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveSystem>());
+         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterImpulseMoveSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerSystem>());
@@ -33,10 +31,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemToTableSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<PredictRollbackStateSystemGroup>());
-
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
-
-
         }
     }
 }

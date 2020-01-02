@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
 
@@ -36,10 +37,15 @@ namespace FootStone.Kitchen
                     }
 
                     var parent = EntityManager.GetComponentData<Parent>(entity);
-                    //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
+                  //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
                     if (parent.Value == interpolatedData.Owner)
                         return;
                     parent.Value = interpolatedData.Owner;
+
+                    var scale = EntityManager.GetComponentData<Scale>(entity);
+                    scale.Value = 1.0f;
+                  //  FSLog.Info($"scale:{scale.Value}");
+                    EntityManager.SetComponentData(entity, scale);
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else

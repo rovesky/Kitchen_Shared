@@ -28,13 +28,12 @@ namespace FootStone.Kitchen
                     return;
 
                 var worldTick = GetSingleton<WorldTime>().Tick;
-                var isEmpty = pickupState.PickupedEntity == Entity.Null;
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
                 FSLog.Info($"worldTick:{worldTick},TriggerOperationSystem Update,PickupedEntity:{pickupState.PickupedEntity}," +
                            $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledInEntity}");
 
-                if (isEmpty && slot.FilledInEntity != Entity.Null)
+                if (pickupState.PickupedEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
                 {
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
                  
@@ -48,7 +47,7 @@ namespace FootStone.Kitchen
 
                     pickupState.PickupedEntity = slot.FilledInEntity;
                 }
-                else if (!isEmpty && slot.FilledInEntity == Entity.Null)
+                else if (pickupState.PickupedEntity != Entity.Null && slot.FilledInEntity == Entity.Null)
                 {
                     FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
 

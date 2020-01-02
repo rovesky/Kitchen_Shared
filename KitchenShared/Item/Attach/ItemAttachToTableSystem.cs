@@ -24,9 +24,13 @@ namespace FootStone.Kitchen
                     return;
 
                 var triggerData = EntityManager.GetComponentData<TriggerData>(triggeredEntity);
-
                 if ((triggerData.Type & (int) TriggerType.Table) == 0)
                     return;
+
+                var slot = EntityManager.GetComponentData<SlotPredictedState>(triggeredEntity);
+                if(slot.FilledInEntity != Entity.Null)
+                    return;
+
 
                 FSLog.Info("ItemToTableSystem OnUpdate!");
                 var request = new AttachToTableRequest()

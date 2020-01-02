@@ -24,8 +24,9 @@ namespace FootStone.Kitchen
 
                 itemPredictedState.Owner = pickupRequest.Owner;
 
-                transformPredictedState.Position = new float3(0, -0.2f, 1.0f);
+                transformPredictedState.Position = new float3(0, -0.2f, 0.9f);
                 transformPredictedState.Rotation = quaternion.identity;
+
                 velocityPredictedState.Linear = float3.zero;
 
                 replicatedEntityData.PredictingPlayerId = pickupRequest.PredictingPlayerId;

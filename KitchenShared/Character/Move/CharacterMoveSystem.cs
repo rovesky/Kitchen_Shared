@@ -347,11 +347,11 @@ namespace FootStone.Kitchen
                     if (!(pm.InverseMass > 0.0f))
                        continue;
 
-                    if(ep.Linear.y > 0.01f)
-                        continue;
-                    FSLog.Info($"impulse.Entity:{impulse.Entity},Linear SqrMagnitude:{Vector3.SqrMagnitude(ep.Linear)}");
-                    if (Vector3.SqrMagnitude(ep.Linear) > 10)
-                        continue;
+                  //  if(ep.Linear.y > 0.01f)
+                     //   continue;
+                  //  FSLog.Info($"impulse.Entity:{impulse.Entity},Linear SqrMagnitude:{Vector3.SqrMagnitude(ep.Linear)}");
+                  //  if (Vector3.SqrMagnitude(ep.Linear) > 10)
+                     //   continue;
                     
 
                     var rigidTransform = new PhysicsVelocity()
@@ -364,8 +364,8 @@ namespace FootStone.Kitchen
                         , new Rotation() {Value = transform.Rotation}, impulse.Impulse, impulse.Point);
 
                     ep.Linear = rigidTransform.Linear;
-                    ep.Linear.y = 0.0f;
-                    ep.Linear /= 1.5f;
+                    //ep.Linear.y = 0.0f;
+                    //ep.Linear /= 1.5f;
 
                     ep.Angular = rigidTransform.Angular;
 

@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
@@ -26,14 +27,31 @@ namespace FootStone.Kitchen
                     if (parent.Value == predictedData.Owner)
                         return;
                     parent.Value = predictedData.Owner;
+                    var scale = EntityManager.GetComponentData<CompositeScale>(entity);
+                    var parentScale = EntityManager.GetComponentData<CompositeScale>(predictedData.Owner);
+                    scale.Value.c0.x /= parentScale.Value.c0.x;
+                    scale.Value.c1.y /= parentScale.Value.c1.y;
+                    scale.Value.c2.z /= parentScale.Value.c2.z;
+                    EntityManager.SetComponentData(entity, scale);
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else
                 {
                     if (!EntityManager.HasComponent<Parent>(entity))
                         return;
+
+                    var parent =  EntityManager.GetComponentData<Parent>(entity);
+                    var parentScale = EntityManager.GetComponentData<CompositeScale>(parent.Value);
+                    var scale = EntityManager.GetComponentData<CompositeScale>(entity);
+                    scale.Value.c0.x *= parentScale.Value.c0.x;
+                    scale.Value.c1.y *= parentScale.Value.c1.y;
+                    scale.Value.c2.z *= parentScale.Value.c2.z;
+                    EntityManager.SetComponentData(entity, scale);
+
                     EntityManager.RemoveComponent<Parent>(entity);
                     EntityManager.RemoveComponent<LocalToParent>(entity);
+
+               
                 }
             });
         }
