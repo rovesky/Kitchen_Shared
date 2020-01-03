@@ -311,7 +311,7 @@ namespace FootStone.Kitchen
             }
         }
 
-        [BurstCompile]
+       // [BurstCompile]
         private struct ApplyDefferedPhysicsUpdatesJob : IJob
         {
             // Chunks can be deallocated at this point
@@ -369,7 +369,7 @@ namespace FootStone.Kitchen
 
                     ep.Angular = rigidTransform.Angular;
 
-                    FSLog.Info($"impulse.Entity:{impulse.Entity},Linear:{ep.Linear}");
+                 //   FSLog.Info($"impulse.Entity:{impulse.Entity},Linear:{ep.Linear}");
                     // Write back
                     VelocityPredictedData[impulse.Entity] = ep;
                 }

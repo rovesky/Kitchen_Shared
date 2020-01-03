@@ -12,6 +12,7 @@ namespace FootStone.Kitchen
         {
             Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
                 ref AttachToCharacterRequest pickupRequest,
+                ref TriggerPredictedState triggerState,
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState velocityPredictedState,
                 ref ItemPredictedState itemPredictedState,
@@ -22,18 +23,20 @@ namespace FootStone.Kitchen
                 if (math.distancesq(velocityPredictedState.Linear, float3.zero) > 2.0f)
                     return;
 
+                triggerState.TriggeredEntity = Entity.Null;
+
                 itemPredictedState.Owner = pickupRequest.Owner;
+                itemPredictedState.IsDynamic = false;
 
                 transformPredictedState.Position = new float3(0, -0.2f, 0.9f);
                 transformPredictedState.Rotation = quaternion.identity;
 
                 velocityPredictedState.Linear = float3.zero;
-
                 replicatedEntityData.PredictingPlayerId = pickupRequest.PredictingPlayerId;
 
                 //变成 Static
-                if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-                    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
+                //if (EntityManager.HasComponent<PhysicsVelocity>(entity))
+                //    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
 
                 EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
             });

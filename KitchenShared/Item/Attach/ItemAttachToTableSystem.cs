@@ -5,17 +5,18 @@ using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
-   
-
     [DisableAutoCreation]
     public class ItemToTableSystem : ComponentSystem
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Item, PhysicsVelocity>().ForEach((Entity entity,
+            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
+                ref ItemPredictedState itemState,
                 ref TriggerPredictedState triggerState) =>
             {
-             
+                if (!itemState.IsDynamic)
+                    return;
+
                 if (triggerState.TriggeredEntity == Entity.Null)
                     return;
 
@@ -30,7 +31,6 @@ namespace FootStone.Kitchen
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggeredEntity);
                 if(slot.FilledInEntity != Entity.Null)
                     return;
-
 
                 FSLog.Info("ItemToTableSystem OnUpdate!");
                 var request = new AttachToTableRequest()
@@ -54,18 +54,22 @@ namespace FootStone.Kitchen
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState  velocityPredictedState,
                 ref TriggerPredictedState triggerState,
+                ref ItemPredictedState itemState,
                 ref AttachToTableRequest request) =>
             {
                 triggerState.TriggeredEntity = Entity.Null;
-
+                
                 FSLog.Info("ItemAttachToTableSystem OnUpdate!");
                 transformPredictedState.Position = request.SlotPos;
                 transformPredictedState.Rotation = quaternion.identity;
-                velocityPredictedState.Linear = float3.zero;
 
+                velocityPredictedState.Linear = float3.zero;
+                velocityPredictedState.Angular = float3.zero;
+
+                itemState.IsDynamic = false;
                 //变成 Static
-                if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-                    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
+                //     if (EntityManager.HasComponent<PhysicsVelocity>(entity))
+                //       EntityManager.RemoveComponent<PhysicsVelocity>(entity);
 
                 EntityManager.RemoveComponent<AttachToTableRequest>(entity);
             });

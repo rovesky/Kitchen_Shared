@@ -48,7 +48,7 @@ namespace FootStone.Kitchen
                     EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest()
                     {
                         Pos = entityPredictData.Position +
-                              math.mul(entityPredictData.Rotation, new float3(0, -0.2f, 1.2f)),
+                              math.mul(entityPredictData.Rotation, new float3(0, -0.2f, 1.3f)),
                         LinearVelocity = float3.zero
                             
                     });

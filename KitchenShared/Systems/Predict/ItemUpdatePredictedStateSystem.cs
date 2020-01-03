@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
@@ -50,8 +51,15 @@ namespace FootStone.Kitchen
 
                     EntityManager.RemoveComponent<Parent>(entity);
                     EntityManager.RemoveComponent<LocalToParent>(entity);
+                }
 
-               
+                if (predictedData.IsDynamic)
+                {
+                    EntityManager.AddComponent<PhysicsVelocity>(entity);
+                }
+                else
+                {
+                    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
                 }
             });
         }

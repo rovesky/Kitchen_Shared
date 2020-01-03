@@ -65,7 +65,7 @@ namespace FootStone.Kitchen
             return inputDeps;
         }
 
-        [BurstCompile]
+      //  [BurstCompile]
         private struct CharacterMoveControlJob : IJobChunk
         {
             public float DeltaTime;

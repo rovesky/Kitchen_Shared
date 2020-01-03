@@ -15,7 +15,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
          
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveSystem>());
+          //  m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterImpulseMoveSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerSystem>());

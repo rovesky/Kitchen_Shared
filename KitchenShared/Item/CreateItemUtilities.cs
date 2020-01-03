@@ -40,7 +40,8 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ItemPredictedState
             {
-                Owner = Entity.Null
+                Owner = Entity.Null,
+                IsDynamic = false
             });
 
             entityManager.AddComponentData(e, new TriggerSetting()

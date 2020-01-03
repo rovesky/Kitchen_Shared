@@ -20,16 +20,18 @@ namespace FootStone.Kitchen
                 FSLog.Info($"ItemDetachFromCharacterSystem OnUpdate!");
               
                 itemPredictedState.Owner = Entity.Null;
+                itemPredictedState.IsDynamic = true;
 
                 transformPredictedState.Position = request.Pos;
                 transformPredictedState.Rotation = quaternion.identity;
+
                 velocityPredictedState.Linear = request.LinearVelocity;
          
                 replicatedEntityData.PredictingPlayerId = -1;
-
+               
                 //变成 dynamtic
-                if (!EntityManager.HasComponent<PhysicsVelocity>(entity))
-                    EntityManager.AddComponent<PhysicsVelocity>(entity);
+                //if (!EntityManager.HasComponent<PhysicsVelocity>(entity))
+                //  EntityManager.AddComponent<PhysicsVelocity>(entity);
 
                 EntityManager.RemoveComponent<DetachFromCharacterRequest>(entity);
 
