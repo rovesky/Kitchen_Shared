@@ -60,7 +60,8 @@ namespace FootStone.Kitchen
             var characterMoveType = GetArchetypeChunkComponentType<CharacterMoveSetting>();
             var userCommandType = GetArchetypeChunkComponentType<UserCommand>();
             var movePredictedType = GetArchetypeChunkComponentType<CharacterMovePredictedState>();
-            var predictType = GetArchetypeChunkComponentType<TransformPredictedState>();
+            var transformType = GetArchetypeChunkComponentType<TransformPredictedState>();
+            var velocityType = GetArchetypeChunkComponentType<VelocityPredictedState>();
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
             var entityType = GetArchetypeChunkEntityType();
          
@@ -74,8 +75,9 @@ namespace FootStone.Kitchen
                 UserCommandComponentType = userCommandType,
                 CharacterMovePredictedType = movePredictedType,
                 PhysicsColliderType = physicsColliderType,
-                EntityPredictedType = predictType,
-        
+                TransformType = transformType,
+                VelocityType = velocityType,
+
                 // Input
                 DeltaTime = tickDuration,
                 PhysicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld,
@@ -112,10 +114,9 @@ namespace FootStone.Kitchen
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
 
             public ArchetypeChunkComponentType<CharacterMovePredictedState> CharacterMovePredictedType;
-            public ArchetypeChunkComponentType<TransformPredictedState> EntityPredictedType;
+            public ArchetypeChunkComponentType<TransformPredictedState> TransformType;
+            public ArchetypeChunkComponentType<VelocityPredictedState> VelocityType;
 
-            //  public ArchetypeChunkComponentType<Translation> TranslationType;
-            //  public ArchetypeChunkComponentType<Rotation> RotationType;
             [ReadOnly] public ArchetypeChunkComponentType<CharacterMoveSetting>   CharacterMoveType;
             [ReadOnly] public ArchetypeChunkComponentType<UserCommand>     UserCommandComponentType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
@@ -131,24 +132,24 @@ namespace FootStone.Kitchen
                 var up = math.up();
 
                 var chunkEntityData = chunk.GetNativeArray(EntityType);
-                var chunkCharacterMoveData = chunk.GetNativeArray(CharacterMoveType);
-                var chunkPredictData = chunk.GetNativeArray(EntityPredictedType);
+                var chunkMoveSettingData = chunk.GetNativeArray(CharacterMoveType);
+                var chunkTransformData = chunk.GetNativeArray(TransformType);
+                var chunkVelocityData = chunk.GetNativeArray(VelocityType);
                 var chunkUserCommand = chunk.GetNativeArray(UserCommandComponentType);
-                var chunkCharacterMoveInternalData = chunk.GetNativeArray(CharacterMovePredictedType);
+                var chunkMovePredictedData = chunk.GetNativeArray(CharacterMovePredictedType);
                 var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);
-                // var chunkTranslationData = chunk.GetNativeArray(TranslationType);
-                //  var chunkRotationData = chunk.GetNativeArray(RotationType);
 
                 DeferredImpulseWriter.BeginForEachIndex(chunkIndex);
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
                     var entity = chunkEntityData[i];
-                    var characterMove = chunkCharacterMoveData[i];
+                    var moveSetting = chunkMoveSettingData[i];
                     var userCommand = chunkUserCommand[i];
-                    var movePredictedData = chunkCharacterMoveInternalData[i];
+                    var movePredictedData = chunkMovePredictedData[i];
                     var collider = chunkPhysicsColliderData[i];
-                    var predictData = chunkPredictData[i];
+                    var transformData = chunkTransformData[i];
+                    var velocityData = chunkVelocityData[i];
 
                     // Collision filter must be valid
                     Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
@@ -159,75 +160,73 @@ namespace FootStone.Kitchen
                         World = PhysicsWorld,
                         DeltaTime = DeltaTime,
                         Up = math.up(),
-                        Gravity = characterMove.Gravity,
-                        MaxIterations = characterMove.MaxIterations,
+                        Gravity = moveSetting.Gravity,
+                        MaxIterations = moveSetting.MaxIterations,
                         Tau = KDefaultTau,
                         Damping = KDefaultDamping,
-                        SkinWidth = characterMove.SkinWidth,
-                        ContactTolerance = characterMove.ContactTolerance,
-                        MaxSlope = characterMove.MaxSlope,
+                        SkinWidth = moveSetting.SkinWidth,
+                        ContactTolerance = moveSetting.ContactTolerance,
+                        MaxSlope = moveSetting.MaxSlope,
                         RigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity),
-                        CurrentVelocity = movePredictedData.LinearVelocity,
-                        MaxMovementSpeed = characterMove.MaxVelocity
+                        //     CurrentVelocity = movePredictedData.LinearVelocity,
+                        CurrentVelocity = velocityData.Linear,
+                        MaxMovementSpeed = moveSetting.MaxVelocity
                     };
 
                     // Character transform
                     var transform = new RigidTransform()
                     {
-                        pos = predictData.Position,
-                        rot = predictData.Rotation
+                        pos = transformData.Position,
+                        rot = transformData.Rotation
+                    };
+
+                    var moveInternalState = new MoveInternalState()
+                    {
+                        SupportedState = CharacterSupportState.Unsupported,
+                        IsJumping = false
                     };
 
                     // Check support
-                    CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform, characterMove.MaxSlope,
-                        out movePredictedData.SupportedState, out var surfaceNormal, out var surfaceVelocity);
+                    CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform, moveSetting.MaxSlope,
+                        /*out  movePredictedData.SupportedState*/ out moveInternalState.SupportedState, out var surfaceNormal, out var surfaceVelocity);
 
                     // User input
-                    var desiredVelocity = movePredictedData.LinearVelocity;
-                    HandleUserInput(characterMove, userCommand, stepInput.Up, surfaceVelocity,
-                        ref movePredictedData,ref desiredVelocity);
+                    var desiredVelocity = velocityData.Linear;
+                    HandleUserInput(moveSetting, userCommand, stepInput.Up, surfaceVelocity,
+                        ref movePredictedData, ref desiredVelocity, ref moveInternalState);
 
                     // Calculate actual velocity with respect to surface
-                    if (movePredictedData.SupportedState == CharacterSupportState.Supported)
-                        CalculateMovement(predictData.Rotation, stepInput.Up, movePredictedData.IsJumping,
-                            movePredictedData.LinearVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
-                            out movePredictedData.LinearVelocity);
+                    if (moveInternalState.SupportedState == CharacterSupportState.Supported)
+                        CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
+                           velocityData.Linear, desiredVelocity, surfaceNormal,surfaceVelocity,out  velocityData.Linear);
                     else
-                        movePredictedData.LinearVelocity = desiredVelocity;
+                        velocityData.Linear = desiredVelocity;
 
                     //// World collision + integrate
-                    CollideAndIntegrate(stepInput, characterMove.CharacterMass,
-                        characterMove.AffectsPhysicsBodies > 0,
-                        collider.ColliderPtr, ref transform, ref movePredictedData.LinearVelocity,
+                    CollideAndIntegrate(stepInput, moveSetting.CharacterMass,
+                        moveSetting.AffectsPhysicsBodies > 0,
+                        collider.ColliderPtr, ref transform,
+                        ref /*movePredictedData.LinearVelocity*/ velocityData.Linear,
                         ref DeferredImpulseWriter);
-
-                    // var newVelocity = desiredVelocity;
-                    var newPosition = transform.pos;
-                    //World collision + integrate
-                    //CharacterControllerUtilities.CollideAndIntegrate(ref PhysicsWorld, characterMove.SkinWidth,
-                    //    characterMove.ContactTolerance, characterMove.MaxVelocity,
-                    //    collider.ColliderPtr, DeltaTime, transform, up, entity, ref newPosition, ref newVelocity);
-
-                    //characterMoveInternalData.LinearVelocity = newVelocity;
-
+                
                     // Write back and orientation integration
-                    predictData.Position = newPosition;
-                    // chracter rotate
+                    transformData.Position = transform.pos; ;
+                    // character rotate
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
-                        var fromRotation = predictData.Rotation;
+                        var fromRotation = transformData.Rotation;
                         var toRotation = quaternion.LookRotationSafe(userCommand.TargetDir, up);
                         var angle = Quaternion.Angle(fromRotation, toRotation);
-                        predictData.Rotation = Quaternion.RotateTowards(fromRotation, toRotation,
+                        transformData.Rotation = Quaternion.RotateTowards(fromRotation, toRotation,
                             math.abs(angle - 180.0f) < float.Epsilon
-                                ? -characterMove.RotationVelocity
-                                : characterMove.RotationVelocity);
+                                ? -moveSetting.RotationVelocity
+                                : moveSetting.RotationVelocity);
                     }
 
                     // Write back to chunk data
                     {
-                        chunkCharacterMoveInternalData[i] = movePredictedData;
-                        chunkPredictData[i] = predictData;
+                        chunkMovePredictedData[i] = movePredictedData;
+                        chunkTransformData[i] = transformData;
                     }
                 }
 
@@ -236,27 +235,28 @@ namespace FootStone.Kitchen
 
 
             private void HandleUserInput(CharacterMoveSetting ccComponentData, UserCommand command, float3 up,
-                float3 surfaceVelocity, ref CharacterMovePredictedState ccPredictedState, ref float3 linearVelocity)
+                float3 surfaceVelocity, ref CharacterMovePredictedState ccPredictedState, ref float3 linearVelocity,
+                ref MoveInternalState moveInternalState)
             {
                 // Reset jumping state and unsupported velocity
-                if (ccPredictedState.SupportedState == CharacterSupportState.Supported)
+                if (/*ccPredictedState.SupportedState*/moveInternalState.SupportedState == CharacterSupportState.Supported)
                 {
-                    ccPredictedState.IsJumping = false;
+                    moveInternalState.IsJumping = false;
                     ccPredictedState.UnsupportedVelocity = float3.zero;
                 }
 
 
                 var shouldJump = command.Buttons.IsSet(UserCommand.Button.Jump) &&
-                                 ccPredictedState.SupportedState == CharacterSupportState.Supported;
+                                 /*ccPredictedState.SupportedState*/ moveInternalState.SupportedState == CharacterSupportState.Supported;
 
                 if (shouldJump)
                 {
                     // Add jump speed to surface velocity and make character unsupported
-                    ccPredictedState.IsJumping = true;
-                    ccPredictedState.SupportedState = CharacterSupportState.Unsupported;
+                    moveInternalState.IsJumping = true;
+                    moveInternalState.SupportedState = CharacterSupportState.Unsupported;
                     ccPredictedState.UnsupportedVelocity = surfaceVelocity + ccComponentData.JumpUpwardsVelocity * up;
                 }
-                else if (ccPredictedState.SupportedState != CharacterSupportState.Supported)
+                else if (moveInternalState.SupportedState != CharacterSupportState.Supported)
                 {
                     // Apply gravity
                     ccPredictedState.UnsupportedVelocity += ccComponentData.Gravity * DeltaTime;
@@ -264,7 +264,7 @@ namespace FootStone.Kitchen
 
                 // If unsupported then keep jump and surface momentum
                 linearVelocity = (float3) command.TargetDir * ccComponentData.MaxVelocity +
-                                 (ccPredictedState.SupportedState != CharacterSupportState.Supported
+                                 (moveInternalState.SupportedState != CharacterSupportState.Supported
                                      ? ccPredictedState.UnsupportedVelocity
                                      : float3.zero);
             }
@@ -352,7 +352,6 @@ namespace FootStone.Kitchen
                   //  FSLog.Info($"impulse.Entity:{impulse.Entity},Linear SqrMagnitude:{Vector3.SqrMagnitude(ep.Linear)}");
                   //  if (Vector3.SqrMagnitude(ep.Linear) > 10)
                      //   continue;
-                    
 
                     var rigidTransform = new PhysicsVelocity()
                     {
@@ -366,7 +365,6 @@ namespace FootStone.Kitchen
                     ep.Linear = rigidTransform.Linear;
                     //ep.Linear.y = 0.0f;
                     //ep.Linear /= 1.5f;
-
                     ep.Angular = rigidTransform.Angular;
 
                  //   FSLog.Info($"impulse.Entity:{impulse.Entity},Linear:{ep.Linear}");
@@ -375,5 +373,11 @@ namespace FootStone.Kitchen
                 }
             }
         }
+    }
+
+    internal struct MoveInternalState
+    {
+        public CharacterSupportState SupportedState;
+        public bool IsJumping;
     }
 }

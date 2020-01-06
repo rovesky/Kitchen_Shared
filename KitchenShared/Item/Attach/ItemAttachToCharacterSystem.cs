@@ -33,11 +33,7 @@ namespace FootStone.Kitchen
 
                 velocityPredictedState.Linear = float3.zero;
                 replicatedEntityData.PredictingPlayerId = pickupRequest.PredictingPlayerId;
-
-                //变成 Static
-                //if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-                //    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
-
+             
                 EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
             });
         }

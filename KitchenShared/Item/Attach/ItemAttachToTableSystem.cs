@@ -1,7 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
@@ -14,6 +13,9 @@ namespace FootStone.Kitchen
                 ref ItemPredictedState itemState,
                 ref TriggerPredictedState triggerState) =>
             {
+                if (itemState.Owner != Entity.Null)
+                    return;
+
                 if (!itemState.IsDynamic)
                     return;
 
@@ -29,7 +31,7 @@ namespace FootStone.Kitchen
                     return;
 
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggeredEntity);
-                if(slot.FilledInEntity != Entity.Null)
+                if (slot.FilledInEntity != Entity.Null)
                     return;
 
                 FSLog.Info("ItemToTableSystem OnUpdate!");
@@ -45,17 +47,18 @@ namespace FootStone.Kitchen
         }
     }
 
+
     [DisableAutoCreation]
     public class ItemAttachToTableSystem : ComponentSystem
     {
         protected override void OnUpdate()
         {
             Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
+                ref AttachToTableRequest request,
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState  velocityPredictedState,
                 ref TriggerPredictedState triggerState,
-                ref ItemPredictedState itemState,
-                ref AttachToTableRequest request) =>
+                ref ItemPredictedState itemState) =>
             {
                 triggerState.TriggeredEntity = Entity.Null;
                 
@@ -67,10 +70,7 @@ namespace FootStone.Kitchen
                 velocityPredictedState.Angular = float3.zero;
 
                 itemState.IsDynamic = false;
-                //变成 Static
-                //     if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-                //       EntityManager.RemoveComponent<PhysicsVelocity>(entity);
-
+            
                 EntityManager.RemoveComponent<AttachToTableRequest>(entity);
             });
         }

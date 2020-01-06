@@ -1,7 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
@@ -26,13 +25,8 @@ namespace FootStone.Kitchen
                 transformPredictedState.Rotation = quaternion.identity;
 
                 velocityPredictedState.Linear = request.LinearVelocity;
-         
                 replicatedEntityData.PredictingPlayerId = -1;
-               
-                //变成 dynamtic
-                //if (!EntityManager.HasComponent<PhysicsVelocity>(entity))
-                //  EntityManager.AddComponent<PhysicsVelocity>(entity);
-
+           
                 EntityManager.RemoveComponent<DetachFromCharacterRequest>(entity);
 
             });

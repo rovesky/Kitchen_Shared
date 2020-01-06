@@ -15,7 +15,8 @@ namespace FootStone.Kitchen
                 ref UserCommand command,
                 ref PickupPredictedState pickupState,
                 ref TriggerPredictedState triggerState,
-                ref TransformPredictedState entityPredictData) =>
+                ref TransformPredictedState transformState,
+                ref VelocityPredictedState velocityState) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
@@ -47,10 +48,10 @@ namespace FootStone.Kitchen
 
                     EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest()
                     {
-                        Pos = entityPredictData.Position +
-                              math.mul(entityPredictData.Rotation, new float3(0, -0.2f, 1.3f)),
-                        LinearVelocity = float3.zero
-                            
+                        Pos = transformState.Position +
+                              math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),
+                        LinearVelocity = velocityState.Linear
+
                     });
 
                     pickupState.PickupedEntity = Entity.Null;

@@ -60,9 +60,8 @@ namespace FootStone.Kitchen
             entityManager.AddComponentData(e, new CharacterMovePredictedState
             {
                UnsupportedVelocity = float3.zero,
-               LinearVelocity = float3.zero,
-               SupportedState = CharacterSupportState.Unsupported,
-               IsJumping = false
+           //    SupportedState = CharacterSupportState.Unsupported,
+            //   IsJumping = false
             });
 
             entityManager.AddComponentData(e, new TriggerSetting()

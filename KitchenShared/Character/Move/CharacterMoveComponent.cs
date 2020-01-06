@@ -28,34 +28,32 @@ namespace FootStone.Kitchen
 
     public struct CharacterMovePredictedState : IComponentData, IPredictedState<CharacterMovePredictedState>
     {
-
-        public CharacterSupportState SupportedState;
         public float3 UnsupportedVelocity;
-        public float3 LinearVelocity;
-        public bool IsJumping;
+
+      //  public CharacterSupportState SupportedState;
+      //  public bool IsJumping;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
-            SupportedState = (CharacterSupportState)reader.ReadByte();
             UnsupportedVelocity = reader.ReadVector3Q();
-            LinearVelocity = reader.ReadVector3Q();
-            IsJumping = reader.ReadBoolean();
+
+          //  SupportedState = (CharacterSupportState)reader.ReadByte();
+          //  IsJumping = reader.ReadBoolean();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-            writer.WriteByte("SupportedState", (byte)SupportedState);
             writer.WriteVector3Q("UnsupportedVelocity", UnsupportedVelocity);
-            writer.WriteVector3Q("LinearVelocity", LinearVelocity);
-            writer.WriteBoolean("IsJumping", IsJumping);
+
+            //writer.WriteByte("SupportedState", (byte)SupportedState);
+            //writer.WriteBoolean("IsJumping", IsJumping);
         }
 
         public bool VerifyPrediction(ref CharacterMovePredictedState state)
         {
-            return SupportedState.Equals(state.SupportedState) &&
-                   UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
-                   LinearVelocity.Equals(state.LinearVelocity) &&
-                   IsJumping.Equals(state.IsJumping);
+            return UnsupportedVelocity.Equals(state.UnsupportedVelocity);// &&
+                  // SupportedState.Equals(state.SupportedState) &&
+                  // IsJumping.Equals(state.IsJumping);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
