@@ -14,7 +14,7 @@ using static FootStone.Kitchen.CharacterMoveUtilities;
 
 namespace FootStone.Kitchen
 {
- 
+
 
 
     [DisableAutoCreation]
@@ -64,7 +64,7 @@ namespace FootStone.Kitchen
             var velocityType = GetArchetypeChunkComponentType<VelocityPredictedState>();
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>();
             var entityType = GetArchetypeChunkEntityType();
-         
+
             var deferredImpulses = new NativeStream(chunks.Length, Allocator.TempJob);
             var tickDuration = GetSingleton<WorldTime>().TickDuration;
             var ccJob = new CharacterControllerJob
@@ -117,8 +117,8 @@ namespace FootStone.Kitchen
             public ArchetypeChunkComponentType<TransformPredictedState> TransformType;
             public ArchetypeChunkComponentType<VelocityPredictedState> VelocityType;
 
-            [ReadOnly] public ArchetypeChunkComponentType<CharacterMoveSetting>   CharacterMoveType;
-            [ReadOnly] public ArchetypeChunkComponentType<UserCommand>     UserCommandComponentType;
+            [ReadOnly] public ArchetypeChunkComponentType<CharacterMoveSetting> CharacterMoveType;
+            [ReadOnly] public ArchetypeChunkComponentType<UserCommand> UserCommandComponentType;
             [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
 
             // Stores impulses we wish to apply to dynamic bodies the character is interacting with.
@@ -168,7 +168,6 @@ namespace FootStone.Kitchen
                         ContactTolerance = moveSetting.ContactTolerance,
                         MaxSlope = moveSetting.MaxSlope,
                         RigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity),
-                        //     CurrentVelocity = movePredictedData.LinearVelocity,
                         CurrentVelocity = velocityData.Linear,
                         MaxMovementSpeed = moveSetting.MaxVelocity
                     };
@@ -188,29 +187,27 @@ namespace FootStone.Kitchen
 
                     // Check support
                     CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform, moveSetting.MaxSlope,
-                        /*out  movePredictedData.SupportedState*/ out moveInternalState.SupportedState, out var surfaceNormal, out var surfaceVelocity);
+                        out moveInternalState.SupportedState, out var surfaceNormal, out var surfaceVelocity);
 
                     // User input
-                    var desiredVelocity = velocityData.Linear;
+                    // var desiredVelocity = velocityData.Linear;
                     HandleUserInput(moveSetting, userCommand, stepInput.Up, surfaceVelocity,
-                        ref movePredictedData, ref desiredVelocity, ref moveInternalState);
+                        ref movePredictedData, out var desiredVelocity, ref moveInternalState);
 
                     // Calculate actual velocity with respect to surface
                     if (moveInternalState.SupportedState == CharacterSupportState.Supported)
                         CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
-                           velocityData.Linear, desiredVelocity, surfaceNormal,surfaceVelocity,out  velocityData.Linear);
+                            velocityData.Linear, desiredVelocity, surfaceNormal, surfaceVelocity,
+                            out velocityData.Linear);
                     else
                         velocityData.Linear = desiredVelocity;
 
-                    //// World collision + integrate
-                    CollideAndIntegrate(stepInput, moveSetting.CharacterMass,
-                        moveSetting.AffectsPhysicsBodies > 0,
-                        collider.ColliderPtr, ref transform,
-                        ref /*movePredictedData.LinearVelocity*/ velocityData.Linear,
-                        ref DeferredImpulseWriter);
-                
+                    // World collision + integrate
+                    CollideAndIntegrate(stepInput, moveSetting.CharacterMass, moveSetting.AffectsPhysicsBodies > 0,
+                        collider.ColliderPtr, ref transform, ref velocityData.Linear, ref DeferredImpulseWriter);
+                    //  FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
                     // Write back and orientation integration
-                    transformData.Position = transform.pos; ;
+                    transformData.Position = transform.pos;
                     // character rotate
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
@@ -227,6 +224,7 @@ namespace FootStone.Kitchen
                     {
                         chunkMovePredictedData[i] = movePredictedData;
                         chunkTransformData[i] = transformData;
+                        chunkVelocityData[i] = velocityData;
                     }
                 }
 
@@ -235,11 +233,11 @@ namespace FootStone.Kitchen
 
 
             private void HandleUserInput(CharacterMoveSetting ccComponentData, UserCommand command, float3 up,
-                float3 surfaceVelocity, ref CharacterMovePredictedState ccPredictedState, ref float3 linearVelocity,
+                float3 surfaceVelocity, ref CharacterMovePredictedState ccPredictedState, out float3 linearVelocity,
                 ref MoveInternalState moveInternalState)
             {
                 // Reset jumping state and unsupported velocity
-                if (/*ccPredictedState.SupportedState*/moveInternalState.SupportedState == CharacterSupportState.Supported)
+                if (moveInternalState.SupportedState == CharacterSupportState.Supported)
                 {
                     moveInternalState.IsJumping = false;
                     ccPredictedState.UnsupportedVelocity = float3.zero;
@@ -247,7 +245,7 @@ namespace FootStone.Kitchen
 
 
                 var shouldJump = command.Buttons.IsSet(UserCommand.Button.Jump) &&
-                                 /*ccPredictedState.SupportedState*/ moveInternalState.SupportedState == CharacterSupportState.Supported;
+                                 moveInternalState.SupportedState == CharacterSupportState.Supported;
 
                 if (shouldJump)
                 {
@@ -311,7 +309,7 @@ namespace FootStone.Kitchen
             }
         }
 
-       // [BurstCompile]
+        // [BurstCompile]
         private struct ApplyDefferedPhysicsUpdatesJob : IJob
         {
             // Chunks can be deallocated at this point
@@ -335,23 +333,23 @@ namespace FootStone.Kitchen
                     var impulse = DeferredImpulseReader.Read<DeferredCharacterControllerImpulse>();
                     while (DeferredImpulseReader.RemainingItemCount == 0 && index < maxIndex)
                         DeferredImpulseReader.BeginForEachIndex(index++);
-                    
-                  
+
+
                     var pm = PhysicsMassData[impulse.Entity];
                     var ep = VelocityPredictedData[impulse.Entity];
                     var transform = TransformPredictedData[impulse.Entity];
 
-                 //   FSLog.Info($"impulse.Entity:{impulse.Entity},pm:{pm.InverseMass}");
+                    //   FSLog.Info($"impulse.Entity:{impulse.Entity},pm:{pm.InverseMass}");
 
                     // Don't apply on kinematic bodies
                     if (!(pm.InverseMass > 0.0f))
-                       continue;
+                        continue;
 
-                  //  if(ep.Linear.y > 0.01f)
-                     //   continue;
-                  //  FSLog.Info($"impulse.Entity:{impulse.Entity},Linear SqrMagnitude:{Vector3.SqrMagnitude(ep.Linear)}");
-                  //  if (Vector3.SqrMagnitude(ep.Linear) > 10)
-                     //   continue;
+                    //  if(ep.Linear.y > 0.01f)
+                    //   continue;
+                    //  FSLog.Info($"impulse.Entity:{impulse.Entity},Linear SqrMagnitude:{Vector3.SqrMagnitude(ep.Linear)}");
+                    //  if (Vector3.SqrMagnitude(ep.Linear) > 10)
+                    //   continue;
 
                     var rigidTransform = new PhysicsVelocity()
                     {
@@ -367,7 +365,7 @@ namespace FootStone.Kitchen
                     //ep.Linear /= 1.5f;
                     ep.Angular = rigidTransform.Angular;
 
-                 //   FSLog.Info($"impulse.Entity:{impulse.Entity},Linear:{ep.Linear}");
+                    //   FSLog.Info($"impulse.Entity:{impulse.Entity},Linear:{ep.Linear}");
                     // Write back
                     VelocityPredictedData[impulse.Entity] = ep;
                 }

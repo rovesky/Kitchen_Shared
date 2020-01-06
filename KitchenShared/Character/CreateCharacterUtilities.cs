@@ -46,8 +46,8 @@ namespace FootStone.Kitchen
             {
                 Gravity = PhysicsStep.Default.Gravity,
                 SkinWidth = 0.02f,
-                Velocity = 8.0f,
-                MaxVelocity = 8.0f,
+                Velocity = 4.0f,
+                MaxVelocity = 4.0f,
                 RotationVelocity = 22.5f,
                 JumpUpwardsVelocity = 4.0f,
                 MaxSlope = 60.0f, 
@@ -60,8 +60,6 @@ namespace FootStone.Kitchen
             entityManager.AddComponentData(e, new CharacterMovePredictedState
             {
                UnsupportedVelocity = float3.zero,
-           //    SupportedState = CharacterSupportState.Unsupported,
-            //   IsJumping = false
             });
 
             entityManager.AddComponentData(e, new TriggerSetting()

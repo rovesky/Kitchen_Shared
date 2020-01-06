@@ -13,7 +13,7 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
-            Entities/*.WithAllReadOnly<ServerEntity>()*/
+            Entities.WithAllReadOnly<ServerEntity>()
                 .ForEach((ref ReplicatedEntityData replicatedEntityData,
                     ref TransformPredictedState transformPredictData,
                     ref VelocityPredictedState velocityPredictData,
