@@ -20,8 +20,7 @@ namespace FootStone.Kitchen
                     interpolateData.Velocity = velocityPredictData.Linear;
                     interpolateData.Owner = predictData.Owner;
 
-                  //  FSLog.Info($"interpolateData.Velocity :{interpolateData.Velocity}");
-                    //   FSLog.Info($"UpdateItemPresentationSystem,Position:{predictData.Position}");
+                   // FSLog.Info($"UpdateItemPresentationSystem,Position:{interpolateData.Position}");
                 });
         }
     }
