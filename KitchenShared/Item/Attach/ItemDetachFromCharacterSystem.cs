@@ -14,17 +14,21 @@ namespace FootStone.Kitchen
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState velocityPredictedState,
                 ref ItemPredictedState itemPredictedState,
+                ref TriggerPredictedState triggerState,
                 ref ReplicatedEntityData replicatedEntityData) =>
             {
                 FSLog.Info($"ItemDetachFromCharacterSystem OnUpdate!");
               
-                itemPredictedState.Owner = Entity.Null;
-                itemPredictedState.IsDynamic = true;
+                triggerState.IsAllowTrigger = true;
 
+                itemPredictedState.Owner = Entity.Null;
+            
                 transformPredictedState.Position = request.Pos;
                 transformPredictedState.Rotation = quaternion.identity;
 
                 velocityPredictedState.Linear = request.LinearVelocity;
+                velocityPredictedState.MotionType = MotionType.Dynamic;
+
                 replicatedEntityData.PredictingPlayerId = -1;
            
                 EntityManager.RemoveComponent<DetachFromCharacterRequest>(entity);

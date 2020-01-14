@@ -34,28 +34,38 @@ namespace FootStone.Kitchen
         }
     }
 
+    public enum MotionType:byte
+    {
+        Static,
+        Kinematic,
+        Dynamic
+    };
 
     public struct VelocityPredictedState : IComponentData, IPredictedState<VelocityPredictedState>
     {
         public float3 Linear;
         public float3 Angular;
+        public MotionType MotionType;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Linear = reader.ReadVector3Q();
             Angular = reader.ReadVector3Q();
+            MotionType =(MotionType)reader.ReadByte();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             writer.WriteVector3Q("Linear", Linear);
             writer.WriteVector3Q("Angular", Angular);
+            writer.WriteByte("MotionType", (byte)MotionType);
         }
 
         public bool VerifyPrediction(ref VelocityPredictedState state)
         {
             return Linear.Equals(state.Linear) &&
-                   Angular.Equals(state.Angular);
+                   Angular.Equals(state.Angular) &&
+                   MotionType.Equals(state.MotionType);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()

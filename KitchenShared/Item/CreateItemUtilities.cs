@@ -36,12 +36,17 @@ namespace FootStone.Kitchen
                 Rotation = rotation
             });
 
-            entityManager.AddComponentData(e, new VelocityPredictedState());
+            entityManager.AddComponentData(e, new VelocityPredictedState()
+            {
+                MotionType = MotionType.Static,
+                Linear = float3.zero,
+                Angular = float3.zero
+            });
 
             entityManager.AddComponentData(e, new ItemPredictedState
             {
                 Owner = Entity.Null,
-                IsDynamic = false
+              //  IsDynamic = false
             });
 
             entityManager.AddComponentData(e, new TriggerSetting()
@@ -51,7 +56,8 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new TriggerPredictedState()
             {
-                TriggeredEntity = Entity.Null
+                TriggeredEntity = Entity.Null,
+                IsAllowTrigger = false
             });
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);

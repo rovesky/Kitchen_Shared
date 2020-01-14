@@ -1,5 +1,4 @@
-﻿using FootStone.ECS;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
 
@@ -20,12 +19,12 @@ namespace FootStone.Kitchen
                 translation.Value = interpolatedData.Position;
                 rotation.Value = interpolatedData.Rotation;
 
-                if (EntityManager.HasComponent<PhysicsVelocity>(entity))
-                {
-                    var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
-                    physicsVelocity.Linear = interpolatedData.Velocity;
-                    EntityManager.SetComponentData(entity, physicsVelocity);
-                }
+                //if (EntityManager.HasComponent<PhysicsVelocity>(entity))
+                //{
+                //    var physicsVelocity = EntityManager.GetComponentData<PhysicsVelocity>(entity);
+                //    physicsVelocity.Linear = interpolatedData.Velocity;
+                //    EntityManager.SetComponentData(entity, physicsVelocity);
+                //}
                 //   FSLog.Info($"physicsVelocity.Linear:{physicsVelocity.Linear}");
 
                 if (interpolatedData.Owner != Entity.Null)
@@ -41,11 +40,10 @@ namespace FootStone.Kitchen
                     if (parent.Value == interpolatedData.Owner)
                         return;
                     parent.Value = interpolatedData.Owner;
-
-                    var scale = EntityManager.GetComponentData<Scale>(entity);
-                    scale.Value = 1.0f;
+                    //var scale = EntityManager.GetComponentData<Scale>(entity);
+                    //scale.Value = 1.0f;
                   //  FSLog.Info($"scale:{scale.Value}");
-                    EntityManager.SetComponentData(entity, scale);
+                   // EntityManager.SetComponentData(entity, scale);
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else

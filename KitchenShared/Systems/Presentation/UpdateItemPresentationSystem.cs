@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
@@ -17,10 +18,23 @@ namespace FootStone.Kitchen
                 {
                     interpolateData.Position = transformPredictData.Position;
                     interpolateData.Rotation = transformPredictData.Rotation;
-                    interpolateData.Velocity = velocityPredictData.Linear;
+                 //   interpolateData.Velocity = velocityPredictData.Linear;
                     interpolateData.Owner = predictData.Owner;
 
-                   // FSLog.Info($"UpdateItemPresentationSystem,Position:{interpolateData.Position}");
+                    switch (velocityPredictData.MotionType)
+                    {
+                        case MotionType.Dynamic:
+                            EntityManager.AddComponentData(entity, new PhysicsVelocity()
+                            {
+                                Linear = velocityPredictData.Linear,
+                                Angular = velocityPredictData.Angular
+                            });
+                            break;
+                        case MotionType.Static:
+                            EntityManager.RemoveComponent<PhysicsVelocity>(entity);
+                            break;
+                    }
+                    // FSLog.Info($"UpdateItemPresentationSystem,Position:{interpolateData.Position}");
                 });
         }
     }

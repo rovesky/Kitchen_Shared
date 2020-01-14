@@ -28,19 +28,22 @@ namespace FootStone.Kitchen
             var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
 
-            Entities.WithAll<PhysicsVelocity>().ForEach((Entity entity,
+            Entities/*.WithAll<PhysicsVelocity>()*/.ForEach((Entity entity,
                 ref TriggerPredictedState predictedState,
                 in TriggerSetting setting,
-                in TransformPredictedState entityState,
+                in TransformPredictedState transformState,
                 in PhysicsCollider collider) =>
             {
+                if(!predictedState.IsAllowTrigger)
+                    return;
+
                 var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
                 // Character transform
                 var transform = new RigidTransform()
                 {
-                    pos = entityState.Position,
-                    rot = entityState.Rotation
+                    pos = transformState.Position,
+                    rot = transformState.Rotation
                 };
 
                 var input = new ColliderDistanceInput

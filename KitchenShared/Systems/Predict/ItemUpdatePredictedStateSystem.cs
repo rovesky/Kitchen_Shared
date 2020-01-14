@@ -34,6 +34,7 @@ namespace FootStone.Kitchen
                     scale.Value.c1.y /= parentScale.Value.c1.y;
                     scale.Value.c2.z /= parentScale.Value.c2.z;
                     EntityManager.SetComponentData(entity, scale);
+
                     EntityManager.SetComponentData(entity, parent);
                 }
                 else
@@ -53,14 +54,14 @@ namespace FootStone.Kitchen
                     EntityManager.RemoveComponent<LocalToParent>(entity);
                 }
 
-                if (predictedData.IsDynamic)
-                {
-                    EntityManager.AddComponent<PhysicsVelocity>(entity);
-                }
-                else
-                {
-                    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
-                }
+                //if (predictedData.IsDynamic)
+                //{
+                //    EntityManager.AddComponent<PhysicsVelocity>(entity);
+                //}
+                //else
+                //{
+                //    EntityManager.RemoveComponent<PhysicsVelocity>(entity);
+                //}
             });
         }
     }

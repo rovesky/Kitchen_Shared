@@ -31,7 +31,12 @@ namespace FootStone.Kitchen
                 Position = position,
                 Rotation = rotation
             });
-            entityManager.AddComponentData(e, new VelocityPredictedState());
+            entityManager.AddComponentData(e, new VelocityPredictedState()
+            {
+                MotionType = MotionType.Kinematic,
+                Linear = float3.zero,
+                Angular = float3.zero
+            });
 
 
             entityManager.AddComponentData(e, new CharacterInterpolatedState
@@ -69,7 +74,8 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new TriggerPredictedState()
             {
-               TriggeredEntity = Entity.Null
+               TriggeredEntity = Entity.Null,
+               IsAllowTrigger = true
             });
 
             entityManager.AddComponentData(e, new PickupSetting());

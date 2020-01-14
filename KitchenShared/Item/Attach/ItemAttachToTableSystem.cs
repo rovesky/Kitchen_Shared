@@ -11,12 +11,13 @@ namespace FootStone.Kitchen
         {
             Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
                 ref ItemPredictedState itemState,
-                ref TriggerPredictedState triggerState) =>
+                ref TriggerPredictedState triggerState,
+                ref VelocityPredictedState velocityState) =>
             {
                 if (itemState.Owner != Entity.Null)
                     return;
 
-                if (!itemState.IsDynamic)
+                if (velocityState.MotionType != MotionType.Dynamic)
                     return;
 
                 if (triggerState.TriggeredEntity == Entity.Null)
@@ -61,6 +62,8 @@ namespace FootStone.Kitchen
                 ref ItemPredictedState itemState) =>
             {
                 triggerState.TriggeredEntity = Entity.Null;
+                triggerState.IsAllowTrigger = false;
+
                 
                 FSLog.Info("ItemAttachToTableSystem OnUpdate!");
                 transformPredictedState.Position = request.SlotPos;
@@ -68,8 +71,8 @@ namespace FootStone.Kitchen
 
                 velocityPredictedState.Linear = float3.zero;
                 velocityPredictedState.Angular = float3.zero;
+                velocityPredictedState.MotionType = MotionType.Static;
 
-                itemState.IsDynamic = false;
             
                 EntityManager.RemoveComponent<AttachToTableRequest>(entity);
             });
