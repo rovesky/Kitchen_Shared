@@ -23,7 +23,7 @@ namespace FootStone.Kitchen
               //  predictedState.Position.y = 1.2f;
                 translation.Value = interpolatedData.Position;
                 rotation.Value = interpolatedData.Rotation;
-                physicsVelocity.Linear = interpolatedData.LinearVelocity;
+              //  physicsVelocity.Linear = interpolatedData.LinearVelocity;
             });
         }
     }

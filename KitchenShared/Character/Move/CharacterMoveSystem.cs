@@ -169,8 +169,11 @@ namespace FootStone.Kitchen
                         MaxSlope = moveSetting.MaxSlope,
                         RigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity),
                         CurrentVelocity = velocityData.Linear,
+                     //   CurrentVelocity = float3.zero,
                         MaxMovementSpeed = moveSetting.MaxVelocity
                     };
+
+                  //  FSLog.Info($"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
 
                     // Character transform
                     var transform = new RigidTransform()
@@ -197,10 +200,13 @@ namespace FootStone.Kitchen
                     // Calculate actual velocity with respect to surface
                     if (moveInternalState.SupportedState == CharacterSupportState.Supported)
                         CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
-                            velocityData.Linear, desiredVelocity, surfaceNormal, surfaceVelocity,
+                            stepInput.CurrentVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out velocityData.Linear);
                     else
                         velocityData.Linear = desiredVelocity;
+
+                   //  FSLog.Info($"velocityData.Linear:{velocityData.Linear}");
+
 
                     // World collision + integrate
                     CollideAndIntegrate(stepInput, moveSetting.CharacterMass, moveSetting.AffectsPhysicsBodies > 0,

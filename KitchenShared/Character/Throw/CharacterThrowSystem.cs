@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Character>().ForEach((Entity entity,
+            Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
                 ref ThrowSetting setting,
                 ref UserCommand command,
                 ref PickupPredictedState pickupState,
@@ -21,30 +22,6 @@ namespace FootStone.Kitchen
 
                 if (pickupState.PickupedEntity == Entity.Null)
                     return;
-
-                //var pickupedEntity = pickupState.PickupedEntity;
-                //var itemEntityPredictedState = EntityManager.GetComponentData<EntityPredictedState>(pickupedEntity);
-
-
-                //itemEntityPredictedState.Transform.pos = entityPredictData.Transform.pos +
-                //    math.mul(entityPredictData.Transform.rot, new float3(0, 0.2f, 0.8f));
-                //EntityManager.SetComponentData(pickupedEntity, itemEntityPredictedState);
-
-                //var itemPredictedState = EntityManager.GetComponentData<ItemPredictedState>(pickupedEntity);
-                //itemPredictedState.Owner = Entity.Null;
-                //EntityManager.SetComponentData(pickupedEntity, itemPredictedState);
-
-                //EntityManager.AddComponentData(pickupedEntity, new PhysicsVelocity());
-
-                //var replicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(pickupedEntity);
-                //replicatedEntityData.PredictingPlayerId = -1;
-                //EntityManager.SetComponentData(pickupedEntity, replicatedEntityData);
-
-                //if (!EntityManager.HasComponent<ServerEntity>(pickupedEntity))
-                //    EntityManager.AddComponentData(pickupedEntity, new ServerEntity());
-
-                //  EntityManager.AddComponentData(pickupedEntity, itemPredictedState.Mass);
-
 
                 Vector3 linear = math.mul(entityPredictData.Rotation, Vector3.forward);
                 linear.y = 0.3f;

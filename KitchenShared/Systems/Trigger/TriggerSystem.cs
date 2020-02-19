@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using FootStone.ECS;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -28,51 +29,55 @@ namespace FootStone.Kitchen
             var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
 
-            Entities/*.WithAll<PhysicsVelocity>()*/.ForEach((Entity entity,
-                ref TriggerPredictedState predictedState,
-                in TriggerSetting setting,
-                in TransformPredictedState transformState,
-                in PhysicsCollider collider) =>
-            {
-                if(!predictedState.IsAllowTrigger)
-                    return;
-
-                var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
-
-                // Character transform
-                var transform = new RigidTransform()
+            inputDeps = Entities
+                .WithAll<ServerEntity>()
+                .WithReadOnly(volumeEntities)
+                .ForEach((Entity entity,
+                    ref TriggerPredictedState triggerState,
+                    in TriggerSetting setting,
+                    in TransformPredictedState transformState,
+                    in PhysicsCollider collider) =>
                 {
-                    pos = transformState.Position,
-                    rot = transformState.Rotation
-                };
+                    if (!triggerState.IsAllowTrigger)
+                        return;
 
-                var input = new ColliderDistanceInput
-                {
-                    MaxDistance = setting.Distance,
-                    Transform = transform,
-                    Collider = collider.ColliderPtr
-                };
+                    var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
-                var selfRigidBodyIndex = physicsWorld.GetRigidBodyIndex(entity);
-                physicsWorld.CalculateDistance(input, ref distanceHits);
+                    // Character transform
+                    var transform = new RigidTransform()
+                    {
+                        pos = transformState.Position,
+                        rot = transformState.Rotation
+                    };
 
-                // if (volumeEntities.Length > 0)
-                //FSLog.Info($"volumeEntities.Length:{volumeEntities.Length}");
+                    var input = new ColliderDistanceInput
+                    {
+                        MaxDistance = setting.Distance,
+                        Transform = transform,
+                        Collider = collider.ColliderPtr
+                    };
 
-                var triggerIndex = CheckTrigger(ref physicsWorld, ref volumeEntities,
-                    selfRigidBodyIndex, ref distanceHits);
+                    var selfRigidBodyIndex = physicsWorld.GetRigidBodyIndex(entity);
+                    physicsWorld.CalculateDistance(input, ref distanceHits);
 
-                predictedState.TriggeredEntity = triggerIndex < 0
-                    ? Entity.Null
-                    : physicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
+                    // if (volumeEntities.Length > 0)
+                    //FSLog.Info($"volumeEntities.Length:{volumeEntities.Length}");
 
-                // if (predictedState.TriggeredEntity != Entity.Null)
-                //  FSLog.Info($"triggerEntity:{predictedState.TriggeredEntity}");
+                    var triggerIndex = CheckTrigger(ref physicsWorld, ref volumeEntities,
+                        selfRigidBodyIndex, ref distanceHits);
 
-                distanceHits.Dispose();
-            }).Schedule(inputDeps).Complete();
+                    triggerState.TriggeredEntity = triggerIndex < 0
+                        ? Entity.Null
+                        : physicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
 
-            volumeEntities.Dispose();
+                    // if (predictedState.TriggeredEntity != Entity.Null)
+                    //  FSLog.Info($"triggerEntity:{predictedState.TriggeredEntity}");
+
+                    distanceHits.Dispose();
+                }).Schedule(inputDeps);//.Complete();
+
+            inputDeps = volumeEntities.Dispose(inputDeps);
+            inputDeps.Complete();
             return inputDeps;
         }
 

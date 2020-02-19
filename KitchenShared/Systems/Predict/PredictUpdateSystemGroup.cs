@@ -10,6 +10,7 @@ namespace FootStone.Kitchen
 
         protected override void OnCreate()
         {
+         
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BuildPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<StepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
@@ -32,6 +33,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<AttachToTableSystem>());
            
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
         }
     }
