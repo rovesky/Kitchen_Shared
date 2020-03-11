@@ -5,51 +5,6 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ItemToTableSystem : ComponentSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
-                ref ItemPredictedState itemState,
-                ref TriggerPredictedState triggerState,
-                ref VelocityPredictedState velocityState) =>
-            {
-                if (itemState.Owner != Entity.Null)
-                    return;
-
-                if (velocityState.MotionType != MotionType.Dynamic)
-                    return;
-
-                if (triggerState.TriggeredEntity == Entity.Null)
-                    return;
-
-                var triggeredEntity = triggerState.TriggeredEntity;
-                if (!EntityManager.HasComponent<TriggerData>(triggeredEntity))
-                    return;
-
-                var triggerData = EntityManager.GetComponentData<TriggerData>(triggeredEntity);
-                if ((triggerData.Type & (int) TriggerType.Table) == 0)
-                    return;
-
-                var slot = EntityManager.GetComponentData<SlotPredictedState>(triggeredEntity);
-                if (slot.FilledInEntity != Entity.Null)
-                    return;
-
-                FSLog.Info("ItemToTableSystem OnUpdate!");
-                var request = new AttachToTableRequest()
-                {
-                    ItemEntity = entity,
-                    SlotPos = triggerData.SlotPos
-                };
-
-                EntityManager.AddComponentData(entity, request);
-                EntityManager.AddComponentData(triggeredEntity, request);
-            });
-        }
-    }
-
-
-    [DisableAutoCreation]
     public class ItemAttachToTableSystem : ComponentSystem
     {
         protected override void OnUpdate()
@@ -63,7 +18,6 @@ namespace FootStone.Kitchen
             {
                 triggerState.TriggeredEntity = Entity.Null;
                 triggerState.IsAllowTrigger = false;
-
                 
                 FSLog.Info("ItemAttachToTableSystem OnUpdate!");
                 transformPredictedState.Position = request.SlotPos;
@@ -72,7 +26,6 @@ namespace FootStone.Kitchen
                 velocityPredictedState.Linear = float3.zero;
                 velocityPredictedState.Angular = float3.zero;
                 velocityPredictedState.MotionType = MotionType.Static;
-
             
                 EntityManager.RemoveComponent<AttachToTableRequest>(entity);
             });
@@ -80,19 +33,5 @@ namespace FootStone.Kitchen
     }
 
 
-    [DisableAutoCreation]
-    public class AttachToTableSystem : ComponentSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((Entity entity,
-                ref AttachToTableRequest request,
-                ref SlotPredictedState slotState) =>
-            {
-                FSLog.Info("AttachToTableSystem OnUpdate!");
-                slotState.FilledInEntity = request.ItemEntity;
-                EntityManager.RemoveComponent<AttachToTableRequest>(entity);
-            });
-        }
-    }
+ 
 }

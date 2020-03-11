@@ -42,6 +42,8 @@ namespace FootStone.Kitchen
                     case MotionType.Static:
                         EntityManager.RemoveComponent<PhysicsVelocity>(entity);
                         break;
+                    case MotionType.Kinematic:
+                        break;
                 }
             });
         }

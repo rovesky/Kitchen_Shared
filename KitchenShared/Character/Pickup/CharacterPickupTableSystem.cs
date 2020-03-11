@@ -37,7 +37,10 @@ namespace FootStone.Kitchen
                 {
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
                  
-                    EntityManager.AddComponentData(triggerEntity, new DetachFromTableRequest());
+                    EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest()
+                    {
+                        ItemEntity = Entity.Null
+                    });
               
                     EntityManager.AddComponentData(slot.FilledInEntity, new AttachToCharacterRequest()
                     {
@@ -56,14 +59,17 @@ namespace FootStone.Kitchen
                         Pos = float3.zero,
                         LinearVelocity = float3.zero
                     });
+               
+                    EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest()
+                    {
+                        ItemEntity = pickupState.PickupedEntity
+                    });
 
-                    var request = new AttachToTableRequest()
+                    EntityManager.AddComponentData(pickupState.PickupedEntity, new AttachToTableRequest()
                     {
                         ItemEntity = pickupState.PickupedEntity,
                         SlotPos = triggerData.SlotPos
-                    };
-                    EntityManager.AddComponentData(triggerEntity, request);
-                    EntityManager.AddComponentData(pickupState.PickupedEntity, request);
+                    });
 
                     pickupState.PickupedEntity = Entity.Null;
                 }

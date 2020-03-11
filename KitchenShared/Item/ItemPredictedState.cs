@@ -1,8 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 
-
-
 namespace FootStone.Kitchen
 {
     public struct ItemPredictedState : IComponentData, IPredictedState<ItemPredictedState>

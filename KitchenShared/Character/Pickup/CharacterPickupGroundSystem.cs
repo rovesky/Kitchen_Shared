@@ -22,7 +22,9 @@ namespace FootStone.Kitchen
                     return;
 
                 var worldTick = GetSingleton<WorldTime>().Tick;
-             //   FSLog.Info($"CharacterPickupGroundSystem:{pickupState.PickupedEntity},{triggerState.TriggeredEntity}");
+                //   FSLog.Info($"CharacterPickupGroundSystem:{pickupState.PickupedEntity},{triggerState.TriggeredEntity}");
+
+                //pickup item
                 if (pickupState.PickupedEntity == Entity.Null
                     && triggerState.TriggeredEntity != Entity.Null)
                 {
@@ -40,7 +42,10 @@ namespace FootStone.Kitchen
                     });
 
                     pickupState.PickupedEntity = triggerState.TriggeredEntity;
+                    triggerState.TriggeredEntity = Entity.Null;
+                    
                 }
+                //putdown item
                 else if (pickupState.PickupedEntity != Entity.Null
                          && triggerState.TriggeredEntity == Entity.Null)
                 {
@@ -50,7 +55,7 @@ namespace FootStone.Kitchen
                     {
                         Pos = transformState.Position +
                               math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),
-                        LinearVelocity = velocityState.Linear *2.0f
+                        LinearVelocity = velocityState.Linear
 
                     });
 

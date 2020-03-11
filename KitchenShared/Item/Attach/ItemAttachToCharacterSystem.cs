@@ -1,7 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 
 namespace FootStone.Kitchen
 {
@@ -19,6 +18,7 @@ namespace FootStone.Kitchen
                 ref ReplicatedEntityData replicatedEntityData) =>
             {
                 FSLog.Info("ItemAttachToCharacterSystem OnUpdate!");
+                EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
                 //速度比较快不能pickup
                 if (math.distancesq(velocityPredictedState.Linear, float3.zero) > 2.0f)
                     return;
@@ -37,7 +37,7 @@ namespace FootStone.Kitchen
 
                 replicatedEntityData.PredictingPlayerId = pickupRequest.PredictingPlayerId;
              
-                EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
+             
             });
         }
     }

@@ -1,5 +1,4 @@
 ﻿using Unity.Entities;
-using Unity.Physics;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
