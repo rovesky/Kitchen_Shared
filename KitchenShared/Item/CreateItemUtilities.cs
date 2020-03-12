@@ -60,6 +60,8 @@ namespace FootStone.Kitchen
                 IsAllowTrigger = false
             });
 
+            entityManager.AddComponentData(e, new PreventParentScale());
+
             entityManager.RemoveComponent<PhysicsVelocity>(e);
         }
     }

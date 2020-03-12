@@ -20,8 +20,8 @@ namespace FootStone.Kitchen
                 FSLog.Info("ItemAttachToCharacterSystem OnUpdate!");
                 EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
                 //速度比较快不能pickup
-                if (math.distancesq(velocityPredictedState.Linear, float3.zero) > 2.0f)
-                    return;
+               // if (math.distancesq(velocityPredictedState.Linear, float3.zero) > 2.0f)
+                  //  return;
 
                 triggerState.TriggeredEntity = Entity.Null;
                 triggerState.IsAllowTrigger = false;

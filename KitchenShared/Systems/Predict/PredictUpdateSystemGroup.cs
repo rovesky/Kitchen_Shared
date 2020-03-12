@@ -33,6 +33,9 @@ namespace FootStone.Kitchen
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
 
+           // m_systemsToUpdate.Add(World.GetOrCreateSystem<TestSystem>());
+
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
         }
     }
