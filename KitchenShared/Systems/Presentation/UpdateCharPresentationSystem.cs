@@ -1,25 +1,25 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Rendering;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class UpdateCharPresentationSystem : ComponentSystem
+    public class UpdateCharPresentationSystem : SystemBase
     {
         private Material material;
 
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<ServerEntity>()
-                .ForEach((ref ReplicatedEntityData replicatedEntityData,
-                    ref TransformPredictedState transformPredictData,
-                    ref VelocityPredictedState velocityPredictData,
-                    ref TriggerPredictedState triggerPredictedData,
-                    ref UserCommand command,
-                    ref CharacterInterpolatedState interpolateData
+            Entities.WithAll<ServerEntity>()
+                .WithStructuralChanges()
+                .ForEach((ref CharacterInterpolatedState interpolateData,
+                    in TransformPredictedState transformPredictData,
+                    in VelocityPredictedState velocityPredictData,
+                    in TriggerPredictedState triggerPredictedData,
+                    in UserCommand command,
+                    in ReplicatedEntityData replicatedEntityData
                     ) =>
                 {
                     interpolateData.Position = transformPredictData.Position;
@@ -43,10 +43,10 @@ namespace FootStone.Kitchen
                         };
                     }
                     volumeRenderMesh.material = material;
-                    PostUpdateCommands.SetSharedComponent(triggerEntity, volumeRenderMesh);
+                    EntityManager.SetSharedComponentData(triggerEntity, volumeRenderMesh);
                     //if(predictData.PickupedEntity != Entity.Null)
                     //   FSLog.Info($"UpdateCharPresentationSystem,pos:{predictData.Position},localToWorld:{localToWorld.Position}");
-                });
+                }).Run();
         }
     }
 }

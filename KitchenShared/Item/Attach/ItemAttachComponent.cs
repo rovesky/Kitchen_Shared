@@ -17,7 +17,6 @@ namespace FootStone.Kitchen
 
     public struct ItemAttachToTableRequest : IComponentData
     {
-     //   public Entity ItemEntity;
         public float3 SlotPos;
     }
 

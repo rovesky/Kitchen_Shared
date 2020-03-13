@@ -5,20 +5,20 @@ using Unity.Physics;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class UpdateItemPresentationSystem : ComponentSystem
+    public class UpdateItemPresentationSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<ServerEntity>()
+            Entities.WithAll<ServerEntity>()
+                .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    ref TransformPredictedState transformPredictData,
-                    ref VelocityPredictedState velocityPredictData,
-                    ref ItemPredictedState predictData,
-                    ref ItemInterpolatedState interpolateData) =>
+                    ref ItemInterpolatedState interpolateData,
+                    in TransformPredictedState transformPredictData,
+                    in VelocityPredictedState velocityPredictData,
+                    in ItemPredictedState predictData) =>
                 {
                     interpolateData.Position = transformPredictData.Position;
                     interpolateData.Rotation = transformPredictData.Rotation;
-                 //   interpolateData.Velocity = velocityPredictData.Linear;
                     interpolateData.Owner = predictData.Owner;
 
                     switch (velocityPredictData.MotionType)
@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
                             break;
                     }
                     // FSLog.Info($"UpdateItemPresentationSystem,Position:{interpolateData.Position}");
-                });
+                }).Run();
         }
     }
 }
