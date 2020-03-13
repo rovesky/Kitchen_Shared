@@ -1,22 +1,26 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
+
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterPickupGroundSystem : ComponentSystem
+    public class CharacterPickupGroundSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
-                ref PickupSetting setting,
-                ref UserCommand command,
+            Entities
+                .WithAll<ServerEntity>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
                 ref PickupPredictedState pickupState,
                 ref TriggerPredictedState triggerState,
-                ref TransformPredictedState transformState,
-                ref VelocityPredictedState velocityState) =>
+                in PickupSetting setting,
+                in UserCommand command,
+                in TransformPredictedState transformState,
+                in VelocityPredictedState velocityState,
+                in ReplicatedEntityData replicatedEntityData) =>
             {
                 if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                     return;
@@ -32,18 +36,18 @@ namespace FootStone.Kitchen
                     if ((triggerData.Type & (int) TriggerType.Item) == 0)
                         return;
 
+                    //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request
+
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                    // PickUpItem(entity,ref triggerState, ref pickupState);
-                    var ownerReplicatedEntityData = EntityManager.GetComponentData<ReplicatedEntityData>(entity);
-                    EntityManager.AddComponentData(triggerState.TriggeredEntity, new AttachToCharacterRequest
+                   
+                    EntityManager.AddComponentData(triggerState.TriggeredEntity, new ItemAttachToCharacterRequest
                     {
-                        PredictingPlayerId = ownerReplicatedEntityData.PredictingPlayerId,
+                        PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
                         Owner = entity
                     });
 
                     pickupState.PickupedEntity = triggerState.TriggeredEntity;
                     triggerState.TriggeredEntity = Entity.Null;
-                    
                 }
                 //putdown item
                 else if (pickupState.PickupedEntity != Entity.Null
@@ -51,7 +55,9 @@ namespace FootStone.Kitchen
                 {
                     FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");
 
-                    EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest()
+                    //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request
+
+                    EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest()
                     {
                         Pos = transformState.Position +
                               math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),
@@ -61,7 +67,7 @@ namespace FootStone.Kitchen
 
                     pickupState.PickupedEntity = Entity.Null;
                 }
-            });
+            }).Run();
         }
     }
 }

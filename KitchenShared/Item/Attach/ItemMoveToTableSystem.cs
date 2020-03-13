@@ -1,18 +1,19 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ItemMoveToTableSystem : ComponentSystem
+    public class ItemMoveToTableSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
-                ref ItemPredictedState itemState,
-                ref TriggerPredictedState triggerState,
-                ref VelocityPredictedState velocityState) =>
+            Entities.WithAll<Item>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    in ItemPredictedState itemState,
+                    in TriggerPredictedState triggerState,
+                    in VelocityPredictedState velocityState) =>
             {
                 if (itemState.Owner != Entity.Null)
                     return;
@@ -37,16 +38,16 @@ namespace FootStone.Kitchen
 
                 FSLog.Info("ItemMoveToTableSystem OnUpdate!");
              
-                EntityManager.AddComponentData(entity, new AttachToTableRequest()
+                EntityManager.AddComponentData(entity, new ItemAttachToTableRequest()
                 {
-                    ItemEntity = entity,
+                 //   ItemEntity = entity,
                     SlotPos = triggerData.SlotPos
                 });
                 EntityManager.AddComponentData(triggeredEntity, new TableFilledInItemRequest()
                 {
                     ItemEntity = entity
                 });
-            });
+            }).Run();
         }
     }
  

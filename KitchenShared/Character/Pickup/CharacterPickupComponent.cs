@@ -5,7 +5,7 @@ namespace FootStone.Kitchen
 {
     public struct PickupSetting : IComponentData
     {
-
+        public int Foo;
     }
 
     public struct PickupPredictedState : IComponentData, IPredictedState<PickupPredictedState>

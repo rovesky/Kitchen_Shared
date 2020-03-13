@@ -5,23 +5,22 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ItemAttachToCharacterSystem : ComponentSystem
+    public class ItemAttachToCharacterSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
-                ref AttachToCharacterRequest pickupRequest,
+            Entities.WithAll<Item>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
                 ref TriggerPredictedState triggerState,
                 ref TransformPredictedState transformPredictedState,
                 ref VelocityPredictedState velocityPredictedState,
                 ref ItemPredictedState itemPredictedState,
-                ref ReplicatedEntityData replicatedEntityData) =>
+                ref ReplicatedEntityData replicatedEntityData,
+                in ItemAttachToCharacterRequest pickupRequest) =>
             {
                 FSLog.Info("ItemAttachToCharacterSystem OnUpdate!");
-                EntityManager.RemoveComponent<AttachToCharacterRequest>(entity);
-                //速度比较快不能pickup
-               // if (math.distancesq(velocityPredictedState.Linear, float3.zero) > 2.0f)
-                  //  return;
+                EntityManager.RemoveComponent<ItemAttachToCharacterRequest>(entity);
 
                 triggerState.TriggeredEntity = Entity.Null;
                 triggerState.IsAllowTrigger = false;
@@ -37,8 +36,7 @@ namespace FootStone.Kitchen
 
                 replicatedEntityData.PredictingPlayerId = pickupRequest.PredictingPlayerId;
              
-             
-            });
+            }).Run();
         }
     }
 }

@@ -7,10 +7,8 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class PredictUpdateSystemGroup : NoSortComponentSystemGroup
     {
-
         protected override void OnCreate()
         {
-         
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BuildPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<StepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
@@ -28,14 +26,12 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemAttachToCharacterSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemDetachFromCharacterSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemAttachToTableSystem>());
-             
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<TableFilledInItemSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
 
            // m_systemsToUpdate.Add(World.GetOrCreateSystem<TestSystem>());
-
-
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
         }
     }

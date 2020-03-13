@@ -5,22 +5,24 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ItemDetachFromCharacterSystem : ComponentSystem
+    public class ItemDetachFromCharacterSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<Item>().ForEach((Entity entity,
-                ref DetachFromCharacterRequest request,
-                ref TransformPredictedState transformPredictedState,
-                ref VelocityPredictedState velocityPredictedState,
-                ref ItemPredictedState itemPredictedState,
-                ref TriggerPredictedState triggerState,
-                ref ReplicatedEntityData replicatedEntityData) =>
+            Entities.WithAll<Item>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    ref TransformPredictedState transformPredictedState,
+                    ref VelocityPredictedState velocityPredictedState,
+                    ref ItemPredictedState itemPredictedState,
+                    ref TriggerPredictedState triggerState,
+                    ref ReplicatedEntityData replicatedEntityData,
+                    in ItemDetachFromCharacterRequest request) =>
             {
                 FSLog.Info($"ItemDetachFromCharacterSystem OnUpdate!");
-              
-                triggerState.IsAllowTrigger = true;
+                EntityManager.RemoveComponent<ItemDetachFromCharacterRequest>(entity);
 
+                triggerState.IsAllowTrigger = true;
                 itemPredictedState.Owner = Entity.Null;
             
                 transformPredictedState.Position = request.Pos;
@@ -30,10 +32,7 @@ namespace FootStone.Kitchen
                 velocityPredictedState.MotionType = MotionType.Dynamic;
 
                 replicatedEntityData.PredictingPlayerId = -1;
-           
-                EntityManager.RemoveComponent<DetachFromCharacterRequest>(entity);
-
-            });
+            }).Run();
         }
     }
 }

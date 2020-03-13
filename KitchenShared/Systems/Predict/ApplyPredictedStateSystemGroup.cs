@@ -7,27 +7,27 @@ namespace FootStone.Kitchen
 {
     
     [DisableAutoCreation]
-    public class ApplyTransformPredictedStateSystem : ComponentSystem
+    public class ApplyTransformPredictedStateSystem : SystemBase
     {
         protected override void OnUpdate()
         {
             Entities.ForEach((Entity entity,
-                ref TransformPredictedState transformPredictedState,
                 ref Translation translation,
-                ref Rotation rotation) =>
+                ref Rotation rotation,
+                in TransformPredictedState transformPredictedState) =>
             {
                 translation.Value = transformPredictedState.Position;
                 rotation.Value = transformPredictedState.Rotation;
-            });
+            }).Run();
         }
     }
 
     [DisableAutoCreation]
-    public class ApplyVelocityPredictedStateSystem : ComponentSystem
+    public class ApplyVelocityPredictedStateSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity,
+            Entities.WithStructuralChanges().ForEach((Entity entity,
                 ref VelocityPredictedState velocityPredictedState) =>
             {
                 switch (velocityPredictedState.MotionType)
@@ -45,7 +45,7 @@ namespace FootStone.Kitchen
                     case MotionType.Kinematic:
                         break;
                 }
-            });
+            }).Run();
         }
     }
 

@@ -5,21 +5,21 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterPickupTableSystem : SystemBase //ComponentSystem
+    public class CharacterPickupTableSystem : SystemBase 
     {
 
         protected override void OnUpdate()
         {
             Entities
                 .WithAll<ServerEntity>()
-              //  .WithName("a")
+                .WithName("CharacterPickupTable")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     int entityInQueryIndex,
                     ref PickupPredictedState pickupState,
+                    in PickupSetting setting,
                     in TriggerPredictedState triggerState,
                     in ReplicatedEntityData replicatedEntityData,
-                    in PickupSetting setting,
                     in UserCommand command) =>
                 {
 
@@ -51,7 +51,7 @@ namespace FootStone.Kitchen
                             ItemEntity = Entity.Null
                         });
 
-                        EntityManager.AddComponentData(slot.FilledInEntity, new AttachToCharacterRequest()
+                        EntityManager.AddComponentData(slot.FilledInEntity, new ItemAttachToCharacterRequest()
                         {
                             PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
                             Owner = entity
@@ -63,7 +63,7 @@ namespace FootStone.Kitchen
                     {
                         FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
 
-                        EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest()
+                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest()
                         {
                             Pos = float3.zero,
                             LinearVelocity = float3.zero
@@ -74,9 +74,9 @@ namespace FootStone.Kitchen
                             ItemEntity = pickupState.PickupedEntity
                         });
 
-                        EntityManager.AddComponentData(pickupState.PickupedEntity, new AttachToTableRequest()
+                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemAttachToTableRequest()
                         {
-                            ItemEntity = pickupState.PickupedEntity,
+                        //    ItemEntity = pickupState.PickupedEntity,
                             SlotPos = triggerData.SlotPos
                         });
 

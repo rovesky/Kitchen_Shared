@@ -6,15 +6,17 @@ using UnityEngine;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterThrowSystem : ComponentSystem
+    public class CharacterThrowSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAllReadOnly<ServerEntity>().ForEach((Entity entity,
-                ref ThrowSetting setting,
-                ref UserCommand command,
-                ref PickupPredictedState pickupState,
-                ref TransformPredictedState entityPredictData) =>
+            Entities.WithAll<ServerEntity>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    ref PickupPredictedState pickupState,
+                    in TransformPredictedState entityPredictData,
+                    in ThrowSetting setting,
+                    in UserCommand command) =>
             {
                 //  FSLog.Info("PickSystem Update");
                 if (!command.Buttons.IsSet(UserCommand.Button.Throw))
@@ -23,11 +25,13 @@ namespace FootStone.Kitchen
                 if (pickupState.PickupedEntity == Entity.Null)
                     return;
 
+                //TODO 
+
                 Vector3 linear = math.mul(entityPredictData.Rotation, Vector3.forward);
                 linear.y = 0.3f;
                 linear.Normalize();
                 linear *= setting.Velocity;
-                EntityManager.AddComponentData(pickupState.PickupedEntity, new DetachFromCharacterRequest
+                EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest
                 {
                     LinearVelocity = linear,
                     Pos = entityPredictData.Position +
@@ -35,7 +39,7 @@ namespace FootStone.Kitchen
                 });
 
                 pickupState.PickupedEntity = Entity.Null;
-            });
+            }).Run();
         }
     }
 }

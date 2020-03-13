@@ -9,18 +9,19 @@ namespace FootStone.Kitchen
     }
 
     [DisableAutoCreation]
-    public class TableFilledInItemSystem : ComponentSystem
+    public class TableFilledInItemSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity,
-                ref TableFilledInItemRequest request,
-                ref SlotPredictedState slotState) =>
+            Entities.WithStructuralChanges().ForEach((Entity entity,
+                ref SlotPredictedState slotState,
+                in TableFilledInItemRequest request) =>
             {
                 FSLog.Info("TableFilledInItemSystem OnUpdate!");
+
                 slotState.FilledInEntity = request.ItemEntity;
                 EntityManager.RemoveComponent<TableFilledInItemRequest>(entity);
-            });
+            }).Run();
         }
     }
 }
