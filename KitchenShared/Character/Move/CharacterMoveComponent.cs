@@ -29,7 +29,7 @@ namespace FootStone.Kitchen
     public struct CharacterMovePredictedState : IComponentData, IPredictedState<CharacterMovePredictedState>
     {
         public float3 UnsupportedVelocity;
-
+ 
       //  public CharacterSupportState SupportedState;
       //  public bool IsJumping;
 

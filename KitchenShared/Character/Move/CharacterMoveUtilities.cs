@@ -1,3 +1,4 @@
+using FootStone.ECS;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -269,7 +270,7 @@ namespace FootStone.Kitchen
                 // FSLog.Info($"begin newVelocity£º{newVelocity} ");
                 SimplexSolver.Solve(world, remainingTime, minDeltaTime, up, stepInput.MaxMovementSpeed, constraints,
                     ref newPosition, ref newVelocity, out var integratedTime);
-                //  FSLog.Info($"end newVelocity£º{newVelocity} ");
+              //  FSLog.Info($"constraints.Length£º{constraints.Length} ");
                 // Apply impulses to hit bodies
                 if (affectBodies)
                     CalculateAndStoreDeferredImpulses(stepInput, characterMass, prevVelocity, ref constraints,
@@ -424,10 +425,14 @@ namespace FootStone.Kitchen
                 var constraint = constraints[i];
 
                 var rigidBodyIndex = constraint.RigidBodyIndex;
-                if (rigidBodyIndex < 0 || rigidBodyIndex >= world.NumDynamicBodies)
+               // FSLog.Info($"Store impulse:{rigidBodyIndex}");
+
+                if (rigidBodyIndex < 0/* || rigidBodyIndex >= world.NumDynamicBodies*/)
                     // Invalid and static bodies should be skipped
                     continue;
 
+                var impulse = float3.zero;
+            
                 var body = world.Bodies[rigidBodyIndex];
 
                 var pointRelVel = world.GetLinearVelocity(rigidBodyIndex, constraint.HitPosition);
@@ -442,15 +447,21 @@ namespace FootStone.Kitchen
                 if (distance < 0.0f) deltaVelocity += distance / stepInput.DeltaTime * stepInput.Tau;
 
                 // Calculate impulse
-                var mv = world.MotionVelocities[rigidBodyIndex];
-                var impulse = float3.zero;
-                if (deltaVelocity < 0.0f)
+                if (deltaVelocity < 0.0f )
                 {
+                
                     // Impulse magnitude
                     float impulseMagnitude;
                     {
-                        var objectMassInv =
-                            GetInvMassAtPoint(constraint.HitPosition, constraint.Plane.Normal, body, mv);
+                        var objectMassInv = 1.0f;
+
+                        if (rigidBodyIndex < world.NumDynamicBodies)
+                        {
+                            var mv = world.MotionVelocities[rigidBodyIndex];
+                            objectMassInv = GetInvMassAtPoint(constraint.HitPosition, 
+                                constraint.Plane.Normal, body, mv);
+                        }
+                        
                         impulseMagnitude = deltaVelocity / objectMassInv;
                     }
 
@@ -478,7 +489,7 @@ namespace FootStone.Kitchen
                         impulse = math.select(impulse, newImpulse, relVelN < 0.0f);
                     }
                 }
-
+         
                 // Store impulse
                 deferredImpulseWriter.Write(
                     new DeferredCharacterControllerImpulse
@@ -496,7 +507,7 @@ namespace FootStone.Kitchen
             unsafe
             {
                 massCenter = math.transform(body.WorldFromBody,
-                    body.Collider->MassProperties.MassDistribution.Transform.pos);
+                    body.Collider.Value.MassProperties.MassDistribution.Transform.pos);
             }
 
             var arm = point - massCenter;

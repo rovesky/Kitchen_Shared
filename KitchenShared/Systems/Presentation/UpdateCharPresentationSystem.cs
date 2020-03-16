@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Rendering;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace FootStone.Kitchen
                     in TransformPredictedState transformPredictData,
                     in VelocityPredictedState velocityPredictData,
                     in TriggerPredictedState triggerPredictedData,
-                    in UserCommand command,
+                  //  in UserCommand command,
                     in ReplicatedEntityData replicatedEntityData
                     ) =>
                 {
@@ -26,7 +27,10 @@ namespace FootStone.Kitchen
                     interpolateData.Rotation = transformPredictData.Rotation;
                     interpolateData.LinearVelocity = velocityPredictData.Linear;
 
-                    interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
+                    var dir = Vector3.SqrMagnitude(velocityPredictData.Linear) < 0.001f ? Vector3.zero :(Vector3) math.normalize(velocityPredictData.Linear);
+                    interpolateData.SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;
+
+             //       interpolateData.SqrMagnitude = new Vector2(command.TargetDir.x, command.TargetDir.z).sqrMagnitude;
                     interpolateData.MaterialId = replicatedEntityData.Id % 4 ;
 
                     //setup trigger entity color

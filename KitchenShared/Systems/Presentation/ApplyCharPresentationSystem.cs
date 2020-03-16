@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
@@ -11,7 +12,7 @@ namespace FootStone.Kitchen
             Entities.ForEach((Entity entity,
                 ref Translation translation,
                 ref Rotation rotation,
-             //   ref PhysicsVelocity physicsVelocity,
+                in PhysicsVelocity physicsVelocity,
                 in CharacterInterpolatedState interpolatedData) =>
             {
                 translation.Value = interpolatedData.Position;
