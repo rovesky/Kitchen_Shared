@@ -94,6 +94,7 @@ namespace FootStone.Kitchen
                 PhysicsMassData = GetComponentDataFromEntity<PhysicsMass>(),
                 TransformPredictedData = GetComponentDataFromEntity<TransformPredictedState>(),
                 VelocityPredictedData = GetComponentDataFromEntity<VelocityPredictedState>(),
+                CharacterMovePredictedData = GetComponentDataFromEntity<CharacterMovePredictedState>(),
             };
 
             inputDeps = applyJob.Schedule(inputDeps);
@@ -194,11 +195,12 @@ namespace FootStone.Kitchen
                         out moveInternalState.SupportedState, out var surfaceNormal, out var surfaceVelocity);
 
                     // User input
-                    // var desiredVelocity = velocityData.Linear;
                     HandleUserInput(moveSetting, userCommand, stepInput.Up, surfaceVelocity,
                         ref movePredictedData, out var desiredVelocity, ref moveInternalState);
                     
-                     desiredVelocity += velocityData.Linear;
+                     //add InitVelocity , clear InitVelocity
+                     desiredVelocity += movePredictedData.InitVelocity;
+                     movePredictedData.InitVelocity = float3.zero;
 
                 //    FSLog.Info($"stepInput.CurrentVelocity:{stepInput.CurrentVelocity},desiredVelocity:{desiredVelocity}");
                     // Calculate actual velocity with respect to surface
@@ -207,8 +209,10 @@ namespace FootStone.Kitchen
                         CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
                             stepInput.CurrentVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out velocityData.Linear);
-                        FSLog.Info($"velocityData.Linear:{velocityData.Linear}," +
-                                   $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
+
+                        //if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
+                        //    FSLog.Info($"Entity:{entity},velocityData.Linear:{velocityData.Linear}," +
+                        //           $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
                     }
                     else
                         velocityData.Linear = desiredVelocity ;
@@ -335,6 +339,7 @@ namespace FootStone.Kitchen
             public ComponentDataFromEntity<PhysicsMass> PhysicsMassData;
             public ComponentDataFromEntity<VelocityPredictedState> VelocityPredictedData;
             public ComponentDataFromEntity<TransformPredictedState> TransformPredictedData;
+            public ComponentDataFromEntity<CharacterMovePredictedState> CharacterMovePredictedData;
 
             public void Execute()
             {
@@ -361,11 +366,14 @@ namespace FootStone.Kitchen
                     //   FSLog.Info($"impulse.Entity:{impulse.Entity},pm:{pm.InverseMass}");
 
                     // Don't apply on kinematic bodies
-                    if (!(pm.InverseMass > 0.0f))
+                    if (!(pm.InverseMass > 0.0f) && CharacterMovePredictedData.HasComponent(impulse.Entity))
                     {
-                        ep.Linear = new float3(6,0,0);
+                        var movePredictedData = CharacterMovePredictedData[impulse.Entity];
+                        movePredictedData.InitVelocity = impulse.Impulse / 10.0f;
+                        CharacterMovePredictedData[impulse.Entity] = movePredictedData;
+                        FSLog.Info($"impulse.Entity:{impulse.Entity},impulse.Impulse:{impulse.Impulse},Linear:{ep.Linear}");
+
                     }
-                    //   continue;
                     else
                     {
                         var rigidTransform = new PhysicsVelocity()
@@ -381,11 +389,9 @@ namespace FootStone.Kitchen
                         //ep.Linear.y = 0.0f;
                         //ep.Linear /= 1.5f;
                         ep.Angular = rigidTransform.Angular;
+                        // Write back
+                        VelocityPredictedData[impulse.Entity] = ep;
                     }
-
-                    FSLog.Info($"impulse.Entity:{impulse.Entity},impulse.Impulse:{impulse.Impulse},Linear:{ep.Linear}");
-                    // Write back
-                    VelocityPredictedData[impulse.Entity] = ep;
                 }
             }
         }

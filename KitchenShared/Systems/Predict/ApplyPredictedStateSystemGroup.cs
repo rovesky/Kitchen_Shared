@@ -43,6 +43,11 @@ namespace FootStone.Kitchen
                         EntityManager.RemoveComponent<PhysicsVelocity>(entity);
                         break;
                     case MotionType.Kinematic:
+                        //EntityManager.SetComponentData(entity, new PhysicsVelocity()
+                        //{
+                        //    Linear = velocityPredictedState.Linear,
+                        //    Angular = velocityPredictedState.Angular
+                        //});
                         break;
                 }
             }).Run();

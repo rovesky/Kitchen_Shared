@@ -449,17 +449,21 @@ namespace FootStone.Kitchen
                 // Calculate impulse
                 if (deltaVelocity < 0.0f )
                 {
-                
                     // Impulse magnitude
                     float impulseMagnitude;
                     {
-                        var objectMassInv = 1.0f;
+                        var objectMassInv = 0.5f;
 
                         if (rigidBodyIndex < world.NumDynamicBodies)
                         {
                             var mv = world.MotionVelocities[rigidBodyIndex];
                             objectMassInv = GetInvMassAtPoint(constraint.HitPosition, 
                                 constraint.Plane.Normal, body, mv);
+
+                            if (System.Math.Abs(objectMassInv) < 0.0001)
+                                objectMassInv = 0.5f;
+
+                            FSLog.Info($"objectMassInv:{objectMassInv}");
                         }
                         
                         impulseMagnitude = deltaVelocity / objectMassInv;
