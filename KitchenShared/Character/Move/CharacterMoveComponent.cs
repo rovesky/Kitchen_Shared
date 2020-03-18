@@ -37,14 +37,15 @@ namespace FootStone.Kitchen
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             UnsupportedVelocity = reader.ReadVector3Q();
-
-          //  SupportedState = (CharacterSupportState)reader.ReadByte();
-          //  IsJumping = reader.ReadBoolean();
+            InitVelocity = reader.ReadVector3Q();
+            //  SupportedState = (CharacterSupportState)reader.ReadByte();
+            //  IsJumping = reader.ReadBoolean();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             writer.WriteVector3Q("UnsupportedVelocity", UnsupportedVelocity);
+            writer.WriteVector3Q("InitVelocity", InitVelocity);
 
             //writer.WriteByte("SupportedState", (byte)SupportedState);
             //writer.WriteBoolean("IsJumping", IsJumping);
@@ -52,9 +53,9 @@ namespace FootStone.Kitchen
 
         public bool VerifyPrediction(ref CharacterMovePredictedState state)
         {
-            return UnsupportedVelocity.Equals(state.UnsupportedVelocity);// &&
-                  // SupportedState.Equals(state.SupportedState) &&
-                  // IsJumping.Equals(state.IsJumping);
+            return UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
+                   InitVelocity.Equals(state.InitVelocity);
+            // IsJumping.Equals(state.IsJumping);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
