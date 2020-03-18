@@ -2,7 +2,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
@@ -57,7 +56,7 @@ namespace FootStone.Kitchen
 
                     //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request
 
-                    EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest()
+                    EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest
                     {
                         Pos = transformState.Position +
                               math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),

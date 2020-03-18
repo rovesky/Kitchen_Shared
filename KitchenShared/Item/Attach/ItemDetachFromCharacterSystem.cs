@@ -19,7 +19,7 @@ namespace FootStone.Kitchen
                     ref ReplicatedEntityData replicatedEntityData,
                     in ItemDetachFromCharacterRequest request) =>
             {
-                FSLog.Info($"ItemDetachFromCharacterSystem OnUpdate!");
+                FSLog.Info("ItemDetachFromCharacterSystem OnUpdate!");
                 EntityManager.RemoveComponent<ItemDetachFromCharacterRequest>(entity);
 
                 triggerState.IsAllowTrigger = true;

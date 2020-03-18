@@ -44,16 +44,14 @@ namespace FootStone.Kitchen
                     var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
                     // Character transform
-                    var transform = new RigidTransform()
-                    {
-                        pos = transformState.Position,
-                        rot = transformState.Rotation
-                    };
-
                     var input = new ColliderDistanceInput
                     {
                         MaxDistance = setting.Distance,
-                        Transform = transform,
+                        Transform = new RigidTransform
+                        {
+                            pos = transformState.Position,
+                            rot = transformState.Rotation
+                        },
                         Collider = collider.ColliderPtr
                     };
 

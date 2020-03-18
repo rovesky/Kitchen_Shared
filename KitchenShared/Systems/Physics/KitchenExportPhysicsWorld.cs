@@ -6,7 +6,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
-
 namespace FootStone.Kitchen
 {
     // A system which copies transforms and velocities from the physics world back to the original entity components.
@@ -27,8 +26,8 @@ namespace FootStone.Kitchen
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-           // var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
-            var handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
+            var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
+           // var handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
             var transformPredictedStateType = GetArchetypeChunkComponentType<TransformPredictedState>();

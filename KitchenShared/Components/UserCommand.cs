@@ -26,7 +26,7 @@ namespace FootStone.Kitchen
             Ability4 = 1 << 6,
             Ability5 = 1 << 7,
             Ability6 = 1 << 8,
-            Ability7 = 1 << 9,
+            Ability7 = 1 << 9
         }
 
         public struct ButtonBitField
@@ -60,7 +60,7 @@ namespace FootStone.Kitchen
         public ButtonBitField Buttons;
         public Vector3 TargetDir;
 
-        public static UserCommand DefaultCommand = new UserCommand()
+        public static UserCommand DefaultCommand = new UserCommand
         {
             CheckTick = 0,
             RenderTick = 0,

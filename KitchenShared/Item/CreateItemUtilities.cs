@@ -15,7 +15,7 @@ namespace FootStone.Kitchen
             entityManager.SetComponentData(e,new Translation{Value = position});
             entityManager.SetComponentData(e,new Rotation{Value = rotation});
 
-            entityManager.AddComponentData(e, new ReplicatedEntityData()
+            entityManager.AddComponentData(e, new ReplicatedEntityData
             {
                 Id = 0,
                 PredictingPlayerId = 0
@@ -30,13 +30,13 @@ namespace FootStone.Kitchen
                 Owner = Entity.Null
             });
 
-            entityManager.AddComponentData(e, new TransformPredictedState()
+            entityManager.AddComponentData(e, new TransformPredictedState
             {
                 Position = position,
                 Rotation = rotation
             });
 
-            entityManager.AddComponentData(e, new VelocityPredictedState()
+            entityManager.AddComponentData(e, new VelocityPredictedState
             {
                 MotionType = MotionType.Static,
                 Linear = float3.zero,
@@ -45,16 +45,16 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ItemPredictedState
             {
-                Owner = Entity.Null,
+                Owner = Entity.Null
               //  IsDynamic = false
             });
 
-            entityManager.AddComponentData(e, new TriggerSetting()
+            entityManager.AddComponentData(e, new TriggerSetting
             {
                 Distance = 0.1f
             });
 
-            entityManager.AddComponentData(e, new TriggerPredictedState()
+            entityManager.AddComponentData(e, new TriggerPredictedState
             {
                 TriggeredEntity = Entity.Null,
                 IsAllowTrigger = false

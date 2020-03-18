@@ -508,11 +508,8 @@ namespace FootStone.Kitchen
         private static float GetInvMassAtPoint(float3 point, float3 normal, RigidBody body, MotionVelocity mv)
         {
             float3 massCenter;
-            unsafe
-            {
-                massCenter = math.transform(body.WorldFromBody,
-                    body.Collider.Value.MassProperties.MassDistribution.Transform.pos);
-            }
+            massCenter = math.transform(body.WorldFromBody,
+                body.Collider.Value.MassProperties.MassDistribution.Transform.pos);
 
             var arm = point - massCenter;
             var jacAng = math.cross(arm, normal);

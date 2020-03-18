@@ -46,12 +46,12 @@ namespace FootStone.Kitchen
 
                         FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
                         //if(EntityManager.HasComponent<TableFilledInItemRequest>(triggerEntity) )
-                        EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest()
+                        EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest
                         {
                             ItemEntity = Entity.Null
                         });
 
-                        EntityManager.AddComponentData(slot.FilledInEntity, new ItemAttachToCharacterRequest()
+                        EntityManager.AddComponentData(slot.FilledInEntity, new ItemAttachToCharacterRequest
                         {
                             PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
                             Owner = entity
@@ -63,18 +63,18 @@ namespace FootStone.Kitchen
                     {
                         FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
 
-                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest()
+                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest
                         {
                             Pos = float3.zero,
                             LinearVelocity = float3.zero
                         });
 
-                        EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest()
+                        EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest
                         {
                             ItemEntity = pickupState.PickupedEntity
                         });
 
-                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemAttachToTableRequest()
+                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemAttachToTableRequest
                         {
                         //    ItemEntity = pickupState.PickupedEntity,
                             SlotPos = triggerData.SlotPos

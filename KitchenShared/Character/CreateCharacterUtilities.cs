@@ -26,12 +26,12 @@ namespace FootStone.Kitchen
                 PredictingPlayerId = -1
             });
 
-            entityManager.AddComponentData(e, new TransformPredictedState()
+            entityManager.AddComponentData(e, new TransformPredictedState
             {
                 Position = position,
                 Rotation = rotation
             });
-            entityManager.AddComponentData(e, new VelocityPredictedState()
+            entityManager.AddComponentData(e, new VelocityPredictedState
             {
                 MotionType = MotionType.Kinematic,
                 Linear = float3.zero,
@@ -64,15 +64,15 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new CharacterMovePredictedState
             {
-               UnsupportedVelocity = float3.zero,
+               UnsupportedVelocity = float3.zero
             });
 
-            entityManager.AddComponentData(e, new TriggerSetting()
+            entityManager.AddComponentData(e, new TriggerSetting
             {
                 Distance = 0.7f
             });
 
-            entityManager.AddComponentData(e, new TriggerPredictedState()
+            entityManager.AddComponentData(e, new TriggerPredictedState
             {
                TriggeredEntity = Entity.Null,
                IsAllowTrigger = true

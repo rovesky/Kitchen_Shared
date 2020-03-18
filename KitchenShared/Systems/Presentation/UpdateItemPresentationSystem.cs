@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                     switch (velocityPredictData.MotionType)
                     {
                         case MotionType.Dynamic:
-                            EntityManager.AddComponentData(entity, new PhysicsVelocity()
+                            EntityManager.AddComponentData(entity, new PhysicsVelocity
                             {
                                 Linear = velocityPredictData.Linear,
                                 Angular = velocityPredictData.Angular

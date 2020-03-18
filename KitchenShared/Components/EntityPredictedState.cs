@@ -39,7 +39,7 @@ namespace FootStone.Kitchen
         Static,
         Kinematic,
         Dynamic
-    };
+    }
 
     public struct VelocityPredictedState : IComponentData, IPredictedState<VelocityPredictedState>
     {

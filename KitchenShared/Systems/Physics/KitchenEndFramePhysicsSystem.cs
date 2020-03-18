@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
         {
             // Add built-in jobs
             HandlesToWaitFor.Add(m_BuildPhysicsWorld.FinalJobHandle);
-            HandlesToWaitFor.Add(m_StepPhysicsWorld.FinalJobHandle);
+         //   HandlesToWaitFor.Add(m_StepPhysicsWorld.FinalJobHandle);
             HandlesToWaitFor.Add(m_ExportPhysicsWorld.FinalJobHandle);
             var handle = JobHandle.CombineDependencies(HandlesToWaitFor);
             HandlesToWaitFor.Clear();
