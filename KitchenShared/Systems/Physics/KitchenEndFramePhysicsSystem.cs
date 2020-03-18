@@ -18,6 +18,8 @@ namespace FootStone.Kitchen
 
         BuildPhysicsWorld m_BuildPhysicsWorld;
         StepPhysicsWorld m_StepPhysicsWorld;
+        KitchenStepPhysicsWorld kitchenStepPhysicsWorldSystem;
+
         KitchenExportPhysicsWorld m_ExportPhysicsWorld;
 
         JobHandle CombineDependencies()
@@ -25,6 +27,7 @@ namespace FootStone.Kitchen
             // Add built-in jobs
             HandlesToWaitFor.Add(m_BuildPhysicsWorld.FinalJobHandle);
          //   HandlesToWaitFor.Add(m_StepPhysicsWorld.FinalJobHandle);
+            HandlesToWaitFor.Add(kitchenStepPhysicsWorldSystem.FinalJobHandle);
             HandlesToWaitFor.Add(m_ExportPhysicsWorld.FinalJobHandle);
             var handle = JobHandle.CombineDependencies(HandlesToWaitFor);
             HandlesToWaitFor.Clear();
@@ -38,6 +41,7 @@ namespace FootStone.Kitchen
 
             m_BuildPhysicsWorld = World.GetOrCreateSystem<BuildPhysicsWorld>();
             m_StepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
+            kitchenStepPhysicsWorldSystem = World.GetOrCreateSystem<KitchenStepPhysicsWorld>();
             m_ExportPhysicsWorld = World.GetOrCreateSystem<KitchenExportPhysicsWorld>();
         }
 

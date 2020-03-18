@@ -17,17 +17,20 @@ namespace FootStone.Kitchen
 
         BuildPhysicsWorld m_BuildPhysicsWorldSystem;
         StepPhysicsWorld m_StepPhysicsWorldSystem;
+        KitchenStepPhysicsWorld kitchenStepPhysicsWorldSystem;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
             m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+            kitchenStepPhysicsWorldSystem = World.GetOrCreateSystem<KitchenStepPhysicsWorld>();
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
+            //var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
            // var handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
+            var handle = JobHandle.CombineDependencies(inputDeps, kitchenStepPhysicsWorldSystem.FinalJobHandle);
 
             ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
             var transformPredictedStateType = GetArchetypeChunkComponentType<TransformPredictedState>();
