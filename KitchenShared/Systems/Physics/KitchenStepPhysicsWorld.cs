@@ -1,8 +1,5 @@
-﻿using Unity.Burst;
-using Unity.Collections;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
@@ -13,18 +10,16 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class KitchenStepPhysicsWorld : JobComponentSystem
     {
+        private KitchenBuildPhysicsWorld m_BuildPhysicsWorldSystem;
+        private SimulationContext SimulationContext;
         public JobHandle FinalJobHandle { get; private set; }
 
-        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        private SimulationContext SimulationContext;
-     
         protected override void OnCreate()
         {
-            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
 
             SimulationContext = new SimulationContext();
             SimulationContext.Reset(ref m_BuildPhysicsWorldSystem.PhysicsWorld);
-
         }
 
         protected override void OnDestroy()
@@ -35,11 +30,10 @@ namespace FootStone.Kitchen
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             var handle = JobHandle.CombineDependencies(inputDeps, m_BuildPhysicsWorldSystem.FinalJobHandle);
-           // var handle = JobHandle.CombineDependencies(inputDeps, m_StepPhysicsWorldSystem.FinalJobHandle);
 
-            ref PhysicsWorld world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
+            ref var world = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
 #if !UNITY_DOTSPLAYER
-            float timeStep = UnityEngine.Time.fixedDeltaTime;
+            var timeStep = UnityEngine.Time.fixedDeltaTime;
 #else
         float timeStep = Time.DeltaTime;
 #endif
@@ -49,12 +43,12 @@ namespace FootStone.Kitchen
                 TimeStep = timeStep,
                 NumSolverIterations = PhysicsStep.Default.SolverIterationCount,
                 Gravity = PhysicsStep.Default.Gravity,
-                SynchronizeCollisionWorld = true,
+                SynchronizeCollisionWorld = true
             };
 
             handle = world.CollisionWorld.ScheduleUpdateDynamicTree(
                 ref world, stepInput.TimeStep, stepInput.Gravity, handle);
-        
+
             // NOTE: Currently the advice is to not chain local simulation steps.
             // Therefore we complete necessary work here and at each step.
             handle.Complete();
@@ -63,10 +57,8 @@ namespace FootStone.Kitchen
 
             Simulation.StepImmediate(stepInput, ref SimulationContext);
 
-
             FinalJobHandle = handle;
             return handle;
         }
-    
     }
 }

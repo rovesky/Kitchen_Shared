@@ -12,13 +12,13 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class TriggerSystem : JobComponentSystem
     {
-        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
+        private KitchenBuildPhysicsWorld m_BuildPhysicsWorldSystem;
         private KitchenExportPhysicsWorld m_ExportPhysicsWorldSystem;
         private EntityQuery m_TriggerVolumeGroup;
 
         protected override void OnCreate()
         {
-            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
             m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<KitchenExportPhysicsWorld>();
             m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerData));
         }

@@ -9,7 +9,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<BuildPhysicsWorld>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenBuildPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenStepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
          //   m_systemsToUpdate.Add(World.GetOrCreateSystem<TestSystem>());

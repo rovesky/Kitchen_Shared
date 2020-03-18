@@ -16,8 +16,8 @@ namespace FootStone.Kitchen
         // A combined handle of all built-in and user physics jobs
         public JobHandle FinalJobHandle { get; private set; }
 
-        BuildPhysicsWorld m_BuildPhysicsWorld;
-        StepPhysicsWorld m_StepPhysicsWorld;
+        KitchenBuildPhysicsWorld m_BuildPhysicsWorld;
+       // StepPhysicsWorld m_StepPhysicsWorld;
         KitchenStepPhysicsWorld kitchenStepPhysicsWorldSystem;
 
         KitchenExportPhysicsWorld m_ExportPhysicsWorld;
@@ -39,8 +39,8 @@ namespace FootStone.Kitchen
             HandlesToWaitFor = new NativeList<JobHandle>(16, Allocator.Persistent);
             FinalJobHandle = new JobHandle();
 
-            m_BuildPhysicsWorld = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            m_StepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
+            m_BuildPhysicsWorld = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
+          //  m_StepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
             kitchenStepPhysicsWorldSystem = World.GetOrCreateSystem<KitchenStepPhysicsWorld>();
             m_ExportPhysicsWorld = World.GetOrCreateSystem<KitchenExportPhysicsWorld>();
         }

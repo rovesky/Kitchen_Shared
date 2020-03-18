@@ -19,7 +19,7 @@ namespace FootStone.Kitchen
         private const float KDefaultTau = 0.4f;
         private const float KDefaultDamping = 0.9f;
 
-        private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
+        private KitchenBuildPhysicsWorld m_BuildPhysicsWorldSystem;
 
         private EntityQuery m_CharacterControllersGroup;
         private KitchenEndFramePhysicsSystem m_EndFramePhysicsSystem;
@@ -27,7 +27,7 @@ namespace FootStone.Kitchen
 
         protected override void OnCreate()
         {
-            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
             m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<KitchenExportPhysicsWorld>();
             m_EndFramePhysicsSystem = World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>();
 

@@ -15,14 +15,14 @@ namespace FootStone.Kitchen
     {
         public JobHandle FinalJobHandle { get; private set; }
 
-        BuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        StepPhysicsWorld m_StepPhysicsWorldSystem;
+        KitchenBuildPhysicsWorld m_BuildPhysicsWorldSystem;
+       // StepPhysicsWorld m_StepPhysicsWorldSystem;
         KitchenStepPhysicsWorld kitchenStepPhysicsWorldSystem;
 
         protected override void OnCreate()
         {
-            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+            m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
+          //  m_StepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
             kitchenStepPhysicsWorldSystem = World.GetOrCreateSystem<KitchenStepPhysicsWorld>();
         }
 
