@@ -94,9 +94,9 @@ namespace FootStone.Kitchen
             // Solve downwards (don't use min delta time, try to solve full step)
             var outVelocity = initialVelocity;
             var outPosition = transform.pos;
-            SimplexSolver.Solve(stepInput.World, stepInput.DeltaTime, stepInput.DeltaTime, stepInput.Up,
-                stepInput.MaxMovementSpeed,
-                constraints, ref outPosition, ref outVelocity, out _, false);
+            SimplexSolver.Solve(stepInput.DeltaTime, stepInput.DeltaTime, stepInput.Up,
+                stepInput.MaxMovementSpeed,constraints, ref outPosition, ref outVelocity, 
+                out _, false);
 
             // Get info on surface
             {
@@ -268,7 +268,7 @@ namespace FootStone.Kitchen
                 var prevVelocity = newVelocity;
                 var prevPosition = newPosition;
                 // FSLog.Info($"begin newVelocity£º{newVelocity} ");
-                SimplexSolver.Solve(world, remainingTime, minDeltaTime, up, stepInput.MaxMovementSpeed, constraints,
+                SimplexSolver.Solve(remainingTime, minDeltaTime, up, stepInput.MaxMovementSpeed, constraints,
                     ref newPosition, ref newVelocity, out var integratedTime);
               //  FSLog.Info($"constraints.Length£º{constraints.Length} ");
                 // Apply impulses to hit bodies
@@ -516,10 +516,10 @@ namespace FootStone.Kitchen
 
             var arm = point - massCenter;
             var jacAng = math.cross(arm, normal);
-            var armC = jacAng * mv.InverseInertiaAndMass.xyz;
+            var armC = jacAng * mv.InverseInertia;
 
             var objectMassInv = math.dot(armC, jacAng);
-            objectMassInv += mv.InverseInertiaAndMass.w;
+            objectMassInv += mv.InverseMass;
 
             return objectMassInv;
         }

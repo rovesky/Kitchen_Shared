@@ -153,7 +153,8 @@ namespace FootStone.Kitchen
                     var velocityData = chunkVelocityData[i];
 
                     // Collision filter must be valid
-                    Assert.IsTrue(collider.ColliderPtr->Filter.IsValid);
+                    if (!collider.IsValid || collider.Value.Value.Filter.IsEmpty)
+                        continue;
 
                 //    velocityData.Linear = new float3(4,0,0);
                     // Character step input
@@ -209,7 +210,6 @@ namespace FootStone.Kitchen
                         CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
                             stepInput.CurrentVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out velocityData.Linear);
-
                         //if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
                         //    FSLog.Info($"Entity:{entity},velocityData.Linear:{velocityData.Linear}," +
                         //           $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
