@@ -23,7 +23,7 @@ namespace FootStone.Kitchen
         // Entity group queries
         public EntityQuery DynamicEntityGroup { get; private set; }
         public EntityQuery StaticEntityGroup { get; private set; }
-        public EntityQuery JointEntityGroup { get; private set; }
+     //   public EntityQuery JointEntityGroup { get; private set; }
 
         KitchenEndFramePhysicsSystem m_EndFramePhysicsSystem;
 
@@ -36,8 +36,9 @@ namespace FootStone.Kitchen
                 All = new ComponentType[]
                 {
                     typeof(PhysicsVelocity),
-                    typeof(Translation),
-                    typeof(Rotation)
+                    typeof(TransformPredictedState)
+                   // typeof(Translation),
+                   // typeof(Rotation)
                 }
             });
 
@@ -50,8 +51,9 @@ namespace FootStone.Kitchen
                 Any = new ComponentType[]
                 {
                     typeof(LocalToWorld),
-                    typeof(Translation),
-                    typeof(Rotation)
+                    typeof(TransformPredictedState)
+                  //  typeof(Translation),
+                  //  typeof(Rotation)
                 },
                 None = new ComponentType[]
                 {
@@ -60,13 +62,13 @@ namespace FootStone.Kitchen
                 }
             });
 
-            JointEntityGroup = GetEntityQuery(new EntityQueryDesc
-            {
-                All = new ComponentType[]
-                {
-                    typeof(PhysicsJoint)
-                }
-            });
+            //JointEntityGroup = GetEntityQuery(new EntityQueryDesc
+            //{
+            //    All = new ComponentType[]
+            //    {
+            //        typeof(PhysicsJoint)
+            //    }
+            //});
 
             m_EndFramePhysicsSystem = World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>();
         }
@@ -86,19 +88,20 @@ namespace FootStone.Kitchen
             var entityType = GetArchetypeChunkEntityType();
             var localToWorldType = GetArchetypeChunkComponentType<LocalToWorld>(true);
             var parentType = GetArchetypeChunkComponentType<Parent>(true);
-            var positionType = GetArchetypeChunkComponentType<Translation>(true);
-            var rotationType = GetArchetypeChunkComponentType<Rotation>(true);
+        //    var positionType = GetArchetypeChunkComponentType<Translation>(true);
+        //   var rotationType = GetArchetypeChunkComponentType<Rotation>(true);
+            var transformType = GetArchetypeChunkComponentType<TransformPredictedState>(true);
             var physicsColliderType = GetArchetypeChunkComponentType<PhysicsCollider>(true);
             var physicsVelocityType = GetArchetypeChunkComponentType<PhysicsVelocity>(true);
             var physicsMassType = GetArchetypeChunkComponentType<PhysicsMass>(true);
             var physicsDampingType = GetArchetypeChunkComponentType<PhysicsDamping>(true);
             var physicsGravityFactorType = GetArchetypeChunkComponentType<PhysicsGravityFactor>(true);
             var physicsCustomTagsType = GetArchetypeChunkComponentType<PhysicsCustomTags>(true);
-            var physicsJointType = GetArchetypeChunkComponentType<PhysicsJoint>(true);
+          //  var physicsJointType = GetArchetypeChunkComponentType<PhysicsJoint>(true);
 
             int numDynamicBodies = DynamicEntityGroup.CalculateEntityCount();
             int numStaticBodies = StaticEntityGroup.CalculateEntityCount();
-            int numJoints = JointEntityGroup.CalculateEntityCount();
+          //  int numJoints = JointEntityGroup.CalculateEntityCount();
 
             int previousStaticBodyCount = PhysicsWorld.NumStaticBodies;
 
@@ -106,7 +109,7 @@ namespace FootStone.Kitchen
             PhysicsWorld.Reset(
                 numStaticBodies + 1, // +1 for the default static body
                 numDynamicBodies,
-                numJoints);
+                0);
 
             // Determine if the static bodies have changed in any way that will require the static broadphase tree to be rebuilt
             JobHandle staticBodiesCheckHandle = default;
@@ -131,8 +134,9 @@ namespace FootStone.Kitchen
                     {
                         LocalToWorldType = localToWorldType,
                         ParentType = parentType,
-                        PositionType = positionType,
-                        RotationType = rotationType,
+                       // PositionType = positionType,
+                      //  RotationType = rotationType,
+                        TransformType = transformType,
                         PhysicsColliderType = physicsColliderType,
                         ChunkHasChangesOutput = chunksHaveChanges,
                         m_LastSystemVersion = LastSystemVersion
@@ -153,11 +157,14 @@ namespace FootStone.Kitchen
 
                 // Create the default static body at the end of the body list
                 // TODO: could skip this if no joints present
-                jobHandles.Add(new Jobs.CreateDefaultStaticRigidBody
+               // if (numJoints > 0)
                 {
-                    NativeBodies = PhysicsWorld.Bodies,
-                    BodyIndex = PhysicsWorld.Bodies.Length - 1
-                }.Schedule(inputDeps));
+                    jobHandles.Add(new Jobs.CreateDefaultStaticRigidBody
+                    {
+                        NativeBodies = PhysicsWorld.Bodies,
+                        BodyIndex = PhysicsWorld.Bodies.Length - 1
+                    }.Schedule(inputDeps));
+                }
 
                 // Dynamic bodies. 
                 // Create these separately from static bodies to maintain a 1:1 mapping
@@ -169,8 +176,9 @@ namespace FootStone.Kitchen
                         EntityType = entityType,
                         LocalToWorldType = localToWorldType,
                         ParentType = parentType,
-                        PositionType = positionType,
-                        RotationType = rotationType,
+                    //    PositionType = positionType,
+                    //    RotationType = rotationType,
+                        TransformType =transformType,
                         PhysicsColliderType = physicsColliderType,
                         PhysicsCustomTagsType = physicsCustomTagsType,
 
@@ -180,8 +188,9 @@ namespace FootStone.Kitchen
 
                     jobHandles.Add(new Jobs.CreateMotions
                     {
-                        PositionType = positionType,
-                        RotationType = rotationType,
+                       // PositionType = positionType,
+                       // RotationType = rotationType,
+                        TransformType = transformType,
                         PhysicsVelocityType = physicsVelocityType,
                         PhysicsMassType = physicsMassType,
                         PhysicsDampingType = physicsDampingType,
@@ -201,8 +210,9 @@ namespace FootStone.Kitchen
                         EntityType = entityType,
                         LocalToWorldType = localToWorldType,
                         ParentType = parentType,
-                        PositionType = positionType,
-                        RotationType = rotationType,
+                      //  PositionType = positionType,
+                      //  RotationType = rotationType,
+                        TransformType = transformType,
                         PhysicsColliderType = physicsColliderType,
                         PhysicsCustomTagsType = physicsCustomTagsType,
 
@@ -215,18 +225,18 @@ namespace FootStone.Kitchen
                 jobHandles.Clear();
 
                 // Build joints
-                if (numJoints > 0)
-                {
-                    jobHandles.Add(new Jobs.CreateJoints
-                    {
-                        JointComponentType = physicsJointType,
-                        EntityType = entityType,
-                        RigidBodies = PhysicsWorld.Bodies,
-                        Joints = PhysicsWorld.Joints,
-                        DefaultStaticBodyIndex = PhysicsWorld.Bodies.Length - 1,
-                        NumDynamicBodies = numDynamicBodies
-                    }.Schedule(JointEntityGroup, handle));
-                }
+                //if (numJoints > 0)
+                //{
+                //    jobHandles.Add(new Jobs.CreateJoints
+                //    {
+                //        JointComponentType = physicsJointType,
+                //        EntityType = entityType,
+                //        RigidBodies = PhysicsWorld.Bodies,
+                //        Joints = PhysicsWorld.Joints,
+                //        DefaultStaticBodyIndex = PhysicsWorld.Bodies.Length - 1,
+                //        NumDynamicBodies = numDynamicBodies
+                //    }.Schedule(JointEntityGroup, handle));
+                //}
 
                 // Build the broadphase
                 // TODO: could optimize this by gathering the AABBs and filters at the same time as building the bodies above
@@ -248,6 +258,7 @@ namespace FootStone.Kitchen
                 jobHandles.Add(haveStaticBodiesChanged.Dispose(buildBroadphaseHandle));
 
                 FinalJobHandle = JobHandle.CombineDependencies(jobHandles);
+                FinalJobHandle.Complete();
             }
 
             return JobHandle.CombineDependencies(FinalJobHandle, inputDeps);
@@ -262,8 +273,9 @@ namespace FootStone.Kitchen
             {
                 [ReadOnly] public ArchetypeChunkComponentType<LocalToWorld> LocalToWorldType;
                 [ReadOnly] public ArchetypeChunkComponentType<Parent> ParentType;
-                [ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
-                [ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
+                //[ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
+                //[ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
+                [ReadOnly] public ArchetypeChunkComponentType<TransformPredictedState> TransformType;
                 [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
 
                 public NativeArray<int> ChunkHasChangesOutput;
@@ -273,8 +285,9 @@ namespace FootStone.Kitchen
                 {
                     bool didChunkChange =
                         chunk.DidChange(LocalToWorldType, m_LastSystemVersion) ||
-                        chunk.DidChange(PositionType, m_LastSystemVersion) ||
-                        chunk.DidChange(RotationType, m_LastSystemVersion) ||
+                    //    chunk.DidChange(PositionType, m_LastSystemVersion) ||
+                    //    chunk.DidChange(RotationType, m_LastSystemVersion) ||
+                        chunk.DidChange(TransformType, m_LastSystemVersion) ||
                         chunk.DidChange(PhysicsColliderType, m_LastSystemVersion);
                     ChunkHasChangesOutput[chunkIndex] = didChunkChange ? 1 : 0;
                 }
@@ -326,8 +339,9 @@ namespace FootStone.Kitchen
                 [ReadOnly] public ArchetypeChunkEntityType EntityType;
                 [ReadOnly] public ArchetypeChunkComponentType<LocalToWorld> LocalToWorldType;
                 [ReadOnly] public ArchetypeChunkComponentType<Parent> ParentType;
-                [ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
-                [ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
+               // [ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
+               // [ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
+                [ReadOnly] public ArchetypeChunkComponentType<TransformPredictedState> TransformType;
                 [ReadOnly] public ArchetypeChunkComponentType<PhysicsCollider> PhysicsColliderType;
                 [ReadOnly] public ArchetypeChunkComponentType<PhysicsCustomTags> PhysicsCustomTagsType;
                 [ReadOnly] public int FirstBodyIndex;
@@ -338,8 +352,10 @@ namespace FootStone.Kitchen
                 {
                     NativeArray<PhysicsCollider> chunkColliders = chunk.GetNativeArray(PhysicsColliderType);
                     NativeArray<LocalToWorld> chunkLocalToWorlds = chunk.GetNativeArray(LocalToWorldType);
-                    NativeArray<Translation> chunkPositions = chunk.GetNativeArray(PositionType);
-                    NativeArray<Rotation> chunkRotations = chunk.GetNativeArray(RotationType);
+               //     NativeArray<Translation> chunkPositions = chunk.GetNativeArray(PositionType);
+              //      NativeArray<Rotation> chunkRotations = chunk.GetNativeArray(RotationType);
+
+                    NativeArray<TransformPredictedState> chunkTransforms = chunk.GetNativeArray(TransformType);
                     NativeArray<Entity> chunkEntities = chunk.GetNativeArray(EntityType);
                     NativeArray<PhysicsCustomTags> chunkCustomTags = chunk.GetNativeArray(PhysicsCustomTagsType);
 
@@ -350,9 +366,12 @@ namespace FootStone.Kitchen
                     bool hasChunkPhysicsCustomTagsType = chunk.Has(PhysicsCustomTagsType);
                     bool hasChunkParentType = chunk.Has(ParentType);
                     bool hasChunkLocalToWorldType = chunk.Has(LocalToWorldType);
-                    bool hasChunkPositionType = chunk.Has(PositionType);
-                    bool hasChunkRotationType = chunk.Has(RotationType);
 
+
+                //    bool hasChunkPositionType = chunk.Has(PositionType);
+                 //   bool hasChunkRotationType = chunk.Has(RotationType);
+
+                    bool hasChunkTransformType = chunk.Has(TransformType);
                     RigidTransform worldFromBody = RigidTransform.identity;
                     for (int i = 0; i < instanceCount; i++, rbIndex++)
                     {
@@ -368,18 +387,18 @@ namespace FootStone.Kitchen
                         }
                         else
                         {
-                            if (hasChunkPositionType)
+                            if (hasChunkTransformType)
                             {
-                                worldFromBody.pos = chunkPositions[i].Value;
+                                worldFromBody.pos = chunkTransforms[i].Position;
                             }
                             else if (hasChunkLocalToWorldType)
                             {
                                 worldFromBody.pos = chunkLocalToWorlds[i].Position;
                             }
 
-                            if (hasChunkRotationType)
+                            if (hasChunkTransformType)
                             {
-                                worldFromBody.rot = chunkRotations[i].Value;
+                                worldFromBody.rot = chunkTransforms[i].Rotation;
                             }
                             else if (hasChunkLocalToWorldType)
                             {
@@ -402,8 +421,9 @@ namespace FootStone.Kitchen
             [BurstCompile]
             internal struct CreateMotions : IJobChunk
             {
-                [ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
-                [ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
+               // [ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
+               // [ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
+                [ReadOnly] public ArchetypeChunkComponentType<TransformPredictedState> TransformType;
                 [ReadOnly] public ArchetypeChunkComponentType<PhysicsVelocity> PhysicsVelocityType;
                 [ReadOnly] public ArchetypeChunkComponentType<PhysicsMass> PhysicsMassType;
                 [ReadOnly] public ArchetypeChunkComponentType<PhysicsDamping> PhysicsDampingType;
@@ -414,8 +434,10 @@ namespace FootStone.Kitchen
 
                 public unsafe void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
                 {
-                    NativeArray<Translation> chunkPositions = chunk.GetNativeArray(PositionType);
-                    NativeArray<Rotation> chunkRotations = chunk.GetNativeArray(RotationType);
+                 //   NativeArray<Translation> chunkPositions = chunk.GetNativeArray(PositionType);
+                 //   NativeArray<Rotation> chunkRotations = chunk.GetNativeArray(RotationType);
+                    NativeArray<TransformPredictedState> chunkTransforms = chunk.GetNativeArray(TransformType);
+
                     NativeArray<PhysicsVelocity> chunkVelocities = chunk.GetNativeArray(PhysicsVelocityType);
                     NativeArray<PhysicsMass> chunkMasses = chunk.GetNativeArray(PhysicsMassType);
                     NativeArray<PhysicsDamping> chunkDampings = chunk.GetNativeArray(PhysicsDampingType);
@@ -473,8 +495,8 @@ namespace FootStone.Kitchen
                         MotionDatas[motionIndex] = new MotionData
                         {
                             WorldFromMotion = new RigidTransform(
-                                math.mul(chunkRotations[i].Value, mass.InertiaOrientation),
-                                math.rotate(chunkRotations[i].Value, mass.CenterOfMass) + chunkPositions[i].Value
+                                math.mul(chunkTransforms[i].Rotation, mass.InertiaOrientation),
+                                math.rotate(chunkTransforms[i].Rotation, mass.CenterOfMass) + chunkTransforms[i].Position
                             ),
                             BodyFromMotion = new RigidTransform(mass.InertiaOrientation, mass.CenterOfMass),
                             LinearDamping = damping.Linear,
@@ -485,90 +507,90 @@ namespace FootStone.Kitchen
                 }
             }
 
-            [BurstCompile]
-            internal struct CreateJoints : IJobChunk
-            {
-                [ReadOnly] public ArchetypeChunkComponentType<PhysicsJoint> JointComponentType;
-                [ReadOnly] public ArchetypeChunkEntityType EntityType;
-                [ReadOnly] public NativeSlice<RigidBody> RigidBodies;
-                [ReadOnly] public int NumDynamicBodies;
+            //[BurstCompile]
+            //internal struct CreateJoints : IJobChunk
+            //{
+            //    [ReadOnly] public ArchetypeChunkComponentType<PhysicsJoint> JointComponentType;
+            //    [ReadOnly] public ArchetypeChunkEntityType EntityType;
+            //    [ReadOnly] public NativeSlice<RigidBody> RigidBodies;
+            //    [ReadOnly] public int NumDynamicBodies;
 
-                [NativeDisableParallelForRestriction]
-                public NativeSlice<Joint> Joints;
+            //    [NativeDisableParallelForRestriction]
+            //    public NativeSlice<Joint> Joints;
 
-                public int DefaultStaticBodyIndex;
+            //    public int DefaultStaticBodyIndex;
 
-                public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-                {
-                    NativeArray<PhysicsJoint> chunkJoint = chunk.GetNativeArray(JointComponentType);
-                    NativeArray<Entity> chunkEntities = chunk.GetNativeArray(EntityType);
+            //    public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            //    {
+            //        NativeArray<PhysicsJoint> chunkJoint = chunk.GetNativeArray(JointComponentType);
+            //        NativeArray<Entity> chunkEntities = chunk.GetNativeArray(EntityType);
 
-                    int instanceCount = chunk.Count;
-                    for (int i = 0; i < instanceCount; i++)
-                    {
-                        PhysicsJoint joint = chunkJoint[i];
-                        Assert.IsTrue(joint.EntityA != joint.EntityB);
+            //        int instanceCount = chunk.Count;
+            //        for (int i = 0; i < instanceCount; i++)
+            //        {
+            //            PhysicsJoint joint = chunkJoint[i];
+            //            Assert.IsTrue(joint.EntityA != joint.EntityB);
 
-                        // TODO find a reasonable way to look up the constraint body indices
-                        // - stash body index in a component on the entity? But we don't have random access to Entity data in a job
-                        // - make a map from entity to rigid body index? Sounds bad and I don't think there is any NativeArray-based map data structure yet
+            //            // TODO find a reasonable way to look up the constraint body indices
+            //            // - stash body index in a component on the entity? But we don't have random access to Entity data in a job
+            //            // - make a map from entity to rigid body index? Sounds bad and I don't think there is any NativeArray-based map data structure yet
 
-                        // If one of the entities is null, use the default static entity
-                        var pair = new BodyIndexPair
-                        {
-                            BodyAIndex = joint.EntityA == Entity.Null ? DefaultStaticBodyIndex : -1,
-                            BodyBIndex = joint.EntityB == Entity.Null ? DefaultStaticBodyIndex : -1
-                        };
+            //            // If one of the entities is null, use the default static entity
+            //            var pair = new BodyIndexPair
+            //            {
+            //                BodyAIndex = joint.EntityA == Entity.Null ? DefaultStaticBodyIndex : -1,
+            //                BodyBIndex = joint.EntityB == Entity.Null ? DefaultStaticBodyIndex : -1
+            //            };
 
-                        // Find the body indices
-                        for (int bodyIndex = 0; bodyIndex < RigidBodies.Length; bodyIndex++)
-                        {
-                            if (joint.EntityA != Entity.Null)
-                            {
-                                if (RigidBodies[bodyIndex].Entity == joint.EntityA)
-                                {
-                                    pair.BodyAIndex = bodyIndex;
-                                    if (pair.BodyBIndex >= 0)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
+            //            // Find the body indices
+            //            for (int bodyIndex = 0; bodyIndex < RigidBodies.Length; bodyIndex++)
+            //            {
+            //                if (joint.EntityA != Entity.Null)
+            //                {
+            //                    if (RigidBodies[bodyIndex].Entity == joint.EntityA)
+            //                    {
+            //                        pair.BodyAIndex = bodyIndex;
+            //                        if (pair.BodyBIndex >= 0)
+            //                        {
+            //                            break;
+            //                        }
+            //                    }
+            //                }
 
-                            if (joint.EntityB != Entity.Null)
-                            {
-                                if (RigidBodies[bodyIndex].Entity == joint.EntityB)
-                                {
-                                    pair.BodyBIndex = bodyIndex;
-                                    if (pair.BodyAIndex >= 0)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+            //                if (joint.EntityB != Entity.Null)
+            //                {
+            //                    if (RigidBodies[bodyIndex].Entity == joint.EntityB)
+            //                    {
+            //                        pair.BodyBIndex = bodyIndex;
+            //                        if (pair.BodyAIndex >= 0)
+            //                        {
+            //                            break;
+            //                        }
+            //                    }
+            //                }
+            //            }
 
-                        bool isInvalid = false;
-                        // Invalid if we have not found the body indices...
-                        isInvalid |= (pair.BodyAIndex == -1 || pair.BodyBIndex == -1);
-                        // ... or if we are constraining two static bodies
-                        // Mark static-static invalid since they are not going to affect simulation in any way.
-                        isInvalid |= (pair.BodyAIndex >= NumDynamicBodies && pair.BodyBIndex >= NumDynamicBodies);
-                        if (isInvalid)
-                        {
-                            pair = BodyIndexPair.Invalid;
-                        }
+            //            bool isInvalid = false;
+            //            // Invalid if we have not found the body indices...
+            //            isInvalid |= (pair.BodyAIndex == -1 || pair.BodyBIndex == -1);
+            //            // ... or if we are constraining two static bodies
+            //            // Mark static-static invalid since they are not going to affect simulation in any way.
+            //            isInvalid |= (pair.BodyAIndex >= NumDynamicBodies && pair.BodyBIndex >= NumDynamicBodies);
+            //            if (isInvalid)
+            //            {
+            //                pair = BodyIndexPair.Invalid;
+            //            }
 
-                        Joints[firstEntityIndex + i] = new Joint
-                        {
-                            JointData = chunkJoint[i].JointData,
-                            BodyPair = pair,
-                            Entity = chunkEntities[i],
-                            EnableCollision = chunkJoint[i].EnableCollision
-                        };
-                    }
-                }
-            }
+            //            Joints[firstEntityIndex + i] = new Joint
+            //            {
+            //                JointData = chunkJoint[i].JointData,
+            //                BodyPair = pair,
+            //                Entity = chunkEntities[i],
+            //                EnableCollision = chunkJoint[i].EnableCollision
+            //            };
+            //        }
+            //    }
+            //}
         }
 
         #endregion
