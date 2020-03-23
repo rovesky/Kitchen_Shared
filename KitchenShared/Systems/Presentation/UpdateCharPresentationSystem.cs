@@ -25,7 +25,7 @@ namespace FootStone.Kitchen
                 {
                     interpolateData.Position = transformPredictData.Position;
                     interpolateData.Rotation = transformPredictData.Rotation;
-                    interpolateData.LinearVelocity = velocityPredictData.Linear;
+                 //   interpolateData.LinearVelocity = velocityPredictData.Linear;
 
                     var dir = Vector3.SqrMagnitude(velocityPredictData.Linear) < 0.001f ? Vector3.zero :(Vector3) math.normalize(velocityPredictData.Linear);
                     interpolateData.SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;

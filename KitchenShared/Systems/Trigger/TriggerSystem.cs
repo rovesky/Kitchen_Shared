@@ -1,35 +1,30 @@
 ﻿using FootStone.ECS;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
-using Unity.Physics.Systems;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class TriggerSystem : JobComponentSystem
+    public class TriggerSystem : SystemBase
     {
         private KitchenBuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        private KitchenExportPhysicsWorld m_ExportPhysicsWorldSystem;
         private EntityQuery m_TriggerVolumeGroup;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
-            m_ExportPhysicsWorldSystem = World.GetOrCreateSystem<KitchenExportPhysicsWorld>();
             m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerData));
         }
 
-        protected override unsafe JobHandle OnUpdate(JobHandle inputDeps)
+        protected override unsafe void OnUpdate()
         {
-            inputDeps = JobHandle.CombineDependencies(inputDeps, m_ExportPhysicsWorldSystem.FinalJobHandle);
             var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
 
-            inputDeps = Entities
+            Entities
                 .WithAll<ServerEntity>()
                 .WithReadOnly(volumeEntities)
                 .ForEach((Entity entity,
@@ -69,14 +64,13 @@ namespace FootStone.Kitchen
                         : physicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
 
                     // if (predictedState.TriggeredEntity != Entity.Null)
-                    //  FSLog.Info($"triggerEntity:{predictedState.TriggeredEntity}");
+                    //FSLog.Info($"triggerEntity:{triggerState.TriggeredEntity}");
 
                     distanceHits.Dispose();
-                }).Schedule(inputDeps);//.Complete();
-
-            inputDeps = volumeEntities.Dispose(inputDeps);
-            inputDeps.Complete();
-            return inputDeps;
+                })
+                //   .WithDeallocateOnJobCompletion(volumeEntities)
+                .Run();
+            volumeEntities.Dispose();
         }
 
         private static int CheckTrigger(ref PhysicsWorld world, ref NativeArray<Entity> volumeEntities,

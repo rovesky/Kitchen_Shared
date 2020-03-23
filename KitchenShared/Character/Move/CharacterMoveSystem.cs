@@ -40,6 +40,7 @@ namespace FootStone.Kitchen
                     typeof(UserCommand),
                     typeof(CharacterMovePredictedState),
                     typeof(TransformPredictedState),
+                    typeof(VelocityPredictedState),
                     typeof(PhysicsCollider)
                 }
             };
@@ -96,8 +97,10 @@ namespace FootStone.Kitchen
             inputDeps = applyJob.Schedule(inputDeps);
             var disposeHandle = deferredImpulses.Dispose(inputDeps);
 
+            disposeHandle.Complete();
+
             // Must finish all jobs before physics step end
-            m_EndFramePhysicsSystem.HandlesToWaitFor.Add(disposeHandle);
+          //  m_EndFramePhysicsSystem.HandlesToWaitFor.Add(disposeHandle);
 
             return inputDeps;
         }
@@ -217,9 +220,8 @@ namespace FootStone.Kitchen
                     //  FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
                     // Write back and orientation integration
                     transformData.Position = transform.pos;
+
                     // character rotate
-
-
                     if (math.distancesq(userCommand.TargetDir, float3.zero) > 0.0001f)
                     {
                         // var dir = Vector3.SqrMagnitude(velocityData.Linear) < 0.001f 

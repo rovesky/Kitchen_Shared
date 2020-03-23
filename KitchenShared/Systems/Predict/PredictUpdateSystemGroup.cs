@@ -1,6 +1,5 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Physics.Systems;
 
 namespace FootStone.Kitchen
 {
@@ -13,10 +12,9 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenStepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
          //   m_systemsToUpdate.Add(World.GetOrCreateSystem<TestSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
-    
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerSystem>());
 
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
