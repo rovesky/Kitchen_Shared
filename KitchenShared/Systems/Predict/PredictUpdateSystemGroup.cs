@@ -8,6 +8,9 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
+          //  m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemReduceTempOwnerCDSystem>());
+
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenBuildPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenStepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
@@ -15,6 +18,8 @@ namespace FootStone.Kitchen
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerSystem>());
+
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupFlyingSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());

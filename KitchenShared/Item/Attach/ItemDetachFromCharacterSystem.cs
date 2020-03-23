@@ -18,21 +18,27 @@ namespace FootStone.Kitchen
                     ref TriggerPredictedState triggerState,
                     ref ReplicatedEntityData replicatedEntityData,
                     in ItemDetachFromCharacterRequest request) =>
-            {
-                FSLog.Info("ItemDetachFromCharacterSystem OnUpdate!");
-                EntityManager.RemoveComponent<ItemDetachFromCharacterRequest>(entity);
+                {
+                    FSLog.Info("ItemDetachFromCharacterSystem OnUpdate!");
+                    EntityManager.RemoveComponent<ItemDetachFromCharacterRequest>(entity);
 
-                triggerState.IsAllowTrigger = true;
-                itemPredictedState.Owner = Entity.Null;
-            
-                transformPredictedState.Position = request.Pos;
-                transformPredictedState.Rotation = quaternion.identity;
+                    triggerState.IsAllowTrigger = true;
+                    itemPredictedState.TempOwner = request.TempOwner;
+                  
+                  //  FSLog.Info($"ItemDetachFromCharacterSystem itemPredictedState.TempOwner :{itemPredictedState.TempOwner }," +
+                        //       $" itemPredictedState.TempOwnerCD：{ itemPredictedState.TempOwnerCD}");
 
-                velocityPredictedState.Linear = request.LinearVelocity;
-                velocityPredictedState.MotionType = MotionType.Dynamic;
+                    itemPredictedState.Owner = Entity.Null;
 
-                replicatedEntityData.PredictingPlayerId = -1;
-            }).Run();
+
+                    transformPredictedState.Position = request.Pos;
+                    transformPredictedState.Rotation = quaternion.identity;
+
+                    velocityPredictedState.Linear = request.LinearVelocity;
+                    velocityPredictedState.MotionType = MotionType.Dynamic;
+
+                    replicatedEntityData.PredictingPlayerId = -1;
+                }).Run();
         }
     }
 }

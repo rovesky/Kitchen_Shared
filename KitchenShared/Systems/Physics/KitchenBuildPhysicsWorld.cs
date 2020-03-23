@@ -132,8 +132,8 @@ namespace FootStone.Kitchen
 
                     staticBodiesCheckHandle = new Jobs.CheckStaticBodyChangesJob
                     {
-                        LocalToWorldType = localToWorldType,
-                        ParentType = parentType,
+                     //   LocalToWorldType = localToWorldType,
+                     //   ParentType = parentType,
                        // PositionType = positionType,
                       //  RotationType = rotationType,
                         TransformType = transformType,
@@ -271,8 +271,8 @@ namespace FootStone.Kitchen
             [BurstCompile]
             internal struct CheckStaticBodyChangesJob : IJobChunk
             {
-                [ReadOnly] public ArchetypeChunkComponentType<LocalToWorld> LocalToWorldType;
-                [ReadOnly] public ArchetypeChunkComponentType<Parent> ParentType;
+              //  [ReadOnly] public ArchetypeChunkComponentType<LocalToWorld> LocalToWorldType;
+              //  [ReadOnly] public ArchetypeChunkComponentType<Parent> ParentType;
                 //[ReadOnly] public ArchetypeChunkComponentType<Translation> PositionType;
                 //[ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
                 [ReadOnly] public ArchetypeChunkComponentType<TransformPredictedState> TransformType;
@@ -284,7 +284,7 @@ namespace FootStone.Kitchen
                 public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
                 {
                     bool didChunkChange =
-                        chunk.DidChange(LocalToWorldType, m_LastSystemVersion) ||
+                    //    chunk.DidChange(LocalToWorldType, m_LastSystemVersion) ||
                     //    chunk.DidChange(PositionType, m_LastSystemVersion) ||
                     //    chunk.DidChange(RotationType, m_LastSystemVersion) ||
                         chunk.DidChange(TransformType, m_LastSystemVersion) ||

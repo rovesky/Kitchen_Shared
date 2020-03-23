@@ -6,24 +6,25 @@ namespace FootStone.Kitchen
     public struct ItemPredictedState : IComponentData, IPredictedState<ItemPredictedState>
     {
         public Entity Owner;
-        //public bool IsDynamic;
-     
+        public Entity TempOwner;
+       
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
-         //   IsDynamic = reader.ReadBoolean();
+            context.RefSerializer.DeserializeReference(ref reader, ref TempOwner);
+            
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             context.RefSerializer.SerializeReference(ref writer, "owner", Owner);
-           // writer.WriteBoolean("IsDynamic", IsDynamic);
+            context.RefSerializer.SerializeReference(ref writer, "TempOwner", TempOwner);
         }
 
         public bool VerifyPrediction(ref ItemPredictedState state)
         {
-            return Owner.Equals(state.Owner);// &&
-            //    IsDynamic.Equals(state.IsDynamic);
+            return Owner.Equals(state.Owner) &&
+                   TempOwner.Equals(state.TempOwner);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()

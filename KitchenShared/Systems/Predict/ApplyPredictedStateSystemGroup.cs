@@ -59,7 +59,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyTransformPredictedStateSystem>());
+         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyTransformPredictedStateSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyVelocityPredictedStateSystem>());
         }
     }
