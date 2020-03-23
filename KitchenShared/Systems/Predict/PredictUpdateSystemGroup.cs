@@ -23,6 +23,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemAttachToCharacterSystem>());

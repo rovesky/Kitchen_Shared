@@ -200,24 +200,29 @@ namespace FootStone.Kitchen
 
                     //add InitVelocity , clear InitVelocity
                     desiredVelocity += movePredictedData.InitVelocity;
-                    movePredictedData.InitVelocity = float3.zero;
+                    if (movePredictedData.VelocityDulation > 0)
+                        movePredictedData.VelocityDulation--;
+                    else
+                        movePredictedData.InitVelocity = float3.zero;
 
+                
                     //    FSLog.Info($"stepInput.CurrentVelocity:{stepInput.CurrentVelocity},desiredVelocity:{desiredVelocity}");
                     // Calculate actual velocity with respect to surface
                     if (moveInternalState.SupportedState == CharacterSupportState.Supported)
                         CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
                             stepInput.CurrentVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out velocityData.Linear);
-                    //if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
-                    //    FSLog.Info($"Entity:{entity},velocityData.Linear:{velocityData.Linear}," +
-                    //           $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
+                    if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
+                        FSLog.Info($"Entity:{entity},velocityData.Linear:{velocityData.Linear}," +
+                               $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
                     else
                         velocityData.Linear = desiredVelocity;
 
                     // World collision + integrate
                     CollideAndIntegrate(stepInput, moveSetting.CharacterMass, moveSetting.AffectsPhysicsBodies > 0,
                         collider.ColliderPtr, ref transform, ref velocityData.Linear, ref DeferredImpulseWriter);
-                    //  FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
+                    if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
+                        FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
                     // Write back and orientation integration
                     transformData.Position = transform.pos;
 
@@ -238,9 +243,12 @@ namespace FootStone.Kitchen
 
                     // Write back to chunk data
                     {
+                     //   movePredictedData.InitVelocity = velocityData.Linear;
+
                         chunkMovePredictedData[i] = movePredictedData;
                         chunkTransformData[i] = transformData;
                         chunkVelocityData[i] = velocityData;
+                   
                     }
                 }
 

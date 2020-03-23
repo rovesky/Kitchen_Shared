@@ -20,7 +20,7 @@ namespace FootStone.Kitchen
             Pickup = 1 << 0,
             Throw = 1 << 1,
             Jump = 1 << 2,
-            Ability1 = 1 << 3,
+            Rush = 1 << 3,
             Ability2 = 1 << 4,
             Ability3 = 1 << 5,
             Ability4 = 1 << 6,

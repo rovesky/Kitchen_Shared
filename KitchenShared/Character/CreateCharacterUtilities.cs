@@ -90,6 +90,11 @@ namespace FootStone.Kitchen
                 Velocity = 14.0f
             });
 
+            entityManager.AddComponentData(e, new RushSetting
+            {
+                Velocity = 30.0f
+            });
+
             //entityManager.AddComponentData(e, new ThrowPredictedState
             //{
             //    ThrowCD = 0

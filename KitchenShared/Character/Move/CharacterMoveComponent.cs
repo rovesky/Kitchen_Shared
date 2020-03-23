@@ -30,6 +30,7 @@ namespace FootStone.Kitchen
     {
         public float3 UnsupportedVelocity;
         public float3 InitVelocity;
+        public ushort VelocityDulation;
 
       //  public CharacterSupportState SupportedState;
       //  public bool IsJumping;
@@ -38,6 +39,7 @@ namespace FootStone.Kitchen
         {
             UnsupportedVelocity = reader.ReadVector3Q();
             InitVelocity = reader.ReadVector3Q();
+
             //  SupportedState = (CharacterSupportState)reader.ReadByte();
             //  IsJumping = reader.ReadBoolean();
         }
