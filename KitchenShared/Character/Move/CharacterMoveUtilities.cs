@@ -463,7 +463,7 @@ namespace FootStone.Kitchen
                             if (System.Math.Abs(objectMassInv) < 0.0001)
                                 objectMassInv = 0.5f;
 
-                            FSLog.Info($"objectMassInv:{objectMassInv}");
+                        //    FSLog.Info($"objectMassInv:{objectMassInv}");
                         }
                         
                         impulseMagnitude = deltaVelocity / objectMassInv;

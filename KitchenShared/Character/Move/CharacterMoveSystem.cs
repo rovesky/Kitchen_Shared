@@ -327,7 +327,7 @@ namespace FootStone.Kitchen
             }
         }
 
-        // [BurstCompile]
+        [BurstCompile]
         private struct ApplyDefferedPhysicsUpdatesJob : IJob
         {
             // Chunks can be deallocated at this point

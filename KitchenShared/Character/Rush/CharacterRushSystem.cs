@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                 Vector3 linear = math.mul(transformData.Rotation, Vector3.forward);
                 linear.Normalize();
                 linear *= setting.Velocity;
-                FSLog.Info($"CharacterRushSystem Update,linear：{linear}");
+               // FSLog.Info($"CharacterRushSystem Update,linear：{linear}");
 
                 movePredictData.ImpulseVelocity = linear;
                 movePredictData.ImpulseDuration = setting.Duration;
