@@ -284,7 +284,7 @@ namespace FootStone.Kitchen
                 }
 
                 // If unsupported then keep jump and surface momentum
-                linearVelocity = (float3) command.TargetDir * ccComponentData.MaxVelocity +
+                linearVelocity = (float3) command.TargetDir * ccComponentData.Velocity +
                                  (moveInternalState.SupportedState != CharacterSupportState.Supported
                                      ? ccPredictedState.UnsupportedVelocity
                                      : float3.zero);

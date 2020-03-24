@@ -31,7 +31,7 @@ namespace FootStone.Kitchen
                 FSLog.Info($"CharacterRushSystem Update,linear：{linear}");
 
                 movePredictData.InitVelocity = linear;
-                movePredictData.VelocityDulation = 25;
+                movePredictData.VelocityDulation = 6;
 
             }).Run();
         }

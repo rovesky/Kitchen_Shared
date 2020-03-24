@@ -52,7 +52,7 @@ namespace FootStone.Kitchen
                 Gravity = PhysicsStep.Default.Gravity,
                 SkinWidth = 0.02f,
                 Velocity = 8.0f,
-                MaxVelocity = 8.0f,
+                MaxVelocity = 30.0f,
                 RotationVelocity = 22.5f,
                 JumpUpwardsVelocity = 4.0f,
                 MaxSlope = 60.0f, 

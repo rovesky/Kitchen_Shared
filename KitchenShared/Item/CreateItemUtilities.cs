@@ -45,7 +45,8 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ItemPredictedState
             {
-                Owner = Entity.Null
+                Owner = Entity.Null,
+                TempOwner = Entity.Null
               //  IsDynamic = false
             });
 

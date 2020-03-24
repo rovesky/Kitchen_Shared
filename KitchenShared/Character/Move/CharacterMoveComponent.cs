@@ -32,32 +32,26 @@ namespace FootStone.Kitchen
         public float3 InitVelocity;
         public ushort VelocityDulation;
 
-      //  public CharacterSupportState SupportedState;
-      //  public bool IsJumping;
-
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             UnsupportedVelocity = reader.ReadVector3Q();
             InitVelocity = reader.ReadVector3Q();
-
-            //  SupportedState = (CharacterSupportState)reader.ReadByte();
-            //  IsJumping = reader.ReadBoolean();
+            VelocityDulation = reader.ReadUInt16();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             writer.WriteVector3Q("UnsupportedVelocity", UnsupportedVelocity);
             writer.WriteVector3Q("InitVelocity", InitVelocity);
-
-            //writer.WriteByte("SupportedState", (byte)SupportedState);
-            //writer.WriteBoolean("IsJumping", IsJumping);
+            writer.WriteUInt16("VelocityDulation",VelocityDulation);
+           
         }
 
         public bool VerifyPrediction(ref CharacterMovePredictedState state)
         {
             return UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
-                   InitVelocity.Equals(state.InitVelocity);
-            // IsJumping.Equals(state.IsJumping);
+                   InitVelocity.Equals(state.InitVelocity) &&
+                   VelocityDulation.Equals(state.VelocityDulation);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
