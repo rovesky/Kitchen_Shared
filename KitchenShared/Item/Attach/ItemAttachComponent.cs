@@ -13,7 +13,7 @@ namespace FootStone.Kitchen
     {
         public float3 Pos;
         public float3 LinearVelocity;
-        public Entity TempOwner;
+        public Entity PreOwner;
     }
 
     public struct ItemAttachToTableRequest : IComponentData

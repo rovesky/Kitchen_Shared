@@ -24,13 +24,13 @@ namespace FootStone.Kitchen
                 if (pickupState.PickupedEntity != Entity.Null || triggerState.TriggeredEntity == Entity.Null) 
                     return;
                
-                var triggerData = EntityManager.GetComponentData<TriggerData>(triggerState.TriggeredEntity);
+                var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
                 if ((triggerData.Type & (int) TriggerType.Item) == 0)
                     return;
                    
                 var item = EntityManager.GetComponentData<ItemPredictedState>(triggerState.TriggeredEntity);
-                FSLog.Info($"PickUpItem item.TempOwner:{item.TempOwner},entity:{entity}");
-                if(item.TempOwner == Entity.Null ||  item.TempOwner == entity)
+                FSLog.Info($"PickUpItem item.TempOwner:{item.PreOwner},entity:{entity}");
+                if(item.PreOwner == Entity.Null ||  item.PreOwner == entity)
                     return;
 
                 //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request

@@ -92,13 +92,11 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new RushSetting
             {
-                Velocity = 30.0f
+                Velocity = 30.0f,
+                Duration = 6
             });
 
-            //entityManager.AddComponentData(e, new ThrowPredictedState
-            //{
-            //    ThrowCD = 0
-            //});
+         
         }
     }
 }

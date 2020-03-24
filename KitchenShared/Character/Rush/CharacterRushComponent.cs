@@ -5,5 +5,6 @@ namespace FootStone.Kitchen
     public struct RushSetting : IComponentData
     {
         public float Velocity;
+        public ushort Duration;
     }
 }

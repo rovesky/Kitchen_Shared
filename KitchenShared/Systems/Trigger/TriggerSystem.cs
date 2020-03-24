@@ -16,7 +16,7 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetOrCreateSystem<KitchenBuildPhysicsWorld>();
-            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggerData));
+            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggeredSetting));
         }
 
         protected override unsafe void OnUpdate()
@@ -59,6 +59,7 @@ namespace FootStone.Kitchen
                     var triggerIndex = CheckTrigger(ref physicsWorld, ref volumeEntities,
                         selfRigidBodyIndex, ref distanceHits);
 
+                  //  triggerState.PreTriggeredEntity = triggerState.TriggeredEntity;
                     triggerState.TriggeredEntity = triggerIndex < 0
                         ? Entity.Null
                         : physicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;

@@ -9,8 +9,7 @@ namespace FootStone.Kitchen
     {
         public float3 Position;
         public quaternion Rotation;
-      //  public float3 LinearVelocity;
-
+   
         public float SqrMagnitude;
         public int MaterialId;
 

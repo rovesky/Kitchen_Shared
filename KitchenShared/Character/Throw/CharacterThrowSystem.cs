@@ -36,7 +36,7 @@ namespace FootStone.Kitchen
                     LinearVelocity = linear,
                     Pos = entityPredictData.Position +
                           math.mul(entityPredictData.Rotation, new float3(0, 0.2f, 1.3f)),
-                    TempOwner = entity
+                    PreOwner = entity
                 });
       
                 pickupState.PickupedEntity = Entity.Null;

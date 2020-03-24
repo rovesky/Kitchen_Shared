@@ -154,8 +154,7 @@ namespace FootStone.Kitchen
                     // Collision filter must be valid
                     if (!collider.IsValid || collider.Value.Value.Filter.IsEmpty)
                         continue;
-
-                    //    velocityData.Linear = new float3(4,0,0);
+        
                     // Character step input
                     var stepInput = new CharacterControllerStepInput
                     {
@@ -171,11 +170,8 @@ namespace FootStone.Kitchen
                         MaxSlope = moveSetting.MaxSlope,
                         RigidBodyIndex = PhysicsWorld.GetRigidBodyIndex(entity),
                         CurrentVelocity = velocityData.Linear,
-                        //   CurrentVelocity = float3.zero,
                         MaxMovementSpeed = moveSetting.MaxVelocity
                     };
-
-                    //      FSLog.Info($"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
 
                     // Character transform
                     var transform = new RigidTransform
@@ -199,12 +195,11 @@ namespace FootStone.Kitchen
                         ref movePredictedData, out var desiredVelocity, ref moveInternalState);
 
                     //add InitVelocity , clear InitVelocity
-                    desiredVelocity += movePredictedData.InitVelocity;
-                    if (movePredictedData.VelocityDulation > 0)
-                        movePredictedData.VelocityDulation--;
+                    desiredVelocity += movePredictedData.ImpulseVelocity;
+                    if (movePredictedData.ImpulseDuration > 0)
+                        movePredictedData.ImpulseDuration--;
                     else
-                        movePredictedData.InitVelocity = float3.zero;
-
+                        movePredictedData.ImpulseVelocity = float3.zero;
                 
                     //    FSLog.Info($"stepInput.CurrentVelocity:{stepInput.CurrentVelocity},desiredVelocity:{desiredVelocity}");
                     // Calculate actual velocity with respect to surface
@@ -212,17 +207,18 @@ namespace FootStone.Kitchen
                         CalculateMovement(transformData.Rotation, stepInput.Up, moveInternalState.IsJumping,
                             stepInput.CurrentVelocity, desiredVelocity, surfaceNormal, surfaceVelocity,
                             out velocityData.Linear);
-                    if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
-                        FSLog.Info($"Entity:{entity},velocityData.Linear:{velocityData.Linear}," +
-                               $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
+                   // if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
+                       // FSLog.Info($"Entity:{entity},velocityData.Linear:{velocityData.Linear}," +
+                          //     $"stepInput.CurrentVelocity:{stepInput.CurrentVelocity}");
                     else
                         velocityData.Linear = desiredVelocity;
 
                     // World collision + integrate
                     CollideAndIntegrate(stepInput, moveSetting.CharacterMass, moveSetting.AffectsPhysicsBodies > 0,
                         collider.ColliderPtr, ref transform, ref velocityData.Linear, ref DeferredImpulseWriter);
-                    if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
-                        FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
+               
+                    //    if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
+                 //       FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
                     // Write back and orientation integration
                     transformData.Position = transform.pos;
 
@@ -243,12 +239,9 @@ namespace FootStone.Kitchen
 
                     // Write back to chunk data
                     {
-                     //   movePredictedData.InitVelocity = velocityData.Linear;
-
                         chunkMovePredictedData[i] = movePredictedData;
                         chunkTransformData[i] = transformData;
                         chunkVelocityData[i] = velocityData;
-                   
                     }
                 }
 
@@ -373,10 +366,11 @@ namespace FootStone.Kitchen
                     if (!(pm.InverseMass > 0.0f) && CharacterMovePredictedData.HasComponent(impulse.Entity))
                     {
                         var movePredictedData = CharacterMovePredictedData[impulse.Entity];
-                        movePredictedData.InitVelocity = impulse.Impulse / 10.0f;
+                        movePredictedData.ImpulseVelocity = impulse.Impulse / 10.0f;
+                        movePredictedData.ImpulseDuration = 1;
                         CharacterMovePredictedData[impulse.Entity] = movePredictedData;
-                        FSLog.Info(
-                            $"impulse.Entity:{impulse.Entity},impulse.Impulse:{impulse.Impulse},Linear:{ep.Linear}");
+                    //    FSLog.Info(
+                        //    $"impulse.Entity:{impulse.Entity},impulse.Impulse:{impulse.Impulse},Linear:{ep.Linear}");
                     }
                     else
                     {
@@ -390,8 +384,6 @@ namespace FootStone.Kitchen
                             , new Rotation {Value = transform.Rotation}, impulse.Impulse, impulse.Point);
 
                         ep.Linear = rigidTransform.Linear;
-                        //ep.Linear.y = 0.0f;
-                        //ep.Linear /= 1.5f;
                         ep.Angular = rigidTransform.Angular;
                         // Write back
                         VelocityPredictedData[impulse.Entity] = ep;

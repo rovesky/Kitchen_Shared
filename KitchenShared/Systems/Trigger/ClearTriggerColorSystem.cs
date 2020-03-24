@@ -6,33 +6,38 @@ using UnityEngine;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ClearTriggerColorSystem : ComponentSystem
+    public class ClearTriggerColorSystem : SystemBase //ComponentSystem
     {
-        private readonly Dictionary<int,Material> originMaterials = new Dictionary<int, Material>();
-
-        protected override void OnCreate()
-        {
-        }
-
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, ref TriggerData data) =>
-            {
-                var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
-
-                if (!originMaterials.ContainsKey(data.Type))
+            Entities
+                .WithStructuralChanges()
+                .WithoutBurst()
+                .ForEach((Entity entity,
+                    ref TriggeredState state) =>
                 {
-                    originMaterials.Add(data.Type, volumeRenderMesh.material);
-                }
-             
+                    state.IsTriggered = false;
+                }).Run();
+        }
+    }
 
-                if (volumeRenderMesh.material == originMaterials[data.Type])
-                    return;
-
-                volumeRenderMesh.material = originMaterials[data.Type];
-
-                EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
-            });
+    [DisableAutoCreation]
+    public class UpdateTriggerColorSystem : SystemBase //ComponentSystem
+    {
+        protected override void OnUpdate()
+        {
+            Entities
+                .WithStructuralChanges()
+                .WithoutBurst()
+                .ForEach((Entity entity,
+                    in TriggeredState state,
+                    in TriggeredSetting setting) =>
+                {
+                    var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
+                    volumeRenderMesh.material = state.IsTriggered?
+                        setting.TriggeredMaterial :setting.OriginMaterial;
+                    EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
+                }).Run();
 
         }
     }

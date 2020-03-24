@@ -1,5 +1,6 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -25,15 +26,25 @@ namespace FootStone.Kitchen
                     FilledInEntity = Entity.Null
                 });
             }
-          
-            var triggerData = new TriggerData
+
+            var meshRenderer = gameObject.GetComponent<MeshRenderer>();
+
+        
+            var triggerData = new TriggeredSetting
             {
                 Type = (int) Type,
-                SlotPos = slotPos
+                SlotPos = slotPos,
+                OriginMaterial = meshRenderer.sharedMaterial,
+                TriggeredMaterial = new Material(Shader.Find("Standard")) {color = Color.gray}
             };
+
+           
             dstManager.AddComponentData(entity, triggerData);
 
-          
+            dstManager.AddComponentData(entity, new TriggeredState()
+            {
+                IsTriggered = false
+            });
         }
     }
 }

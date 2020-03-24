@@ -13,6 +13,8 @@ namespace FootStone.Kitchen
         public Entity TriggeredEntity;
         public bool IsAllowTrigger;
 
+       // public Entity PreTriggeredEntity;
+
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             context.RefSerializer.DeserializeReference(ref reader, ref TriggeredEntity);

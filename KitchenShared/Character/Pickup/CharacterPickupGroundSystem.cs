@@ -31,7 +31,7 @@ namespace FootStone.Kitchen
                 if (pickupState.PickupedEntity == Entity.Null
                     && triggerState.TriggeredEntity != Entity.Null)
                 {
-                    var triggerData = EntityManager.GetComponentData<TriggerData>(triggerState.TriggeredEntity);
+                    var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
                     if ((triggerData.Type & (int) TriggerType.Item) == 0)
                         return;
 

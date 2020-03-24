@@ -30,7 +30,7 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    var triggerData = EntityManager.GetComponentData<TriggerData>(triggerEntity);
+                    var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerEntity);
                     if ((triggerData.Type & (int) TriggerType.Table) == 0)
                         return;
 

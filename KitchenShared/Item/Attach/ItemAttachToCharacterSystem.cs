@@ -26,7 +26,7 @@ namespace FootStone.Kitchen
                 triggerState.IsAllowTrigger = false;
 
                 itemPredictedState.Owner = pickupRequest.Owner;
-                itemPredictedState.TempOwner = Entity.Null;
+                itemPredictedState.PreOwner = Entity.Null;
               
                 transformPredictedState.Position = new float3(0, -0.2f, 0.9f);
                 transformPredictedState.Rotation = quaternion.identity;

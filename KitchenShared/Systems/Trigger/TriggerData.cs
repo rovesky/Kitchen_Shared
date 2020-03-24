@@ -1,6 +1,7 @@
 ﻿using System;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -13,9 +14,17 @@ namespace FootStone.Kitchen
         Character = 1 << 3
     }
 
-    public struct TriggerData : IComponentData
+    public class TriggeredSetting : IComponentData
     {
         public int Type;
         public float3 SlotPos;
+        public Material OriginMaterial;
+        public Material TriggeredMaterial;
+    }
+
+    public struct TriggeredState : IComponentData
+    {
+        public bool IsTriggered;
+     
     }
 }

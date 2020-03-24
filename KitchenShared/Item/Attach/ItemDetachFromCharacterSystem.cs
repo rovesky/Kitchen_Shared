@@ -23,7 +23,7 @@ namespace FootStone.Kitchen
                     EntityManager.RemoveComponent<ItemDetachFromCharacterRequest>(entity);
 
                     triggerState.IsAllowTrigger = true;
-                    itemPredictedState.TempOwner = request.TempOwner;
+                    itemPredictedState.PreOwner = request.PreOwner;
                   
                   //  FSLog.Info($"ItemDetachFromCharacterSystem itemPredictedState.TempOwner :{itemPredictedState.TempOwner }," +
                         //       $" itemPredictedState.TempOwnerCD：{ itemPredictedState.TempOwnerCD}");

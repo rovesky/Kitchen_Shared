@@ -29,29 +29,29 @@ namespace FootStone.Kitchen
     public struct CharacterMovePredictedState : IComponentData, IPredictedState<CharacterMovePredictedState>
     {
         public float3 UnsupportedVelocity;
-        public float3 InitVelocity;
-        public ushort VelocityDulation;
+        public float3 ImpulseVelocity;
+        public ushort ImpulseDuration;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             UnsupportedVelocity = reader.ReadVector3Q();
-            InitVelocity = reader.ReadVector3Q();
-            VelocityDulation = reader.ReadUInt16();
+            ImpulseVelocity = reader.ReadVector3Q();
+            ImpulseDuration = reader.ReadUInt16();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             writer.WriteVector3Q("UnsupportedVelocity", UnsupportedVelocity);
-            writer.WriteVector3Q("InitVelocity", InitVelocity);
-            writer.WriteUInt16("VelocityDulation",VelocityDulation);
+            writer.WriteVector3Q("ImpulseVelocity", ImpulseVelocity);
+            writer.WriteUInt16("ImpulseDuration",ImpulseDuration);
            
         }
 
         public bool VerifyPrediction(ref CharacterMovePredictedState state)
         {
             return UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
-                   InitVelocity.Equals(state.InitVelocity) &&
-                   VelocityDulation.Equals(state.VelocityDulation);
+                   ImpulseVelocity.Equals(state.ImpulseVelocity) &&
+                   ImpulseDuration.Equals(state.ImpulseDuration);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
