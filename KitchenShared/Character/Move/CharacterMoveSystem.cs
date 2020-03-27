@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
             {
                 All = new ComponentType[]
                 {
-                    typeof(ServerEntity),
+                  //  typeof(ServerEntity),
                     typeof(CharacterMoveSetting),
                     typeof(UserCommand),
                     typeof(CharacterMovePredictedState),
@@ -355,12 +355,8 @@ namespace FootStone.Kitchen
 
                     if (!PhysicsMassData.HasComponent(impulse.Entity))
                         continue;
-
+                    
                     var pm = PhysicsMassData[impulse.Entity];
-                    var ep = VelocityPredictedData[impulse.Entity];
-                    var transform = TransformPredictedData[impulse.Entity];
-
-                    //   FSLog.Info($"impulse.Entity:{impulse.Entity},pm:{pm.InverseMass}");
 
                     // Don't apply on kinematic bodies
                     if (!(pm.InverseMass > 0.0f) && CharacterMovePredictedData.HasComponent(impulse.Entity))
@@ -374,6 +370,9 @@ namespace FootStone.Kitchen
                     }
                     else
                     {
+                        var ep = VelocityPredictedData[impulse.Entity];
+                        var transform = TransformPredictedData[impulse.Entity];
+
                         var rigidTransform = new PhysicsVelocity
                         {
                             Linear = ep.Linear,
@@ -381,7 +380,7 @@ namespace FootStone.Kitchen
                         };
                         // Apply impulse
                         rigidTransform.ApplyImpulse(pm, new Translation {Value = transform.Position}
-                            , new Rotation {Value = transform.Rotation}, impulse.Impulse, impulse.Point);
+                            , new Rotation {Value = transform.Rotation}, impulse.Impulse/5, impulse.Point);
 
                         ep.Linear = rigidTransform.Linear;
                         ep.Angular = rigidTransform.Angular;

@@ -9,7 +9,7 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities
-                .WithAll<ServerEntity>()
+              //  .WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                 ref PickupPredictedState pickupState,
@@ -17,7 +17,9 @@ namespace FootStone.Kitchen
                 in PickupSetting setting,
                 in UserCommand command,
                 in ReplicatedEntityData replicatedEntityData) =>
-            {
+              {
+
+                //  FSLog.Info($"CharacterPickupFlyingSystem,entity:{entity}");
                 if (command.Buttons.IsSet(UserCommand.Button.Throw))
                    return;
                
@@ -29,7 +31,7 @@ namespace FootStone.Kitchen
                     return;
                    
                 var item = EntityManager.GetComponentData<ItemPredictedState>(triggerState.TriggeredEntity);
-                FSLog.Info($"PickUpItem item.TempOwner:{item.PreOwner},entity:{entity}");
+                FSLog.Info($"PickUpItem flying,PreOwner:{item.PreOwner},entity:{entity}");
                 if(item.PreOwner == Entity.Null ||  item.PreOwner == entity)
                     return;
 

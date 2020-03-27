@@ -28,7 +28,7 @@ namespace FootStone.Kitchen
                 //TODO 
 
                 Vector3 linear = math.mul(entityPredictData.Rotation, Vector3.forward);
-                linear.y = 0.3f;
+                linear.y = 0.2f;
                 linear.Normalize();
                 linear *= setting.Velocity;
                 EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest
