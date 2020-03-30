@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
             {
                 All = new ComponentType[]
                 {
-                  //  typeof(ServerEntity),
+                    typeof(ServerEntity),
                     typeof(CharacterMoveSetting),
                     typeof(UserCommand),
                     typeof(CharacterMovePredictedState),
@@ -217,8 +217,8 @@ namespace FootStone.Kitchen
                     CollideAndIntegrate(stepInput, moveSetting.CharacterMass, moveSetting.AffectsPhysicsBodies > 0,
                         collider.ColliderPtr, ref transform, ref velocityData.Linear, ref DeferredImpulseWriter);
                
-                    //    if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
-                 //       FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
+                  //  if(math.distancesq(velocityData.Linear, float3.zero) > 0.0001f)
+                      //  FSLog.Info($"end  velocityData.Linear:{ velocityData.Linear}");
                     // Write back and orientation integration
                     transformData.Position = transform.pos;
 

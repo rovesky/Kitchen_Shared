@@ -70,39 +70,39 @@ namespace FootStone.Kitchen
 
         public void Reset()
         {
-          //  checkTick = 0;
-          //  renderTick = 0;
+            //  checkTick = 0;
+            //  renderTick = 0;
             Buttons.Flags = 0;
-           // targetPos = Vector3.zero;
+            // targetPos = Vector3.zero;
         }
 
-        public byte[] ToData()
-        {
-            MemoryStream memStream = new MemoryStream(100);
-            BinaryWriter writer = new BinaryWriter(memStream);
+        //public byte[] ToData()
+        //{
+        //    MemoryStream memStream = new MemoryStream(100);
+        //    BinaryWriter writer = new BinaryWriter(memStream);
 
-            writer.Write(CheckTick);
-            writer.Write(RenderTick);
-            writer.Write(Buttons.Flags);
-            writer.Write(TargetDir.x);
-            writer.Write(TargetDir.y);
-            writer.Write(TargetDir.z);
+        //    writer.Write(CheckTick);
+        //    writer.Write(RenderTick);
+        //    writer.Write(Buttons.Flags);
+        //    writer.Write(TargetDir.x);
+        //    writer.Write(TargetDir.y);
+        //    writer.Write(TargetDir.z);
 
-            return memStream.ToArray();
-        }
+        //    return memStream.ToArray();
+        //}
 
-        public void FromData(byte[] data)
-        {
-            var memStream = new MemoryStream(data);
-            var reader = new BinaryReader(memStream);
+        //public void FromData(byte[] data)
+        //{
+        //    var memStream = new MemoryStream(data);
+        //    var reader = new BinaryReader(memStream);
 
-            CheckTick = reader.ReadUInt32();
-            RenderTick = reader.ReadUInt32();
-            Buttons.Flags = reader.ReadUInt32();
-            TargetDir.x = reader.ReadSingle();
-            TargetDir.y = reader.ReadSingle();
-            TargetDir.z = reader.ReadSingle();           
-        }
+        //    CheckTick = reader.ReadUInt32();
+        //    RenderTick = reader.ReadUInt32();
+        //    Buttons.Flags = reader.ReadUInt32();
+        //    TargetDir.x = reader.ReadSingle();
+        //    TargetDir.y = reader.ReadSingle();
+        //    TargetDir.z = reader.ReadSingle();           
+        //}
 
 
         public void Serialize(ref NetworkWriter networkWriter)
@@ -121,5 +121,18 @@ namespace FootStone.Kitchen
             TargetDir = networkReader.ReadVector3Q();       
         }
     }
+
+
+    public struct CurrentCommand  : IComponentData
+    {
+        public UserCommand  Command;
+    }
+
+
+    public struct PredictCommands : IComponentData
+    {
+         public BlobArray<UserCommand> Commands;
+    }
+
 
 }

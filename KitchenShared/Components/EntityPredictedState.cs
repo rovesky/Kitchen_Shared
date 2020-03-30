@@ -1,6 +1,7 @@
 using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -13,11 +14,14 @@ namespace FootStone.Kitchen
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
+          //  FSLog.Info($"TransformPredictedState Deserialize,enity:{context.Entity},Position:{Position}!");
 
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
+         //   FSLog.Info($"TransformPredictedState Serialize,enity:{context.Entity},Position:{Position}!");
+
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
         }
@@ -46,12 +50,21 @@ namespace FootStone.Kitchen
         public float3 Linear;
         public float3 Angular;
         public MotionType MotionType;
+        public float SqrMagnitude;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Linear = reader.ReadVector3Q();
             Angular = reader.ReadVector3Q();
             MotionType =(MotionType)reader.ReadByte();
+
+            var dir = Vector3.SqrMagnitude(Linear) < 0.001f? Vector3.zero: (Vector3) math.normalize(Linear);
+            SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;
+
+      
+          //  FSLog.Info($"VelocityPredictedState Deserialize,enity:{context.Entity},Linear:{Linear}!");
+
+           // FSLog.Info($"VelocityPredictedState,Linear:{Linear}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)

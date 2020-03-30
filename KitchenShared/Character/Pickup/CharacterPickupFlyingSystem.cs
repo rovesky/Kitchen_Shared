@@ -9,7 +9,7 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities
-              //  .WithAll<ServerEntity>()
+                .WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                 ref PickupPredictedState pickupState,
