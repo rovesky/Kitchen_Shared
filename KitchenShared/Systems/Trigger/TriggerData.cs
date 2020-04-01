@@ -27,4 +27,7 @@ namespace FootStone.Kitchen
         public bool IsTriggered;
      
     }
+
+
+   
 }

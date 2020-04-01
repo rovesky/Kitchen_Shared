@@ -23,7 +23,6 @@ namespace FootStone.Kitchen
                     interpolateData.Position = transformPredictData.Position;
                     interpolateData.Rotation = transformPredictData.Rotation;
 
-
                  //   FSLog.Info($"velocityPredictData.SqrMagnitude:{velocityPredictData.SqrMagnitude}");
                     if (velocityPredictData.SqrMagnitude > 0)
                     {
@@ -36,11 +35,7 @@ namespace FootStone.Kitchen
                      //   if(!dir.Equals(Vector3.zero))
                            // FSLog.Info($"UpdateCharPresentationSystem,entity:{entity},velocityPredictData:{velocityPredictData.Linear}");
                         interpolateData.SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;
-
                     }
-               
-                  //  interpolateData.SqrMagnitude = velocityPredictData.SqrMagnitude;
-                   
                     interpolateData.MaterialId = replicatedEntityData.Id % 4;
 
                     //setup trigger entity 
