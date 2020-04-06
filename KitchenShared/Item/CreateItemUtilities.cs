@@ -68,7 +68,7 @@ namespace FootStone.Kitchen
             });
             entityManager.AddComponentData(e, new ItemSliceState()
             {
-                CurSliceTick = 1,
+                CurSliceTick = 0,
                 IsSlicing = false
             });
 
