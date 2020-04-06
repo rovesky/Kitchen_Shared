@@ -1,6 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
@@ -65,6 +66,17 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterSliceSystem : SystemBase
     {
+        private Entity appleSlicePrefab;
+
+        protected override void OnCreate()
+        {
+            appleSlicePrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(
+                Resources.Load("AppleSlice") as GameObject,
+                GameObjectConversionSettings.FromWorld(World,
+                    World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<ConvertToEntitySystem>().BlobAssetStore));
+
+        }
+
         protected override void OnUpdate()
         {
             Entities.WithAll<ServerEntity>()
@@ -109,18 +121,35 @@ namespace FootStone.Kitchen
 
                     if (itemSliceState.CurSliceTick < itemSliceSetting.TotalSliceTick)
                     {
-                        itemSliceState.IsSlicing = true;
+                       // itemSliceState.IsSlicing = true;
                         itemSliceState.CurSliceTick++;
+                        EntityManager.SetComponentData(slot.FilledInEntity, itemSliceState);
                     }
                     else
                     {
-                        itemSliceState.IsSlicing = false;
+                      //  itemSliceState.IsSlicing = false;
                         sliceState.IsSlicing = false;
+
+                        var itemPos = EntityManager.GetComponentData<LocalToWorld>(slot.FilledInEntity);
+                        EntityManager.DestroyEntity(slot.FilledInEntity);
+
+                        var e = EntityManager.Instantiate(appleSlicePrefab);
+                        CreateItemUtilities.CreateItemComponent(EntityManager, e,
+                            itemPos.Position, quaternion.identity);
+
+                        EntityManager.SetComponentData(e, new ReplicatedEntityData
+                        {
+                            Id = -1,
+                            PredictingPlayerId = -1
+                        });
+
+                        slot.FilledInEntity = e;
+                        EntityManager.SetComponentData(triggerState.TriggeredEntity,slot);
                     }
 
                     FSLog.Info($"CharacterSliceSystem,itemSliceState.CurSliceTick:{itemSliceState.CurSliceTick}");
 
-                    EntityManager.SetComponentData(slot.FilledInEntity, itemSliceState);
+                 
 
                 }).Run();
         }

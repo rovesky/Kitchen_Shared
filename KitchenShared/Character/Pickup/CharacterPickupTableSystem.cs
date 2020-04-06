@@ -43,8 +43,19 @@ namespace FootStone.Kitchen
 
                     if (pickupState.PickupedEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
                     {
-                        FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
+                      
+                        //the item is not sliced,can't pickup
+                        if (EntityManager.HasComponent<ItemSliceState>(slot.FilledInEntity))
+                        {
+                            var itemSliceState = EntityManager.GetComponentData<ItemSliceState>(slot.FilledInEntity);
+                            FSLog.Info($"PickUpItem,itemSliceState.CurSliceTick:{itemSliceState.CurSliceTick}");
 
+                            if (itemSliceState.CurSliceTick > 0)
+                                return;
+                        }
+
+                        FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
+                        
                         ItemUtilities.ItemAttachToCharacter(EntityManager, slot.FilledInEntity, entity,
                             replicatedEntityData.PredictingPlayerId);
 

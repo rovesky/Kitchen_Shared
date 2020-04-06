@@ -69,7 +69,7 @@ namespace FootStone.Kitchen
             entityManager.AddComponentData(e, new ItemSliceState()
             {
                 CurSliceTick = 0,
-                IsSlicing = false
+            //    IsSlicing = false
             });
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);

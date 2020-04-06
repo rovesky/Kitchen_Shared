@@ -14,7 +14,7 @@ namespace FootStone.Kitchen
     public struct ItemSliceState : IComponentData, IPredictedState<ItemSliceState>
     {
         public byte CurSliceTick;
-        public bool IsSlicing;
+      //  public bool IsSlicing;
        
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
