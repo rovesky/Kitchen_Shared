@@ -5,7 +5,7 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterPickupTableSystem : SystemBase 
+    public class CharacterPickupTableSystem : SystemBase
     {
 
         protected override void OnUpdate()
@@ -43,47 +43,32 @@ namespace FootStone.Kitchen
 
                     if (pickupState.PickupedEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
                     {
-
                         FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                        //if(EntityManager.HasComponent<TableFilledInItemRequest>(triggerEntity) )
-                        EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest
-                        {
-                            ItemEntity = Entity.Null
-                        });
 
-                        EntityManager.AddComponentData(slot.FilledInEntity, new ItemAttachToCharacterRequest
-                        {
-                            PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
-                            Owner = entity
-                        });
+                        ItemUtilities.ItemAttachToCharacter(EntityManager, slot.FilledInEntity, entity,
+                            replicatedEntityData.PredictingPlayerId);
 
                         pickupState.PickupedEntity = slot.FilledInEntity;
+
+                        slot.FilledInEntity = Entity.Null;
+                        EntityManager.SetComponentData(triggerEntity, slot);
                     }
                     else if (pickupState.PickupedEntity != Entity.Null && slot.FilledInEntity == Entity.Null)
                     {
                         FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
 
-                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest
-                        {
-                            Pos = float3.zero,
-                            LinearVelocity = float3.zero
-                        });
+                        ItemUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
+                            Entity.Null, float3.zero, float3.zero);
 
-                        EntityManager.AddComponentData(triggerEntity, new TableFilledInItemRequest
-                        {
-                            ItemEntity = pickupState.PickupedEntity
-                        });
+                        ItemUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity, triggerData.SlotPos);
 
-                        EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemAttachToTableRequest
-                        {
-                        //    ItemEntity = pickupState.PickupedEntity,
-                            SlotPos = triggerData.SlotPos
-                        });
+                        slot.FilledInEntity = pickupState.PickupedEntity;
+                        EntityManager.SetComponentData(triggerEntity, slot);
 
                         pickupState.PickupedEntity = Entity.Null;
                     }
+
                 }).Run();
         }
-
     }
 }

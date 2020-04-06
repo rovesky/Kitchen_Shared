@@ -34,16 +34,10 @@ namespace FootStone.Kitchen
                     var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
                     if ((triggerData.Type & (int) TriggerType.Item) == 0)
                         return;
-
-                    //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request
-
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                   
-                    EntityManager.AddComponentData(triggerState.TriggeredEntity, new ItemAttachToCharacterRequest
-                    {
-                        PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
-                        Owner = entity
-                    });
+
+                    ItemUtilities.ItemAttachToCharacter(EntityManager, triggerState.TriggeredEntity, entity,
+                        replicatedEntityData.PredictingPlayerId);
 
                     pickupState.PickupedEntity = triggerState.TriggeredEntity;
                     triggerState.TriggeredEntity = Entity.Null;
@@ -52,17 +46,14 @@ namespace FootStone.Kitchen
                 else if (pickupState.PickupedEntity != Entity.Null
                          && triggerState.TriggeredEntity == Entity.Null)
                 {
-                    FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");
-
-                    //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request
-
-                    EntityManager.AddComponentData(pickupState.PickupedEntity, new ItemDetachFromCharacterRequest
-                    {
-                        Pos = transformState.Position +
-                              math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),
-                        LinearVelocity = velocityState.Linear
-
-                    });
+                    FSLog.Info(
+                        $"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");
+                    
+                    ItemUtilities.ItemDetachFromCharacter(EntityManager, 
+                        pickupState.PickupedEntity, 
+                        Entity.Null,
+                        transformState.Position + math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),
+                        velocityState.Linear);
 
                     pickupState.PickupedEntity = Entity.Null;
                 }

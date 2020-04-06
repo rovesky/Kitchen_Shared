@@ -96,7 +96,10 @@ namespace FootStone.Kitchen
                 Duration = 6
             });
 
-         
+            entityManager.AddComponentData(e, new SlicePredictedState()
+            {
+              IsSlicing = false
+            });
         }
     }
 }

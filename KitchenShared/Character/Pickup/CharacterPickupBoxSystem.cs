@@ -69,12 +69,7 @@ namespace FootStone.Kitchen
                             PredictingPlayerId = -1
                         });
 
-                        EntityManager.AddComponentData(e, new ItemAttachToCharacterRequest
-                        {
-                            PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
-                            Owner = entity
-                        });
-
+                        ItemUtilities.ItemAttachToCharacter(EntityManager,e,entity,replicatedEntityData.PredictingPlayerId);
                         pickupState.PickupedEntity = e;
                     }
 

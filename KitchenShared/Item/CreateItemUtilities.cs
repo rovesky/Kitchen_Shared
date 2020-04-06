@@ -61,7 +61,16 @@ namespace FootStone.Kitchen
                 IsAllowTrigger = false
             });
 
-         //a   entityManager.AddComponentData(e, new PreventParentScale());
+            entityManager.AddComponentData(e, new ItemSliceSetting()
+            {
+                TotalSliceTick = 150,
+                OffPos = new float3(0,1.7f,0)
+            });
+            entityManager.AddComponentData(e, new ItemSliceState()
+            {
+                CurSliceTick = 1,
+                IsSlicing = false
+            });
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);
         }

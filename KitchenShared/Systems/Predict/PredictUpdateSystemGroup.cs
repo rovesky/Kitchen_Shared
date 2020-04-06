@@ -23,12 +23,11 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushSystem>());
 
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemAttachToCharacterSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemDetachFromCharacterSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemAttachToTableSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSetSliceSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSliceSystem>());
 
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<TableFilledInItemSystem>());
+
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());

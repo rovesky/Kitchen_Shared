@@ -37,16 +37,12 @@ namespace FootStone.Kitchen
                     return;
 
                 FSLog.Info("ItemMoveToTableSystem OnUpdate!");
-             
-                EntityManager.AddComponentData(entity, new ItemAttachToTableRequest
-                {
-                 //   ItemEntity = entity,
-                    SlotPos = triggerData.SlotPos
-                });
-                EntityManager.AddComponentData(triggeredEntity, new TableFilledInItemRequest
-                {
-                    ItemEntity = entity
-                });
+          
+                ItemUtilities.ItemAttachToTable(EntityManager, entity, triggerData.SlotPos);
+
+                slot.FilledInEntity = entity;
+                EntityManager.SetComponentData(triggeredEntity,slot);
+            
             }).Run();
         }
     }

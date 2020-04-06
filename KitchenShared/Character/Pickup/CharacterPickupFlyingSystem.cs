@@ -35,17 +35,11 @@ namespace FootStone.Kitchen
                 if(item.PreOwner == Entity.Null ||  item.PreOwner == entity)
                     return;
 
-                //TODO 需要判断triggerState.TriggeredEntity的状态是否能发request
-
                 var worldTick = GetSingleton<WorldTime>().Tick;
                 FSLog.Info($"PickUpItem flying,command tick:{command.RenderTick},worldTick:{worldTick}");
+ 
+                ItemUtilities.ItemAttachToCharacter(EntityManager,triggerState.TriggeredEntity,entity,replicatedEntityData.PredictingPlayerId);
                   
-                EntityManager.AddComponentData(triggerState.TriggeredEntity, new ItemAttachToCharacterRequest
-                {
-                    PredictingPlayerId = replicatedEntityData.PredictingPlayerId,
-                    Owner = entity
-                });
-
                 pickupState.PickupedEntity = triggerState.TriggeredEntity;
                 triggerState.TriggeredEntity = Entity.Null;
             }).Run();
