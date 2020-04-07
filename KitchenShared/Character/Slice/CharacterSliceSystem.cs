@@ -144,6 +144,8 @@ namespace FootStone.Kitchen
                         var e = EntityManager.Instantiate(appleSlicePrefab);
                         ItemCreateUtilities.CreateItemComponent(EntityManager, e,
                             itemPos.Position, quaternion.identity);
+                        EntityManager.AddComponentData(e, new Food());
+                        EntityManager.AddComponentData(e, new Slice());
 
                         EntityManager.SetComponentData(e, new ReplicatedEntityData
                         {

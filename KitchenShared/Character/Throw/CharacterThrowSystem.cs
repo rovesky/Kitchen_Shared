@@ -24,6 +24,9 @@ namespace FootStone.Kitchen
 
                     if (pickupState.PickupedEntity == Entity.Null)
                         return;
+
+                    if(!EntityManager.HasComponent<Food>(pickupState.PickupedEntity))
+                        return;
            
                     Vector3 linear = math.mul(entityPredictData.Rotation, Vector3.forward);
                     linear.y = 0.2f;

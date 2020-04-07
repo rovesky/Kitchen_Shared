@@ -42,7 +42,7 @@ namespace FootStone.Kitchen
                 FSLog.Info("ItemMoveToTableSystem OnUpdate!");
                 var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggeredEntity);
 
-                ItemAttachUtilities.ItemAttachToTable(EntityManager, entity, slotSetting.Pos);
+                ItemAttachUtilities.ItemAttachToTable(EntityManager, entity, triggeredEntity,slotSetting.Pos);
 
                 slot.FilledInEntity = entity;
                 EntityManager.SetComponentData(triggeredEntity,slot);

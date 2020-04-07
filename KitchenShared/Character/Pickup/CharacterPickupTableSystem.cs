@@ -8,6 +8,34 @@ namespace FootStone.Kitchen
     public class CharacterPickupTableSystem : SystemBase
     {
 
+        private bool IsFilledInEmpty(Entity filledInEntity)
+        {
+            return filledInEntity == Entity.Null;
+        }
+
+        private bool IsFilledInPlate(EntityManager entityManager,Entity filledInEntity)
+        {
+            return filledInEntity != Entity.Null && entityManager.HasComponent<Plate>(filledInEntity);
+        }
+
+        private void PutDownItem(ref PickupPredictedState pickupState,ref SlotPredictedState slot,Entity triggerEntity)
+        {
+            FSLog.Info($"PutDownItem ,triggerEntity:{triggerEntity}");
+
+            ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
+                Entity.Null, float3.zero, float3.zero);
+                        
+
+            var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
+            ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,
+                triggerEntity,slotSetting.Pos);
+
+            slot.FilledInEntity = pickupState.PickupedEntity;
+            EntityManager.SetComponentData(triggerEntity, slot);
+
+            pickupState.PickupedEntity = Entity.Null;
+        }
+
         protected override void OnUpdate()
         {
             Entities
@@ -22,24 +50,23 @@ namespace FootStone.Kitchen
                     in ReplicatedEntityData replicatedEntityData,
                     in UserCommand command) =>
                 {
-
+                    //未按键返回
                     if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                         return;
 
+                    //没有触发返回
                     var triggerEntity = triggerState.TriggeredEntity;
                     if (triggerEntity == Entity.Null)
                         return;
-
-                   // var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerEntity);
-                   // if ((triggerData.Type & (int) TriggerType.Table) == 0)
-                  //      return;
+       
+                    //触发的不是Table返回
                     if(!EntityManager.HasComponent<Table>(triggerEntity))
                         return;
 
                     var worldTick = GetSingleton<WorldTime>().Tick;
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
-                    FSLog.Info($"worldTick:{worldTick},TriggerOperationSystem Update," +
+                    FSLog.Info($"worldTick:{worldTick},CharacterPickupTableSystem Update," +
                         $"PickupedEntity:{pickupState.PickupedEntity}," +
                         $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledInEntity}");
 
@@ -57,7 +84,7 @@ namespace FootStone.Kitchen
                         }
 
                         FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                        
+                        ItemAttachUtilities.ItemDetachFromTable(EntityManager,slot.FilledInEntity,triggerEntity);
                         ItemAttachUtilities.ItemAttachToCharacter(EntityManager, slot.FilledInEntity, entity,
                             replicatedEntityData.PredictingPlayerId);
 
@@ -66,22 +93,38 @@ namespace FootStone.Kitchen
                         slot.FilledInEntity = Entity.Null;
                         EntityManager.SetComponentData(triggerEntity, slot);
                     }
-                    else if (pickupState.PickupedEntity != Entity.Null && slot.FilledInEntity == Entity.Null)
+                    else if (pickupState.PickupedEntity != Entity.Null && IsFilledInEmpty(slot.FilledInEntity))
                     {
-                        FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
+                   
+                        PutDownItem(ref pickupState,ref slot, triggerEntity);
+                        //ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
+                        //    Entity.Null, float3.zero, float3.zero);
+                        
 
-                        ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
-                            Entity.Null, float3.zero, float3.zero);
+                        //var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
+                        //ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,
+                        //    slotSetting.Pos);
 
-                     
-                        var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggerEntity);
-                        ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,slotSetting.Pos);
+                        //slot.FilledInEntity = pickupState.PickupedEntity;
+                        //EntityManager.SetComponentData(triggerEntity, slot);
 
-                        slot.FilledInEntity = pickupState.PickupedEntity;
-                        EntityManager.SetComponentData(triggerEntity, slot);
-
-                        pickupState.PickupedEntity = Entity.Null;
+                        //pickupState.PickupedEntity = Entity.Null;
                     }
+                    else if (pickupState.PickupedEntity != Entity.Null &&
+                             IsFilledInPlate(EntityManager, slot.FilledInEntity))
+                    {
+                        if(!EntityManager.HasComponent<Slice>(pickupState.PickupedEntity))
+                            return;
+
+                        var newTriggerEntity = slot.FilledInEntity;
+                        var newSlot =  EntityManager.GetComponentData<SlotPredictedState>(newTriggerEntity);
+                        PutDownItem(ref pickupState,ref newSlot, newTriggerEntity);
+
+                        var plateState = EntityManager.GetComponentData<PlatePredictedState>(newTriggerEntity);
+                        plateState.FillIn(pickupState.PickupedEntity);
+                        EntityManager.SetComponentData(newTriggerEntity,plateState);
+                    }
+
 
                 }).Run();
         }

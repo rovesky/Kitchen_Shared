@@ -66,7 +66,7 @@ namespace FootStone.Kitchen
                         ItemCreateUtilities.CreateItemComponent(EntityManager, e,
                             new float3 {x = 0.0f, y = -10f, z = 0.0f}, quaternion.identity);
 
-                        EntityManager.SetComponentData(e, new Food());
+                        EntityManager.AddComponentData(e, new Food());
                       
                         EntityManager.SetComponentData(e, new ReplicatedEntityData
                         {

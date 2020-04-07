@@ -36,7 +36,7 @@ namespace FootStone.Kitchen
                     //    return;
                     if(!EntityManager.HasComponent<Item>(triggerState.TriggeredEntity))
                         return;
-                    FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
+                    FSLog.Info($"PickUpItem,command ,triggerState.TriggeredEntity:{triggerState.TriggeredEntity},worldTick:{worldTick}");
 
                     ItemAttachUtilities.ItemAttachToCharacter(EntityManager, triggerState.TriggeredEntity, entity,
                         replicatedEntityData.PredictingPlayerId);

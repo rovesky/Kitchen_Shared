@@ -47,7 +47,6 @@ namespace FootStone.Kitchen
             {
                 Owner = Entity.Null,
                 PreOwner = Entity.Null
-              //  IsDynamic = false
             });
 
             entityManager.AddComponentData(e, new TriggerSetting
@@ -70,6 +69,12 @@ namespace FootStone.Kitchen
             {
                 CurSliceTick = 0,
             //    IsSlicing = false
+            });
+
+            var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
+            entityManager.AddComponentData(e, new ScaleSetting()
+            {
+                Scale =new float3(compositeScale.Value.c0.x,compositeScale.Value.c1.y,compositeScale.Value.c2.z)
             });
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);

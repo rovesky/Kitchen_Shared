@@ -34,7 +34,7 @@ namespace FootStone.Kitchen
                     return;
                    
                 var item = EntityManager.GetComponentData<ItemPredictedState>(triggerState.TriggeredEntity);
-                FSLog.Info($"PickUpItem flying,PreOwner:{item.PreOwner},entity:{entity}");
+              //  FSLog.Info($"PickUpItem flying,PreOwner:{item.PreOwner},entity:{entity}");
                 if(item.PreOwner == Entity.Null ||  item.PreOwner == entity)
                     return;
 
