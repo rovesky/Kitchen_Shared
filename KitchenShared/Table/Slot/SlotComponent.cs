@@ -1,9 +1,15 @@
 using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-    public struct SlotPredictedState : IComponentData, /*IReplicatedState*/IPredictedState<SlotPredictedState>
+    public struct SlotSetting : IComponentData
+    {
+        public float3 Pos;
+    }
+
+    public struct SlotPredictedState : IComponentData, IPredictedState<SlotPredictedState>
     {
         // 放入的对象
         public Entity FilledInEntity;

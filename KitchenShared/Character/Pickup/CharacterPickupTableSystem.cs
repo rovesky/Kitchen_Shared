@@ -30,24 +30,26 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerEntity);
-                    if ((triggerData.Type & (int) TriggerType.Table) == 0)
+                   // var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerEntity);
+                   // if ((triggerData.Type & (int) TriggerType.Table) == 0)
+                  //      return;
+                    if(!EntityManager.HasComponent<Table>(triggerEntity))
                         return;
 
                     var worldTick = GetSingleton<WorldTime>().Tick;
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
-                    FSLog.Info(
-                        $"worldTick:{worldTick},TriggerOperationSystem Update,PickupedEntity:{pickupState.PickupedEntity}," +
+                    FSLog.Info($"worldTick:{worldTick},TriggerOperationSystem Update," +
+                        $"PickupedEntity:{pickupState.PickupedEntity}," +
                         $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledInEntity}");
 
                     if (pickupState.PickupedEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
                     {
                       
                         //the item is not sliced,can't pickup
-                        if (EntityManager.HasComponent<ItemSliceState>(slot.FilledInEntity))
+                        if (EntityManager.HasComponent<FoodSliceState>(slot.FilledInEntity))
                         {
-                            var itemSliceState = EntityManager.GetComponentData<ItemSliceState>(slot.FilledInEntity);
+                            var itemSliceState = EntityManager.GetComponentData<FoodSliceState>(slot.FilledInEntity);
                             FSLog.Info($"PickUpItem,itemSliceState.CurSliceTick:{itemSliceState.CurSliceTick}");
 
                             if (itemSliceState.CurSliceTick > 0)
@@ -56,7 +58,7 @@ namespace FootStone.Kitchen
 
                         FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
                         
-                        ItemUtilities.ItemAttachToCharacter(EntityManager, slot.FilledInEntity, entity,
+                        ItemAttachUtilities.ItemAttachToCharacter(EntityManager, slot.FilledInEntity, entity,
                             replicatedEntityData.PredictingPlayerId);
 
                         pickupState.PickupedEntity = slot.FilledInEntity;
@@ -68,10 +70,12 @@ namespace FootStone.Kitchen
                     {
                         FSLog.Info($"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick}");
 
-                        ItemUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
+                        ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
                             Entity.Null, float3.zero, float3.zero);
 
-                        ItemUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity, triggerData.SlotPos);
+                     
+                        var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggerEntity);
+                        ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,slotSetting.Pos);
 
                         slot.FilledInEntity = pickupState.PickupedEntity;
                         EntityManager.SetComponentData(triggerEntity, slot);

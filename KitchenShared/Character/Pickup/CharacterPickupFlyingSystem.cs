@@ -26,8 +26,11 @@ namespace FootStone.Kitchen
                 if (pickupState.PickupedEntity != Entity.Null || triggerState.TriggeredEntity == Entity.Null) 
                     return;
                
-                var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
-                if ((triggerData.Type & (int) TriggerType.Item) == 0)
+                //var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
+                //if ((triggerData.Type & (int) TriggerType.Item) == 0)
+                //    return;
+
+                if(!EntityManager.HasComponent<Item>(triggerState.TriggeredEntity))
                     return;
                    
                 var item = EntityManager.GetComponentData<ItemPredictedState>(triggerState.TriggeredEntity);
@@ -38,10 +41,11 @@ namespace FootStone.Kitchen
                 var worldTick = GetSingleton<WorldTime>().Tick;
                 FSLog.Info($"PickUpItem flying,command tick:{command.RenderTick},worldTick:{worldTick}");
  
-                ItemUtilities.ItemAttachToCharacter(EntityManager,triggerState.TriggeredEntity,entity,replicatedEntityData.PredictingPlayerId);
+                ItemAttachUtilities.ItemAttachToCharacter(EntityManager,triggerState.TriggeredEntity,entity,replicatedEntityData.PredictingPlayerId);
                   
                 pickupState.PickupedEntity = triggerState.TriggeredEntity;
                 triggerState.TriggeredEntity = Entity.Null;
+
             }).Run();
         }
     }

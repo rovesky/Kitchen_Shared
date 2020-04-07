@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public static class CreateItemUtilities
+    public static class ItemCreateUtilities
     {
         public static void CreateItemComponent(EntityManager entityManager, Entity e, Vector3 position,
             Quaternion rotation)
@@ -61,12 +61,12 @@ namespace FootStone.Kitchen
                 IsAllowTrigger = false
             });
 
-            entityManager.AddComponentData(e, new ItemSliceSetting()
+            entityManager.AddComponentData(e, new FoodSliceSetting()
             {
                 TotalSliceTick = 150,
                 OffPos = new float3(0,1.7f,0)
             });
-            entityManager.AddComponentData(e, new ItemSliceState()
+            entityManager.AddComponentData(e, new FoodSliceState()
             {
                 CurSliceTick = 0,
             //    IsSlicing = false

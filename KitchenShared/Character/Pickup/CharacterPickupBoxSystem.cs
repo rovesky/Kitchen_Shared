@@ -44,8 +44,11 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerEntity);
-                    if ((triggerData.Type & (int) TriggerType.Table) == 0)
+                    //var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerEntity);
+                    //if ((triggerData.Type & (int) TriggerType.Table) == 0)
+                    //    return;
+
+                    if(!EntityManager.HasComponent<Table>(triggerEntity))
                         return;
 
                     if( !EntityManager.HasComponent<BoxSetting>(triggerEntity))
@@ -60,16 +63,18 @@ namespace FootStone.Kitchen
                     {
                         var e = EntityManager.Instantiate(applePrefab);
 
-                        CreateItemUtilities.CreateItemComponent(EntityManager, e,
+                        ItemCreateUtilities.CreateItemComponent(EntityManager, e,
                             new float3 {x = 0.0f, y = -10f, z = 0.0f}, quaternion.identity);
 
+                        EntityManager.SetComponentData(e, new Food());
+                      
                         EntityManager.SetComponentData(e, new ReplicatedEntityData
                         {
                             Id = -1,
                             PredictingPlayerId = -1
                         });
 
-                        ItemUtilities.ItemAttachToCharacter(EntityManager,e,entity,replicatedEntityData.PredictingPlayerId);
+                        ItemAttachUtilities.ItemAttachToCharacter(EntityManager,e,entity,replicatedEntityData.PredictingPlayerId);
                         pickupState.PickupedEntity = e;
                     }
 

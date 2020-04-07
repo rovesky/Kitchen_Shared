@@ -28,8 +28,11 @@ namespace FootStone.Kitchen
                 if (!EntityManager.HasComponent<TriggeredSetting>(triggeredEntity))
                     return;
 
-                var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggeredEntity);
-                if ((triggerData.Type & (int) TriggerType.Table) == 0)
+              //  var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggeredEntity);
+               // if ((triggerData.Type & (int) TriggerType.Table) == 0)
+                //    return;
+
+                if(!EntityManager.HasComponent<Table>(triggeredEntity))
                     return;
 
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggeredEntity);
@@ -37,8 +40,9 @@ namespace FootStone.Kitchen
                     return;
 
                 FSLog.Info("ItemMoveToTableSystem OnUpdate!");
-          
-                ItemUtilities.ItemAttachToTable(EntityManager, entity, triggerData.SlotPos);
+                var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggeredEntity);
+
+                ItemAttachUtilities.ItemAttachToTable(EntityManager, entity, slotSetting.Pos);
 
                 slot.FilledInEntity = entity;
                 EntityManager.SetComponentData(triggeredEntity,slot);

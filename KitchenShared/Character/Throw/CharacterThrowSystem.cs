@@ -30,7 +30,7 @@ namespace FootStone.Kitchen
                     linear.Normalize();
                     linear *= setting.Velocity;
 
-                    ItemUtilities.ItemDetachFromCharacter(EntityManager,
+                    ItemAttachUtilities.ItemDetachFromCharacter(EntityManager,
                         pickupState.PickupedEntity,
                         entity,
                         entityPredictData.Position + math.mul(entityPredictData.Rotation, new float3(0, 0.2f, 1.3f)),

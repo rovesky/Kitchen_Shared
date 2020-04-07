@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Rendering;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ClearTriggerColorSystem : SystemBase //ComponentSystem
+    public class ClearTriggeredSystem : SystemBase //ComponentSystem
     {
         protected override void OnUpdate()
         {
@@ -22,7 +20,7 @@ namespace FootStone.Kitchen
     }
 
     [DisableAutoCreation]
-    public class UpdateTriggerColorSystem : SystemBase //ComponentSystem
+    public class UpdateTriggeredColorSystem : SystemBase //ComponentSystem
     {
         protected override void OnUpdate()
         {
@@ -34,11 +32,9 @@ namespace FootStone.Kitchen
                     in TriggeredSetting setting) =>
                 {
                     var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
-                    volumeRenderMesh.material = state.IsTriggered?
-                        setting.TriggeredMaterial :setting.OriginMaterial;
+                    volumeRenderMesh.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
                     EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
                 }).Run();
-
         }
     }
 }

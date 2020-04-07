@@ -31,12 +31,14 @@ namespace FootStone.Kitchen
                 if (pickupState.PickupedEntity == Entity.Null
                     && triggerState.TriggeredEntity != Entity.Null)
                 {
-                    var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
-                    if ((triggerData.Type & (int) TriggerType.Item) == 0)
+                    //var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
+                    //if ((triggerData.Type & (int) TriggerType.Item) == 0)
+                    //    return;
+                    if(!EntityManager.HasComponent<Item>(triggerState.TriggeredEntity))
                         return;
                     FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
 
-                    ItemUtilities.ItemAttachToCharacter(EntityManager, triggerState.TriggeredEntity, entity,
+                    ItemAttachUtilities.ItemAttachToCharacter(EntityManager, triggerState.TriggeredEntity, entity,
                         replicatedEntityData.PredictingPlayerId);
 
                     pickupState.PickupedEntity = triggerState.TriggeredEntity;
@@ -49,7 +51,7 @@ namespace FootStone.Kitchen
                     FSLog.Info(
                         $"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");
                     
-                    ItemUtilities.ItemDetachFromCharacter(EntityManager, 
+                    ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, 
                         pickupState.PickupedEntity, 
                         Entity.Null,
                         transformState.Position + math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),

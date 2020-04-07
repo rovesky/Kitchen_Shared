@@ -16,8 +16,8 @@ namespace FootStone.Kitchen
 
     public class TriggeredSetting : IComponentData
     {
-        public int Type;
-        public float3 SlotPos;
+     //   public int Type;
+     //   public float3 SlotPos;
         public Material OriginMaterial;
         public Material TriggeredMaterial;
     }

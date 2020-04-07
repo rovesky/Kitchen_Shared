@@ -5,7 +5,7 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
 
-    public static class ItemUtilities
+    public static class ItemAttachUtilities
     {
         public static void ItemAttachToCharacter(EntityManager entityManager, Entity itemEntity, Entity owner,
             int predictingPlayerId)

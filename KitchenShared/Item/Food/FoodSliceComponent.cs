@@ -4,17 +4,27 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-    public struct ItemSliceSetting: IComponentData
+
+    public struct Slice : IComponentData
+    {
+    
+    }
+
+    public struct Food : IComponentData
+    {
+    
+    }
+
+    public struct FoodSliceSetting: IComponentData
     {
         public byte TotalSliceTick;
         public float3 OffPos;
     }
 
 
-    public struct ItemSliceState : IComponentData, IPredictedState<ItemSliceState>
+    public struct FoodSliceState : IComponentData, IPredictedState<FoodSliceState>
     {
         public byte CurSliceTick;
-      //  public bool IsSlicing;
        
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
@@ -27,14 +37,14 @@ namespace FootStone.Kitchen
            writer.WriteByte("Percentage",CurSliceTick);
         }
 
-        public bool VerifyPrediction(ref ItemSliceState state)
+        public bool VerifyPrediction(ref FoodSliceState state)
         {
             return CurSliceTick.Equals(state.CurSliceTick);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
         {
-            return new PredictedStateSerializerFactory<ItemSliceState>();
+            return new PredictedStateSerializerFactory<FoodSliceState>();
         }
     }
 }

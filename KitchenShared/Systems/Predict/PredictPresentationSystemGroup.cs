@@ -10,12 +10,12 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateReplicatedOwnerFlag>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearTriggerColorSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearTriggeredSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateItemPresentationSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyCharPresentationSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyItemPresentationSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateTriggerColorSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateTriggeredColorSystem>());
         }
     }
 
