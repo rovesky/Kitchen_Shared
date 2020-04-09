@@ -34,7 +34,7 @@ namespace FootStone.Kitchen
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-           writer.WriteByte("Percentage",CurSliceTick);
+           writer.WriteByte("CurSliceTick",CurSliceTick);
         }
 
         public bool VerifyPrediction(ref FoodSliceState state)
