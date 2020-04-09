@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
             entityManager.SetComponentData(itemEntity, itemPredictedState);
 
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-            transformPredictedState.Position = new float3(0, -0.2f, 0.9f);
+            transformPredictedState.Position = new float3(0, 0f, 0.9f);
             transformPredictedState.Rotation = quaternion.identity;
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 

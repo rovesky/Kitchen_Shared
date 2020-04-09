@@ -18,6 +18,7 @@ namespace FootStone.Kitchen
                     in TransformPredictedState transformPredictData,
                     in VelocityPredictedState velocityPredictData,
                     in TriggerPredictedState triggerPredictedData,
+                    in SlicePredictedState slicePredictedState,
                     in ReplicatedEntityData replicatedEntityData) =>
                 {
                     interpolateData.Position = transformPredictData.Position;
@@ -36,7 +37,9 @@ namespace FootStone.Kitchen
                            // FSLog.Info($"UpdateCharPresentationSystem,entity:{entity},velocityPredictData:{velocityPredictData.Linear}");
                         interpolateData.SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;
                     }
-                    interpolateData.MaterialId = replicatedEntityData.Id % 4;
+                    interpolateData.MaterialId = (byte)(replicatedEntityData.Id % 4);
+
+                    interpolateData.ActionId = (byte)(slicePredictedState.IsSlicing ? 1 : 0);
 
                     //setup trigger entity 
                     if (triggerPredictedData.TriggeredEntity == Entity.Null)

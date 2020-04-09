@@ -11,7 +11,8 @@ namespace FootStone.Kitchen
         public quaternion Rotation;
    
         public float SqrMagnitude;
-        public int MaterialId;
+        public byte MaterialId;
+        public byte ActionId;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
@@ -19,6 +20,7 @@ namespace FootStone.Kitchen
             Rotation = reader.ReadQuaternionQ();
             SqrMagnitude = reader.ReadFloatQ();
             MaterialId = reader.ReadByte();
+            ActionId = reader.ReadByte();
            // FSLog.Info($"Deserialize,MaterialId:{MaterialId}");
         }
 
@@ -27,7 +29,8 @@ namespace FootStone.Kitchen
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
             writer.WriteFloatQ("sqrMagnitude", SqrMagnitude);
-            writer.WriteByte("materialId", (byte)MaterialId);
+            writer.WriteByte("materialId", MaterialId);
+            writer.WriteByte("ActionId", ActionId);
         }
 
         public void Interpolate(ref SerializeContext context, ref CharacterInterpolatedState prevState,
@@ -37,6 +40,7 @@ namespace FootStone.Kitchen
             Rotation = Quaternion.Lerp(prevState.Rotation, nextState.Rotation, interpVal);
             SqrMagnitude = math.lerp(prevState.SqrMagnitude, nextState.SqrMagnitude, interpVal);
             MaterialId = prevState.MaterialId;
+            ActionId = prevState.ActionId;
         }
 
         public static IInterpolatedStateSerializerFactory CreateSerializerFactory()

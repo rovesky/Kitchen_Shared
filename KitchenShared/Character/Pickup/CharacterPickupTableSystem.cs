@@ -95,20 +95,7 @@ namespace FootStone.Kitchen
                     }
                     else if (pickupState.PickupedEntity != Entity.Null && IsFilledInEmpty(slot.FilledInEntity))
                     {
-                   
                         PutDownItem(ref pickupState,ref slot, triggerEntity);
-                        //ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
-                        //    Entity.Null, float3.zero, float3.zero);
-                        
-
-                        //var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
-                        //ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,
-                        //    slotSetting.Pos);
-
-                        //slot.FilledInEntity = pickupState.PickupedEntity;
-                        //EntityManager.SetComponentData(triggerEntity, slot);
-
-                        //pickupState.PickupedEntity = Entity.Null;
                     }
                     else if (pickupState.PickupedEntity != Entity.Null &&
                              IsFilledInPlate(EntityManager, slot.FilledInEntity))
