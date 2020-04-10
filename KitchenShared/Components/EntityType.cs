@@ -4,6 +4,8 @@
     {
         Character,
         Plate,
-        Table
+        Table,
+        Apple,
+        AppleSlice
     }
 }

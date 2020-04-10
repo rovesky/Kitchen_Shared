@@ -32,4 +32,7 @@ namespace FootStone.Kitchen
             return new PredictedStateSerializerFactory<SlicePredictedState>();
         }
     }
+
+
+   
 }

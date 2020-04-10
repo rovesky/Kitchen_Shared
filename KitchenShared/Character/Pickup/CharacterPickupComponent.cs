@@ -15,6 +15,7 @@ namespace FootStone.Kitchen
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             context.RefSerializer.DeserializeReference(ref reader, ref PickupedEntity);
+            FSLog.Info($"PickupPredictedState,PickupedEntity:{PickupedEntity}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)

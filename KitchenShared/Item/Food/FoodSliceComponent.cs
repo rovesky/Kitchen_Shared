@@ -15,20 +15,23 @@ namespace FootStone.Kitchen
     
     }
 
-    public struct FoodSliceSetting: IComponentData
+    public struct FoodSlicedSetting: IComponentData
     {
         public byte TotalSliceTick;
         public float3 OffPos;
     }
 
+    public struct FoodSlicedRequest : IComponentData
+    {
+        public Entity Character;
+    }
 
-    public struct FoodSliceState : IComponentData, IPredictedState<FoodSliceState>
+    public struct FoodSlicedState : IComponentData, IPredictedState<FoodSlicedState>
     {
         public byte CurSliceTick;
        
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
-
             CurSliceTick = reader.ReadByte();
         }
 
@@ -37,14 +40,14 @@ namespace FootStone.Kitchen
            writer.WriteByte("CurSliceTick",CurSliceTick);
         }
 
-        public bool VerifyPrediction(ref FoodSliceState state)
+        public bool VerifyPrediction(ref FoodSlicedState state)
         {
             return CurSliceTick.Equals(state.CurSliceTick);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
         {
-            return new PredictedStateSerializerFactory<FoodSliceState>();
+            return new PredictedStateSerializerFactory<FoodSlicedState>();
         }
     }
 }

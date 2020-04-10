@@ -21,15 +21,19 @@ namespace FootStone.Kitchen
                     //  FSLog.Info("PickSystem Update");
                     if (!command.Buttons.IsSet(UserCommand.Button.Throw))
                         return;
+                 //   FSLog.Info($"throw entity1:{pickupState.PickupedEntity}");
 
                     if (pickupState.PickupedEntity == Entity.Null)
                         return;
+                  //  FSLog.Info($"throw entity2:{pickupState.PickupedEntity}");
 
                     if(!EntityManager.HasComponent<Food>(pickupState.PickupedEntity))
                         return;
            
+                  //  FSLog.Info($"throw entity3:{pickupState.PickupedEntity}");
+
                     Vector3 linear = math.mul(entityPredictData.Rotation, Vector3.forward);
-                    linear.y = 0.2f;
+                    linear.y = 0.25f;
                     linear.Normalize();
                     linear *= setting.Velocity;
 

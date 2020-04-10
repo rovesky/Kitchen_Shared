@@ -31,13 +31,7 @@ namespace FootStone.Kitchen
                         sliceState.IsSlicing = false;
                         return;
                     }
-
-                    //var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
-                    //if ((triggerData.Type & (int) TriggerType.Table) == 0)
-                    //{
-                    //    sliceState.IsSlicing = false;
-                    //    return;
-                    //}
+                 
 
                     if(!EntityManager.HasComponent<Table>(triggerState.TriggeredEntity))
                     {
@@ -59,7 +53,7 @@ namespace FootStone.Kitchen
                     }
 
 
-                    if (!EntityManager.HasComponent<FoodSliceState>(slot.FilledInEntity))
+                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledInEntity))
                     {
                         sliceState.IsSlicing = false;
                         return;
@@ -106,59 +100,41 @@ namespace FootStone.Kitchen
 
                     if (triggerState.TriggeredEntity == Entity.Null)
                         return;
-
-                    //var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggerState.TriggeredEntity);
-                    //if ((triggerData.Type & (int) TriggerType.Table) == 0)
-                    //    return;
-                    if(!EntityManager.HasComponent<Table>(triggerState.TriggeredEntity))
+               
+                    if (!EntityManager.HasComponent<Table>(triggerState.TriggeredEntity))
                         return;
 
-                    if(!EntityManager.HasComponent<TableSlice>(triggerState.TriggeredEntity))
+                    if (!EntityManager.HasComponent<TableSlice>(triggerState.TriggeredEntity))
                         return;
 
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerState.TriggeredEntity);
                     if (slot.FilledInEntity == Entity.Null)
                         return;
 
-                    if (!EntityManager.HasComponent<FoodSliceState>(slot.FilledInEntity))
+                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledInEntity))
                         return;
 
-                    var itemSliceState = EntityManager.GetComponentData<FoodSliceState>(slot.FilledInEntity);
-                    var itemSliceSetting = EntityManager.GetComponentData<FoodSliceSetting>(slot.FilledInEntity);
-
+                    var itemSliceState = EntityManager.GetComponentData<FoodSlicedState>(slot.FilledInEntity);
+                    var itemSliceSetting = EntityManager.GetComponentData<FoodSlicedSetting>(slot.FilledInEntity);
 
                     if (itemSliceState.CurSliceTick < itemSliceSetting.TotalSliceTick)
                     {
                         // itemSliceState.IsSlicing = true;
                         itemSliceState.CurSliceTick++;
                         EntityManager.SetComponentData(slot.FilledInEntity, itemSliceState);
+                        return;
                     }
-                    else
+
+                    //  itemSliceState.IsSlicing = false;
+                    sliceState.IsSlicing = false;
+
+                    EntityManager.AddComponentData(slot.FilledInEntity, new FoodSlicedRequest()
                     {
-                        //  itemSliceState.IsSlicing = false;
-                        sliceState.IsSlicing = false;
+                        Character = entity
+                    });
 
-                        var itemPos = EntityManager.GetComponentData<LocalToWorld>(slot.FilledInEntity);
-                        EntityManager.DestroyEntity(slot.FilledInEntity);
+                    //     FSLog.Info($"CharacterSliceSystem,itemSliceState.CurSliceTick:{itemSliceState.CurSliceTick}");
 
-                        var e = EntityManager.Instantiate(appleSlicePrefab);
-                        ItemCreateUtilities.CreateItemComponent(EntityManager, e,
-                            itemPos.Position, quaternion.identity);
-                        EntityManager.AddComponentData(e, new Food());
-                        EntityManager.AddComponentData(e, new Slice());
-
-                        EntityManager.SetComponentData(e, new ReplicatedEntityData
-                        {
-                            Id = -1,
-                            PredictingPlayerId = -1
-                        });
-
-                        slot.FilledInEntity = e;
-                        EntityManager.SetComponentData(triggerState.TriggeredEntity, slot);
-                    }
-
-                    FSLog.Info($"CharacterSliceSystem,itemSliceState.CurSliceTick:{itemSliceState.CurSliceTick}");
-                    
                 }).Run();
         }
     }
