@@ -6,6 +6,8 @@
         Plate,
         Table,
         Apple,
-        AppleSlice
+        AppleSlice,
+        Game,
+        Menu
     }
 }

@@ -3,8 +3,6 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-    
-
     [InternalBufferCapacity(16)]
     public struct SpawnFoodRequest : IBufferElementData
     {
@@ -16,5 +14,6 @@ namespace FootStone.Kitchen
 
     public struct SpawnFoodArray : IComponentData
     {
+
     }
 }
