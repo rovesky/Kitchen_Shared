@@ -3,9 +3,8 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-    public struct Countdown : IComponentData,IReplicatedState
+    public struct Score : IComponentData,IReplicatedState
     {
-        public long EndTime;
         public ushort Value;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
@@ -20,7 +19,7 @@ namespace FootStone.Kitchen
 
         public static IReplicatedStateSerializerFactory CreateSerializerFactory()
         {
-            return new ReplicatedStateSerializerFactory<Countdown>();
+            return new ReplicatedStateSerializerFactory<Score>();
         }
     }
 

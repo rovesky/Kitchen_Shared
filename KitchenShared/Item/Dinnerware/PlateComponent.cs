@@ -3,7 +3,11 @@ using FootStone.ECS;
 
 namespace FootStone.Kitchen
 {
-
+    
+    public struct PlateServedRequest : IComponentData
+    {
+      
+    }
 
     public struct Plate : IComponentData
     {

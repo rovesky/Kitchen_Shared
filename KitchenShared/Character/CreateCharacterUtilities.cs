@@ -100,6 +100,8 @@ namespace FootStone.Kitchen
             {
               IsSlicing = false
             });
+
+            entityManager.AddComponentData(e, new ServeSetting());
         }
     }
 }
