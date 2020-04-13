@@ -8,8 +8,10 @@ namespace FootStone.Kitchen
     public enum BoxType
     {
         None = 0,
-        Apple = 1 << 1,
-        Banana = 2 << 1
+        Shrimp = 1 << 1,
+        Kelp = 2 << 1,
+        Cucumber = 3 << 1,
+        Rice = 4 << 1
     }
     public struct BoxSetting : IComponentData
     {

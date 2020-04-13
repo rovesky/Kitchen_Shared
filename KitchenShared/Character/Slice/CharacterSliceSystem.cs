@@ -71,14 +71,14 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterSliceSystem : SystemBase
     {
-        private Entity appleSlicePrefab;
+    //    private Entity appleSlicePrefab;
 
         protected override void OnCreate()
         {
-            appleSlicePrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(
-                Resources.Load("AppleSlice") as GameObject,
-                GameObjectConversionSettings.FromWorld(World,
-                    World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<ConvertToEntitySystem>().BlobAssetStore));
+        //    appleSlicePrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(
+         //       Resources.Load("AppleSlice") as GameObject,
+          //      GameObjectConversionSettings.FromWorld(World,
+             //       World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<ConvertToEntitySystem>().BlobAssetStore));
 
         }
 

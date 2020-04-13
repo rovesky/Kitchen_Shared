@@ -9,6 +9,20 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class FoodSlicedSystem : SystemBase
     {
+
+        private EntityType FoodToSlice(EntityType foodType)
+        {
+            switch (foodType)
+            {
+                case EntityType.Shrimp:
+                    return EntityType.ShrimpSlice;
+                case EntityType.Cucumber:
+                    return EntityType.CucumberSlice;
+                default:
+                    return EntityType.ShrimpSlice;
+            }
+        }
+
         protected override void OnUpdate()
         {
             Entities.WithAll<ServerEntity>()
@@ -32,7 +46,7 @@ namespace FootStone.Kitchen
                     var buffer = EntityManager.GetBuffer<SpawnFoodRequest>(spawnFoodEntity);
                     buffer.Add(new SpawnFoodRequest()
                     {
-                        Type = EntityType.AppleSlice,
+                        Type = FoodToSlice(food.Type),
                         Pos = slotSetting.Pos,
                         Owner = itemState.Owner,
                         IsSlice = true

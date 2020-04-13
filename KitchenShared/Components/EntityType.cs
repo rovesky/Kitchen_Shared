@@ -5,8 +5,17 @@
         Character,
         Plate,
         Table,
-        Apple,
-        AppleSlice,
+
+        /*foods*/
+        Shrimp,
+        ShrimpSlice,
+        Rice,
+        RiceCooked,
+        KelpSlice,
+        Cucumber,
+        CucumberSlice,
+        /*foods*/
+
         Game,
         Menu
     }

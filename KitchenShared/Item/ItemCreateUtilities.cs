@@ -10,10 +10,19 @@ namespace FootStone.Kitchen
     public static class ItemCreateUtilities
     {
         public static void CreateItemComponent(EntityManager entityManager, Entity e, Vector3 position,
-            Quaternion rotation)
+            Quaternion rotation1)
         {
-            entityManager.SetComponentData(e,new Translation{Value = position});
-            entityManager.SetComponentData(e,new Rotation{Value = rotation});
+            var translation = entityManager.GetComponentData<Translation>(e);
+            var rotation = entityManager.GetComponentData<Rotation>(e);
+         //   FSLog.Info($"CreateItemComponent，translation：{translation.Value}");
+            entityManager.AddComponentData(e,new OffsetSetting()
+            {
+                Pos = translation.Value,
+                Rot = rotation.Value
+            });
+            var newPosition = (float3) position + translation.Value;
+            entityManager.SetComponentData(e,new Translation{Value = newPosition});
+            entityManager.SetComponentData(e,new Rotation{Value = rotation.Value});
 
             entityManager.AddComponentData(e, new ReplicatedEntityData
             {
@@ -25,15 +34,15 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ItemInterpolatedState
             {
-                Position = position,
-                Rotation = Quaternion.identity,
+                Position = newPosition,
+                Rotation = rotation.Value,
                 Owner = Entity.Null
             });
 
             entityManager.AddComponentData(e, new TransformPredictedState
             {
-                Position = position,
-                Rotation = rotation
+                Position = newPosition,
+                Rotation = rotation.Value
             });
 
             entityManager.AddComponentData(e, new VelocityPredictedState
@@ -67,15 +76,24 @@ namespace FootStone.Kitchen
             });
             entityManager.AddComponentData(e, new FoodSlicedState()
             {
-                CurSliceTick = 0,
-            //    IsSlicing = false
+                CurSliceTick = 0
             });
 
-            var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
-            entityManager.AddComponentData(e, new ScaleSetting()
+            if (entityManager.HasComponent<CompositeScale>(e))
             {
-                Scale =new float3(compositeScale.Value.c0.x,compositeScale.Value.c1.y,compositeScale.Value.c2.z)
-            });
+                var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
+                entityManager.AddComponentData(e, new ScaleSetting()
+                {
+                    Scale = new float3(compositeScale.Value.c0.x, compositeScale.Value.c1.y, compositeScale.Value.c2.z)
+                });
+            }
+            else
+            {
+                entityManager.AddComponentData(e, new ScaleSetting()
+                {
+                    Scale = new float3(1.0f, 1.0f, 1.0f)
+                });
+            }
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);
         }

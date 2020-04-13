@@ -12,4 +12,10 @@ namespace FootStone.Kitchen
     {
         public float3 Scale;
     }
+
+    public struct OffsetSetting : IComponentData
+    {
+        public float3 Pos;
+        public quaternion Rot;
+    }
 }

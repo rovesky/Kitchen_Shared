@@ -12,7 +12,7 @@ namespace FootStone.Kitchen
 
     public struct Food : IComponentData
     {
-    
+        public EntityType Type;
     }
 
     public struct FoodSlicedSetting: IComponentData

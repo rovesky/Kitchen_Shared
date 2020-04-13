@@ -23,10 +23,16 @@ namespace FootStone.Kitchen
         {
             switch (boxType)
             {
-                case BoxType.Apple:
-                    return EntityType.Apple;
+                case BoxType.Shrimp:
+                    return EntityType.Shrimp;
+                case BoxType.Rice :
+                    return EntityType.Rice;
+                case BoxType.Kelp :
+                    return EntityType.KelpSlice;
+                case BoxType.Cucumber :
+                    return EntityType.Cucumber;
                 default:
-                    return EntityType.Apple;
+                    return EntityType.Shrimp;
             }
         }
 
@@ -69,12 +75,15 @@ namespace FootStone.Kitchen
 
                     var spawnFoodEntity = GetSingletonEntity<SpawnFoodArray>();
                     var buffer = EntityManager.GetBuffer<SpawnFoodRequest>(spawnFoodEntity);
+
+                    var isSlice = boxSetting.Type == BoxType.Kelp;
+
                     buffer.Add(new SpawnFoodRequest()
                     {
                         Type = BoxTypeToEntityType(boxSetting.Type),
                         Pos = slotSetting.Pos,
                         Owner = triggerEntity,
-                        IsSlice = false
+                        IsSlice = isSlice
                     });
 
 

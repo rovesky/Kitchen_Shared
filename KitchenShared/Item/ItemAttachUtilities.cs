@@ -21,9 +21,10 @@ namespace FootStone.Kitchen
             itemPredictedState.PreOwner = Entity.Null;
             entityManager.SetComponentData(itemEntity, itemPredictedState);
 
+            var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-            transformPredictedState.Position = new float3(0, 0f, 0.9f);
-            transformPredictedState.Rotation = quaternion.identity;
+            transformPredictedState.Position = new float3(0, 0f, 0.9f)+ offset.Pos;
+            transformPredictedState.Rotation = offset.Rot;
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
 
@@ -52,9 +53,10 @@ namespace FootStone.Kitchen
             itemPredictedState.Owner = Entity.Null;
             entityManager.SetComponentData(itemEntity, itemPredictedState);
 
+            var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-            transformPredictedState.Position = pos;
-            transformPredictedState.Rotation = quaternion.identity;
+            transformPredictedState.Position = pos + offset.Pos;
+            transformPredictedState.Rotation = offset.Rot;
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
             var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(itemEntity);
@@ -76,9 +78,10 @@ namespace FootStone.Kitchen
             triggerState.IsAllowTrigger = false;
             entityManager.SetComponentData(itemEntity, triggerState);
 
+            var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-            transformPredictedState.Position = slotPos;
-            transformPredictedState.Rotation = quaternion.identity;
+            transformPredictedState.Position = slotPos+offset.Pos;
+            transformPredictedState.Rotation = offset.Rot;
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
             var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(itemEntity);
