@@ -51,22 +51,34 @@ namespace FootStone.Kitchen
             return new PredictedStateSerializerFactory<PlatePredictedState>();
         }
 
+        public bool IsEmpty()
+        {
+            return Material1 == Entity.Null
+                   && Material2 == Entity.Null
+                   && Material3 == Entity.Null
+                   && Material4 == Entity.Null;
+        }
+
         public void FillIn(Entity entity)
         {
             if (Material1 == Entity.Null)
             {
+               // FSLog.Info($"FillIn Material1:{entity}");
+
                 Material1 = entity;
             }
-            else  if (Material2 == Entity.Null)
+            else if (Material2 == Entity.Null)
             {
+               // FSLog.Info($"FillIn Material2:{entity}");
+
                 Material2 = entity;
             }
-            else  if (Material3 == Entity.Null)
-            {
+            else if (Material3 == Entity.Null)
+            { // FSLog.Info($"FillIn Material3:{entity}");
                 Material3 = entity;
             }
-            else  if (Material4 == Entity.Null)
-            {
+            else if (Material4 == Entity.Null)
+            {  //FSLog.Info($"FillIn Material4:{entity}");
                 Material4 = entity;
             }
         }
