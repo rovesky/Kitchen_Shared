@@ -9,6 +9,17 @@ namespace FootStone.Kitchen
 {
     public static class ItemCreateUtilities
     {
+        public static bool IsSlice(EntityType type)
+        {
+            if (type == EntityType.CucumberSlice 
+                || type == EntityType.KelpSlice
+                || type == EntityType.ShrimpSlice)
+                return true;
+
+            return false;
+        }
+
+
         public static void CreateItemComponent(EntityManager entityManager, Entity e, Vector3 position,
             Quaternion rotation1)
         {

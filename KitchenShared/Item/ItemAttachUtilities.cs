@@ -25,6 +25,7 @@ namespace FootStone.Kitchen
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
             transformPredictedState.Position = new float3(0, 0f, 0.9f)+ offset.Pos;
             transformPredictedState.Rotation = offset.Rot;
+        //    FSLog.Info($"ItemAttachToCharacter,Rotation:{transformPredictedState.Rotation.value}");
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
 
@@ -70,8 +71,9 @@ namespace FootStone.Kitchen
         }
 
 
-        
-        public static void ItemAttachToTable(EntityManager entityManager, Entity itemEntity,Entity tableEntity, float3 slotPos)
+
+        public static void ItemAttachToTable(EntityManager entityManager, Entity itemEntity, Entity tableEntity,
+            float3 slotPos)
         {
             var triggerState = entityManager.GetComponentData<TriggerPredictedState>(itemEntity);
             triggerState.TriggeredEntity = Entity.Null;
@@ -80,7 +82,7 @@ namespace FootStone.Kitchen
 
             var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-            transformPredictedState.Position = slotPos+offset.Pos;
+            transformPredictedState.Position = slotPos + offset.Pos;
             transformPredictedState.Rotation = offset.Rot;
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
@@ -90,7 +92,7 @@ namespace FootStone.Kitchen
             velocityPredictedState.MotionType = MotionType.Static;
             entityManager.SetComponentData(itemEntity, velocityPredictedState);
 
-            var itemState =  entityManager.GetComponentData<ItemPredictedState>(itemEntity);
+            var itemState = entityManager.GetComponentData<ItemPredictedState>(itemEntity);
             itemState.Owner = tableEntity;
             entityManager.SetComponentData(itemEntity, itemState);
             // entityManager.AddComponentData(itemEntity,new TriggeredSetting());

@@ -24,6 +24,32 @@ namespace FootStone.Kitchen
             }
         }
 
+        private void Despawn(Entity entity,ref PlatePredictedState plateState)
+        {
+            //Despawn
+           // EntityManager.AddComponentData(entity, new Despawn());
+
+            if (plateState.Material1 != Entity.Null)
+            {
+                plateState.Material1 = Entity.Null;
+                EntityManager.AddComponentData(plateState.Material1, new Despawn());
+            }
+
+            if(plateState.Material2 != Entity.Null) {
+                plateState.Material2 = Entity.Null;
+                EntityManager.AddComponentData(plateState.Material2, new Despawn());
+            }
+            if(plateState.Material3 != Entity.Null) {
+                plateState.Material3 = Entity.Null;
+                EntityManager.AddComponentData(plateState.Material3, new Despawn());
+            }
+            if(plateState.Material4 != Entity.Null) {
+                plateState.Material4 = Entity.Null;
+                EntityManager.AddComponentData(plateState.Material4, new Despawn());
+            }
+
+        }
+
         protected override void OnUpdate()
         {
             Entities.WithAll<ServerEntity,Plate>()
@@ -35,13 +61,16 @@ namespace FootStone.Kitchen
                 {
                     EntityManager.RemoveComponent<PlateServedRequest>(entity);
 
-                    EntityManager.AddComponentData(entity, new Despawn());
+                    //Despawn
+                    Despawn(entity, ref plateState);
+
                     EntityManager.SetComponentData(itemState.Owner,new SlotPredictedState()
                     {
                         FilledInEntity = Entity.Null
                     });
 
 
+                    //add score
                     var query = GetEntityQuery(new EntityQueryDesc
                     {
                         All = new ComponentType[]

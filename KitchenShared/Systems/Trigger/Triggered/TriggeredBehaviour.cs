@@ -1,27 +1,21 @@
 ﻿using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Rendering;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
 {
     public class TriggeredBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
-       // public GameObject Slot;
-       // public TriggerType Type;
-
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
             var meshRenderer = gameObject.GetComponent<MeshRenderer>();
 
+            var material = new Material(meshRenderer.sharedMaterial);
+            material.SetFloat("_Brightness", 1.4f);
             dstManager.AddComponentData(entity, new TriggeredSetting
             {
-             //   Type = (int) Type,
-                //     SlotPos = slotPos,
                 OriginMaterial = meshRenderer.sharedMaterial,
-                TriggeredMaterial = new Material(Shader.Find("Standard")) {color = Color.gray}
+                TriggeredMaterial = material
             });
 
             dstManager.AddComponentData(entity, new TriggeredState()

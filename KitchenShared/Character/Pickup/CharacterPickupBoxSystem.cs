@@ -61,7 +61,6 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-
                     if(!EntityManager.HasComponent<BoxSetting>(triggerEntity))
                         return;
 
@@ -82,7 +81,7 @@ namespace FootStone.Kitchen
                     {
                         Type = BoxTypeToEntityType(boxSetting.Type),
                         Pos = slotSetting.Pos,
-                        Owner = triggerEntity,
+                        Owner = entity,
                         IsSlice = isSlice
                     });
 
