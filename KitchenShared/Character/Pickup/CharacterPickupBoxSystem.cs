@@ -26,7 +26,7 @@ namespace FootStone.Kitchen
                 case BoxType.Shrimp:
                     return EntityType.Shrimp;
                 case BoxType.Rice :
-                    return EntityType.Rice;
+                    return EntityType.RiceCooked;
                 case BoxType.Kelp :
                     return EntityType.KelpSlice;
                 case BoxType.Cucumber :
@@ -75,7 +75,7 @@ namespace FootStone.Kitchen
                     var spawnFoodEntity = GetSingletonEntity<SpawnFoodArray>();
                     var buffer = EntityManager.GetBuffer<SpawnFoodRequest>(spawnFoodEntity);
 
-                    var isSlice = boxSetting.Type == BoxType.Kelp;
+                    var isSlice = boxSetting.Type == BoxType.Kelp || boxSetting.Type == BoxType.Rice;
 
                     buffer.Add(new SpawnFoodRequest()
                     {

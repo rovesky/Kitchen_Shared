@@ -1,5 +1,6 @@
 ﻿using Unity.Entities;
 using FootStone.ECS;
+using System;
 
 namespace FootStone.Kitchen
 {
@@ -59,6 +60,14 @@ namespace FootStone.Kitchen
                    && Material4 == Entity.Null;
         }
 
+        public bool IsFull()
+        {
+            return Material1 != Entity.Null
+                   && Material2 != Entity.Null
+                   && Material3 != Entity.Null
+                   && Material4 != Entity.Null;
+        }
+
         public void FillIn(Entity entity)
         {
             if (Material1 == Entity.Null)
@@ -81,6 +90,22 @@ namespace FootStone.Kitchen
             {  //FSLog.Info($"FillIn Material4:{entity}");
                 Material4 = entity;
             }
+        }
+
+        public int MaterialCount()
+        {
+            var count = 0;
+
+            if (Material1 != Entity.Null)
+                count++;
+            if (Material2 != Entity.Null)
+                count++;
+            if (Material3 != Entity.Null)
+                count++;
+            if (Material4 != Entity.Null)
+                count++;
+
+            return count;
         }
     }
 

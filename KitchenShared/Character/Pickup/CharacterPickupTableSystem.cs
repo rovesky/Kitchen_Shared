@@ -130,7 +130,11 @@ namespace FootStone.Kitchen
                             return;
                         var newTriggerEntity = slot.FilledInEntity;
                         var plateState = EntityManager.GetComponentData<PlatePredictedState>(newTriggerEntity);
-
+                       
+                        //盘子已满
+                        if(plateState.IsFull())
+                            return;
+                        //盘子已有该材料
                         if (HasMaterial(plateState, pickupEntity))
                             return;
 

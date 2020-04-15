@@ -38,5 +38,30 @@ namespace FootStone.Kitchen
         {
             return new ReplicatedStateSerializerFactory<Menu>();
         }
+
+        public int MaterialCount()
+        {
+            var count = 0;
+
+            if (MaterialId1 != 0)
+                count++;
+            if (MaterialId2 != 0)
+                count++;
+            if (MaterialId3 != 0)
+                count++;
+            if (MaterialId4 != 0)
+                count++;
+
+            return count;
+        }
+
+        public bool HasMaterial(ushort material)
+        {
+            return MaterialId1 == material 
+                   || MaterialId2 == material 
+                   || MaterialId3 == material
+                   || MaterialId4 == material;
+
+        }
     }
 }

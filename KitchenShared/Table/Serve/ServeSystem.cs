@@ -18,6 +18,7 @@ namespace FootStone.Kitchen
                     if(slotState.FilledInEntity == Entity.Null)
                         return;
 
+                    FSLog.Info("TableServeSystem OnUpdate");
                     var filledInEntity = slotState.FilledInEntity;
 
                     if(!EntityManager.HasComponent<Plate>(filledInEntity))
