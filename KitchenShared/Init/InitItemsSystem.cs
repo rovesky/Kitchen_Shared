@@ -33,15 +33,15 @@ namespace FootStone.Kitchen
             var entities = query.ToEntityArray(Allocator.TempJob);
 
             //生成Plate
-            for (var i = 0; i < 5; ++i)
+            for (var i = 0; i < 7; ++i)
             {
                 var entity = entities[i + 5];
                 var slotData = EntityManager.GetComponentData<SlotSetting>(entity);
 
                 var entityType = EntityType.Plate;
-                if (i == 3)
+                if (i >=  3 && i <5)
                     entityType = EntityType.ShrimpSlice;
-                if (i == 4)
+                if (i >= 5 && i <7)
                     entityType = EntityType.CucumberSlice;
 
                 var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();

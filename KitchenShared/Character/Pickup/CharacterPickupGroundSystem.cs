@@ -15,7 +15,6 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
 
                     ref TriggerPredictedState triggerState,
-                    //   in PickupSetting setting,
                     in SlotPredictedState slotState,
                     in UserCommand command,
                     in TransformPredictedState transformState,
@@ -29,21 +28,20 @@ namespace FootStone.Kitchen
 
                     //pickup item
                     var pickupedEntity = slotState.FilledInEntity;
-                    if (pickupedEntity == Entity.Null && triggerState.TriggeredEntity != Entity.Null)
+                    var triggeredEntity = triggerState.TriggeredEntity;
+                    if (pickupedEntity == Entity.Null && triggeredEntity != Entity.Null)
                     {
-                        if (!EntityManager.HasComponent<Item>(triggerState.TriggeredEntity))
+                        if (!EntityManager.HasComponent<Item>(triggeredEntity))
                             return;
-                        FSLog.Info(
-                            $"PickUpItem,command ,triggerState.TriggeredEntity:{triggerState.TriggeredEntity},worldTick:{worldTick}");
+                        FSLog.Info($"PickUpItem,command ,triggerState.TriggeredEntity:{triggeredEntity},worldTick:{worldTick}");
 
                         ItemAttachUtilities.ItemAttachToOwner(EntityManager,
-                            triggerState.TriggeredEntity, entity, Entity.Null);
-
+                            triggeredEntity, entity, Entity.Null);
 
                         triggerState.TriggeredEntity = Entity.Null;
                     }
                     //putdown item
-                    else if (pickupedEntity != Entity.Null && triggerState.TriggeredEntity == Entity.Null)
+                    else if (pickupedEntity != Entity.Null && triggeredEntity == Entity.Null)
                     {
                         FSLog.Info(
                             $"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");

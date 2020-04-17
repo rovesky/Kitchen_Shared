@@ -1,13 +1,11 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class CharacterPickupTableSystem : SystemBase
     {
-      
 
         protected override void OnUpdate()
         {
@@ -16,9 +14,6 @@ namespace FootStone.Kitchen
                 .WithName("CharacterPickupTable")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    int entityInQueryIndex,
-                  //  ref PickupPredictedState pickupState,
-                 //   in PickupSetting setting,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
                     in UserCommand command) =>
@@ -46,7 +41,6 @@ namespace FootStone.Kitchen
 
                     if (pickupEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
                     {
-
                         //the item is not sliced,can't pickup
                         if (EntityManager.HasComponent<FoodSlicedState>(slot.FilledInEntity))
                         {
@@ -60,20 +54,15 @@ namespace FootStone.Kitchen
                         FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
                         ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                             slot.FilledInEntity, entity,triggerEntity);
-
-                     
                     }
                     else if (pickupEntity != Entity.Null && slot.FilledInEntity == Entity.Null)
                     {
                         ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                             pickupEntity, triggerEntity,entity);
-                    
                     }
 
                 }).Run();
         }
-
-
       
     }
 }

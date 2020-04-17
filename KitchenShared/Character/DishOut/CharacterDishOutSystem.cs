@@ -1,43 +1,20 @@
 ﻿using FootStone.ECS;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterPickupPlateSystem : SystemBase
+    public class CharacterDishOutSystem : SystemBase
     {
-
-        //private void PutDownItem(ref PickupPredictedState pickupState, ref SlotPredictedState slot,
-        //    Entity triggerEntity)
-        //{
-        //    FSLog.Info($"PutDownItem ,triggerEntity:{triggerEntity}");
-
-        //    ItemAttachUtilities.ItemDetachFromOwner(EntityManager, pickupState.PickupedEntity,
-        //        Entity.Null, float3.zero, float3.zero);
-
-
-        //    var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
-        //    ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,
-        //        triggerEntity, slotSetting.Pos);
-
-        //    slot.FilledInEntity = pickupState.PickupedEntity;
-        //    EntityManager.SetComponentData(triggerEntity, slot);
-
-        //    pickupState.PickupedEntity = Entity.Null;
-        //}
 
         protected override void OnUpdate()
         {
             Entities
                 .WithAll<ServerEntity>()
-                .WithName("CharacterPickupTable")
+                .WithName("CharacterDishOutSystem")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    int entityInQueryIndex,
-                 //   ref PickupPredictedState pickupState,
-                 //   in PickupSetting setting,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
                     in UserCommand command) =>
@@ -82,11 +59,11 @@ namespace FootStone.Kitchen
                     if (HasMaterial(plateState, pickupEntity))
                         return;
 
-                    
-                    ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
-                        pickupEntity,plateEntity, entity);
+                    //改变Owner
+                    ItemAttachUtilities.ItemAttachToOwner(EntityManager,
+                        pickupEntity, plateEntity, entity);
 
-                          plateState.FillIn(pickupEntity);
+                    plateState.FillIn(pickupEntity);
                     EntityManager.SetComponentData(plateEntity, plateState);
 
 
@@ -96,7 +73,7 @@ namespace FootStone.Kitchen
 
                     }
 
-                
+
 
                 }).Run();
         }
