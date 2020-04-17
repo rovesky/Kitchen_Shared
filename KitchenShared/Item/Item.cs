@@ -5,7 +5,7 @@ namespace FootStone.Kitchen
 {
     public struct Item : IComponentData
     {
-        public EntityType Type;
+      //  public EntityType Type;
     }
 
     public struct ScaleSetting : IComponentData

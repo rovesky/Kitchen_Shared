@@ -33,7 +33,7 @@ namespace FootStone.Kitchen
                 FSLog.Info($"Spawn item:{spawnItem.Type}");
 
                 var e = ItemCreateUtilities.CreateItem(EntityManager, spawnItem.Type,
-                    spawnItem.Pos, spawnItem.Owner,spawnItem.ReplicateId);
+                    spawnItem.Pos, spawnItem.Owner);
 
                 if (e == Entity.Null)
                     continue;

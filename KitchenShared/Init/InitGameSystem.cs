@@ -18,7 +18,7 @@ namespace FootStone.Kitchen
             var requests = EntityManager.GetBuffer<SpawnGameRequest>(GetSingletonEntity<SpawnGameArray>());
             requests.Add(new SpawnGameRequest()
             {
-                ReplicateId = -1,
+              //  ReplicateId = -1,
                 TotalTime = TotalTime,
                 Score = 0
             });

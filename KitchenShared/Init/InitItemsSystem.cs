@@ -49,7 +49,7 @@ namespace FootStone.Kitchen
                 buffer.Add(new SpawnItemRequest()
                 {
                     Type = entityType,
-                    ReplicateId = -1,
+                   // ReplicateId = -1,
                     Pos = slotData.Pos,
                     Owner = entity
                 });

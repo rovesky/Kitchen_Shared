@@ -28,7 +28,7 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     in OwnerPredictedState itemState,
                     in FoodSlicedRequest request,
-                    in Item food) =>
+                    in GameEntity food) =>
                 {
                     EntityManager.RemoveComponent<FoodSlicedRequest>(entity);
                     EntityManager.AddComponentData(entity, new Despawn());

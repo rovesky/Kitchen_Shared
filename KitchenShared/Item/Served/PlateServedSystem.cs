@@ -2,8 +2,6 @@
 using Unity.Collections;
 using Unity.Entities;
 
-
-
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
@@ -108,7 +106,7 @@ namespace FootStone.Kitchen
         {
             if (entity == Entity.Null)
                 return false;
-            var food = EntityManager.GetComponentData<Item>(entity);
+            var food = EntityManager.GetComponentData<GameEntity>(entity);
             return menu.HasMaterial((ushort) food.Type);
         }
 

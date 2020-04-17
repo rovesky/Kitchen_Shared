@@ -28,12 +28,17 @@ namespace FootStone.Kitchen
 
             foreach (var spawnGame in array)
             {
-                var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(Countdown), typeof(Score));
+                var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(Countdown), typeof(Score), typeof(GameEntity));
                 EntityManager.SetComponentData(e, new ReplicatedEntityData()
                 {
                     Id = -1,
                     PredictingPlayerId = -1
                 });
+
+                EntityManager.SetComponentData(e, new GameEntity()
+                { 
+                    Type = EntityType.Game
+                }); 
 
                 EntityManager.SetComponentData(e, new Countdown()
                 {

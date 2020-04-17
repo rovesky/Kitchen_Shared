@@ -102,18 +102,18 @@ namespace FootStone.Kitchen
         }
 
 
-        private bool IsSameMaterial(Entity material, Item food)
+        private bool IsSameMaterial(Entity material, GameEntity food)
         {
             if (material == Entity.Null)
                 return false;
-            var food1 = EntityManager.GetComponentData<Item>(material);
+            var food1 = EntityManager.GetComponentData<GameEntity>(material);
             FSLog.Info($"food1.Type:{food1.Type},food.Type:{food.Type}");
             return food1.Type == food.Type;
         }
 
         private bool HasMaterial(PlatePredictedState plateState, Entity material)
         {
-            var food = EntityManager.GetComponentData<Item>(material);
+            var food = EntityManager.GetComponentData<GameEntity>(material);
 
             return IsSameMaterial(plateState.Material1, food)
                    || IsSameMaterial(plateState.Material2, food)
@@ -155,7 +155,7 @@ namespace FootStone.Kitchen
         {
             if (entity == Entity.Null)
                 return false;
-            var food = EntityManager.GetComponentData<Item>(entity);
+            var food = EntityManager.GetComponentData<GameEntity>(entity);
             return menu.HasMaterial((ushort) food.Type);
         }
 

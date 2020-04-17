@@ -37,7 +37,7 @@ namespace FootStone.Kitchen
         }
 
         public static Entity CreateItem(EntityManager entityManager, 
-            EntityType type, Vector3 position,Entity owner,int replicatedId)
+            EntityType type, Vector3 position,Entity owner)
         {
             if (!prefabs.ContainsKey(type))
             {
@@ -61,14 +61,15 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ReplicatedEntityData
             {
-                Id = replicatedId,
+                Id = -1,
                 PredictingPlayerId = -1
             });
-
-            entityManager.AddComponentData(e, new Item()
+            entityManager.AddComponentData(e, new GameEntity()
             {
                 Type = type
             });
+
+            entityManager.AddComponentData(e, new Item());
 
             entityManager.AddComponentData(e, new ItemInterpolatedState
             {

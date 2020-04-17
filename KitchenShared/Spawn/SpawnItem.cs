@@ -7,7 +7,7 @@ namespace FootStone.Kitchen
     public struct SpawnItemRequest : IBufferElementData
     {
         public EntityType Type;
-        public int ReplicateId;
+      //  public int ReplicateId;
         public float3 Pos;
         public Entity Owner;
 
