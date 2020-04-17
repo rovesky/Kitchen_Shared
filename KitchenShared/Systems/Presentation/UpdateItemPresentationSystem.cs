@@ -15,7 +15,7 @@ namespace FootStone.Kitchen
                     ref ItemInterpolatedState interpolateData,
                     in TransformPredictedState transformPredictData,
                     in VelocityPredictedState velocityPredictData,
-                    in ItemPredictedState predictData) =>
+                    in OwnerPredictedState predictData) =>
                 {
                     interpolateData.Position = transformPredictData.Position;
                     interpolateData.Rotation = transformPredictData.Rotation;

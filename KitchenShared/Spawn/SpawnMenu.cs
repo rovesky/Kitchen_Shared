@@ -13,6 +13,7 @@ namespace FootStone.Kitchen
     public struct SpawnMenuRequest : IBufferElementData
     {
         public MenuType Type;
+        public int ReplicateId;
         public ushort index;
     }
 

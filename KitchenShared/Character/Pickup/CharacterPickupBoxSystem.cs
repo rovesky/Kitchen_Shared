@@ -1,23 +1,15 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class CharacterPickupBoxSystem : SystemBase 
     {
-     //   private Entity applePrefab;
 
         protected override void OnCreate()
         {
-            //applePrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(
-            //    Resources.Load("Apple") as GameObject,
-            //    GameObjectConversionSettings.FromWorld(World,
-            //        World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<ConvertToEntitySystem>().BlobAssetStore));
-           // networkServerSystem = World.GetExistingSystem<NetworkServerSystem>();
-        }
+              }
 
         private EntityType BoxTypeToEntityType(BoxType boxType)
         {
@@ -40,21 +32,19 @@ namespace FootStone.Kitchen
         {
             Entities
                 .WithAll<ServerEntity>()
-                .WithName("CharacterPickupTable")
+                .WithName("CharacterPickupBoxSystem")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    int entityInQueryIndex,
-                    ref PickupPredictedState pickupState,
-                    in PickupSetting setting,
+                    in SlotPredictedState slotState,
                     in TriggerPredictedState triggerState,
-                    in ReplicatedEntityData replicatedEntityData,
                     in UserCommand command) =>
                 {
 
                     if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                         return;
 
-                    if (pickupState.PickupedEntity != Entity.Null)
+                    var pickupedEntity = slotState.FilledInEntity;
+                    if (pickupedEntity != Entity.Null)
                         return;
 
                     var triggerEntity = triggerState.TriggeredEntity;
@@ -69,20 +59,16 @@ namespace FootStone.Kitchen
                         return;
 
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
-
                     var boxSetting = EntityManager.GetComponentData<BoxSetting>(triggerEntity);
 
-                    var spawnFoodEntity = GetSingletonEntity<SpawnFoodArray>();
-                    var buffer = EntityManager.GetBuffer<SpawnFoodRequest>(spawnFoodEntity);
-
-                    var isSlice = boxSetting.Type == BoxType.Kelp || boxSetting.Type == BoxType.Rice;
-
-                    buffer.Add(new SpawnFoodRequest()
+                    var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
+                    var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
+                    
+                    buffer.Add(new SpawnItemRequest()
                     {
                         Type = BoxTypeToEntityType(boxSetting.Type),
                         Pos = slotSetting.Pos,
-                        Owner = entity,
-                        IsSlice = isSlice
+                        Owner = entity
                     });
 
 

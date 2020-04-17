@@ -13,7 +13,7 @@ namespace FootStone.Kitchen
             Entities.WithAll<ServerEntity,TableServe>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    ref SlotPredictedState slotState) =>
+                    in SlotPredictedState slotState) =>
                 {
                     if(slotState.FilledInEntity == Entity.Null)
                         return;

@@ -26,9 +26,9 @@ namespace FootStone.Kitchen
             Entities.WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    ref ItemPredictedState itemState,
+                    in OwnerPredictedState itemState,
                     in FoodSlicedRequest request,
-                    in Food food) =>
+                    in Item food) =>
                 {
                     EntityManager.RemoveComponent<FoodSlicedRequest>(entity);
                     EntityManager.AddComponentData(entity, new Despawn());
@@ -40,14 +40,13 @@ namespace FootStone.Kitchen
 
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(itemState.Owner);
 
-                    var spawnFoodEntity = GetSingletonEntity<SpawnFoodArray>();
-                    var buffer = EntityManager.GetBuffer<SpawnFoodRequest>(spawnFoodEntity);
-                    buffer.Add(new SpawnFoodRequest()
+                    var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
+                    var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
+                    buffer.Add(new SpawnItemRequest()
                     {
                         Type = FoodToSlice(food.Type),
                         Pos = slotSetting.Pos,
-                        Owner = itemState.Owner,
-                        IsSlice = true
+                        Owner = itemState.Owner
                     });
 
                 }).Run();

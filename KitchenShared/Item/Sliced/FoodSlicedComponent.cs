@@ -5,15 +5,14 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
 
-    public struct Slice : IComponentData
+    public struct Material : IComponentData
     {
     
     }
 
-    public struct Food : IComponentData
-    {
-        public EntityType Type;
-    }
+    //public struct Food : IComponentData
+    //{
+    //}
 
     public struct FoodSlicedSetting: IComponentData
     {

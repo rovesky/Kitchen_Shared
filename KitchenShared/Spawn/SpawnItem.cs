@@ -4,15 +4,16 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     [InternalBufferCapacity(16)]
-    public struct SpawnFoodRequest : IBufferElementData
+    public struct SpawnItemRequest : IBufferElementData
     {
         public EntityType Type;
+        public int ReplicateId;
         public float3 Pos;
         public Entity Owner;
-        public bool IsSlice;
+
     }
 
-    public struct SpawnFoodArray : IComponentData
+    public struct SpawnItemArray : IComponentData
     {
 
     }

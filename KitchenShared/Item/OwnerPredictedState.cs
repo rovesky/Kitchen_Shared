@@ -3,7 +3,7 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-    public struct ItemPredictedState : IComponentData, IPredictedState<ItemPredictedState>
+    public struct OwnerPredictedState : IComponentData, IPredictedState<OwnerPredictedState>
     {
         public Entity Owner;
         public Entity PreOwner;
@@ -12,7 +12,7 @@ namespace FootStone.Kitchen
         {
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
             context.RefSerializer.DeserializeReference(ref reader, ref PreOwner);
-            FSLog.Info($"Deserialize ItemPredictedState,Owner:{Owner}");
+            FSLog.Info($"Deserialize OwnerPredictedState,Owner:{Owner}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
            // FSLog.Info($"Serialize ItemPredictedState,Owner:{Owner}");
         }
 
-        public bool VerifyPrediction(ref ItemPredictedState state)
+        public bool VerifyPrediction(ref OwnerPredictedState state)
         {
             return Owner.Equals(state.Owner) &&
                    PreOwner.Equals(state.PreOwner);
@@ -30,7 +30,7 @@ namespace FootStone.Kitchen
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
         {
-            return new PredictedStateSerializerFactory<ItemPredictedState>();
+            return new PredictedStateSerializerFactory<OwnerPredictedState>();
         }
     }
 }

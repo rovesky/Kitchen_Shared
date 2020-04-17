@@ -12,24 +12,24 @@ namespace FootStone.Kitchen
                 .WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                ref PickupPredictedState pickupState,
                 ref TriggerPredictedState triggerState,
-                in PickupSetting setting,
-                in UserCommand command,
-                in ReplicatedEntityData replicatedEntityData) =>
+                in SlotPredictedState slotState,
+                in UserCommand command) =>
               {
 
                 //  FSLog.Info($"CharacterPickupFlyingSystem,entity:{entity}");
                 if (command.Buttons.IsSet(UserCommand.Button.Throw))
                    return;
+
+                var pickupEntity = slotState.FilledInEntity;
                
-                if (pickupState.PickupedEntity != Entity.Null || triggerState.TriggeredEntity == Entity.Null) 
+                if (pickupEntity != Entity.Null || triggerState.TriggeredEntity == Entity.Null) 
                     return;;
 
                 if(!EntityManager.HasComponent<Item>(triggerState.TriggeredEntity))
                     return;
                    
-                var item = EntityManager.GetComponentData<ItemPredictedState>(triggerState.TriggeredEntity);
+                var item = EntityManager.GetComponentData<OwnerPredictedState>(triggerState.TriggeredEntity);
               //  FSLog.Info($"PickUpItem flying,PreOwner:{item.PreOwner},entity:{entity}");
                 if(item.PreOwner == Entity.Null ||  item.PreOwner == entity)
                     return;
@@ -37,9 +37,10 @@ namespace FootStone.Kitchen
                 var worldTick = GetSingleton<WorldTime>().Tick;
                 FSLog.Info($"PickUpItem flying,command tick:{command.RenderTick},worldTick:{worldTick}");
  
-                ItemAttachUtilities.ItemAttachToCharacter(EntityManager,triggerState.TriggeredEntity,entity,replicatedEntityData.PredictingPlayerId);
+                ItemAttachUtilities.ItemAttachToOwner(EntityManager,
+                    triggerState.TriggeredEntity,entity,Entity.Null);
                   
-                pickupState.PickupedEntity = triggerState.TriggeredEntity;
+            //    pickupState.PickupedEntity = triggerState.TriggeredEntity;
                 triggerState.TriggeredEntity = Entity.Null;
 
             }).Run();

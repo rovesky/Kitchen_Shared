@@ -78,10 +78,13 @@ namespace FootStone.Kitchen
                IsAllowTrigger = true
             });
 
-            entityManager.AddComponentData(e, new PickupSetting());
-            entityManager.AddComponentData(e, new PickupPredictedState
+            entityManager.AddComponentData(e, new SlotSetting()
             {
-                PickupedEntity = Entity.Null
+                Pos = new float3(0f,0.1f,0.8f)
+            });
+            entityManager.AddComponentData(e, new SlotPredictedState()
+            {
+                FilledInEntity = Entity.Null
             });
 
 

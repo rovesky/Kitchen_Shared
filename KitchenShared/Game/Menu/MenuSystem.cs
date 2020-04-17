@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using FootStone.ECS;
+using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
@@ -13,6 +14,7 @@ namespace FootStone.Kitchen
                 return;
 
             isSpawned = true;
+
 
             var spawnFoodEntity = GetSingletonEntity<SpawnMenuArray>();
             var requests = EntityManager.GetBuffer<SpawnMenuRequest>(spawnFoodEntity);

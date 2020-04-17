@@ -11,7 +11,7 @@ namespace FootStone.Kitchen
             Entities.WithAll<Item>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    in ItemPredictedState itemState,
+                    in OwnerPredictedState itemState,
                     in TriggerPredictedState triggerState,
                     in VelocityPredictedState velocityState) =>
             {
@@ -28,10 +28,6 @@ namespace FootStone.Kitchen
                 if (!EntityManager.HasComponent<TriggeredSetting>(triggeredEntity))
                     return;
 
-              //  var triggerData = EntityManager.GetComponentData<TriggeredSetting>(triggeredEntity);
-               // if ((triggerData.Type & (int) TriggerType.Table) == 0)
-                //    return;
-
                 if(!EntityManager.HasComponent<Table>(triggeredEntity))
                     return;
 
@@ -42,7 +38,8 @@ namespace FootStone.Kitchen
                 FSLog.Info("ItemMoveToTableSystem OnUpdate!");
                 var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggeredEntity);
 
-                ItemAttachUtilities.ItemAttachToTable(EntityManager, entity, triggeredEntity,slotSetting.Pos);
+                ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+                    entity, triggeredEntity,Entity.Null);
 
                 slot.FilledInEntity = entity;
                 EntityManager.SetComponentData(triggeredEntity,slot);

@@ -15,12 +15,14 @@ namespace FootStone.Kitchen
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     ref SlicePredictedState sliceState,
-                    in PickupPredictedState pickupState,
+                    in SlotPredictedState slotState,
                     in TransformPredictedState entityPredictData,
                     in TriggerPredictedState triggerState,
                     in UserCommand command) =>
                 {
-                    if (pickupState.PickupedEntity != Entity.Null)
+
+                    var pickupedEntity = slotState.FilledInEntity;
+                    if (pickupedEntity != Entity.Null)
                     {
                         sliceState.IsSlicing = false;
                         return;
@@ -52,7 +54,7 @@ namespace FootStone.Kitchen
                         return;
                     }
 
-                    if (EntityManager.HasComponent<Slice>(slot.FilledInEntity))
+                    if (EntityManager.HasComponent<Material>(slot.FilledInEntity))
                     {
                         sliceState.IsSlicing = false;
                         return;
@@ -93,14 +95,15 @@ namespace FootStone.Kitchen
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     ref SlicePredictedState sliceState,
-                    in PickupPredictedState pickupState,
+                    in SlotPredictedState slotState,
                     in TransformPredictedState entityPredictData,
                     in TriggerPredictedState triggerState) =>
                 {
                     if (!sliceState.IsSlicing)
                         return;
 
-                    if (pickupState.PickupedEntity != Entity.Null)
+                    var pickupedEntity = slotState.FilledInEntity;
+                    if (pickupedEntity != Entity.Null)
                         return;
 
                     if (triggerState.TriggeredEntity == Entity.Null)

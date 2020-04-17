@@ -7,58 +7,7 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterPickupTableSystem : SystemBase
     {
-
-        private bool IsFilledInEmpty(Entity filledInEntity)
-        {
-            return filledInEntity == Entity.Null;
-        }
-
-        private bool IsFilledInPlate(EntityManager entityManager, Entity filledInEntity)
-        {
-            return filledInEntity != Entity.Null && entityManager.HasComponent<Plate>(filledInEntity);
-        }
-
-        private bool IsSameMaterial(Entity material, Food food)
-        {
-            if (material == Entity.Null)
-                return false;
-            var food1 = EntityManager.GetComponentData<Food>(material);
-            FSLog.Info($"food1.Type:{food1.Type},food.Type:{food.Type}");
-            return food1.Type == food.Type;
-        }
-
-        private bool HasMaterial(PlatePredictedState plateState, Entity material)
-        {
-
-            var food = EntityManager.GetComponentData<Food>(material);
-
-            return IsSameMaterial(plateState.Material1, food)
-                   || IsSameMaterial(plateState.Material2, food)
-                   || IsSameMaterial(plateState.Material3, food)
-                   || IsSameMaterial(plateState.Material4, food);
-        }
-  
-
-
-
-
-        private void PutDownItem(ref PickupPredictedState pickupState,ref SlotPredictedState slot,Entity triggerEntity)
-        {
-            FSLog.Info($"PutDownItem ,triggerEntity:{triggerEntity}");
-
-            ItemAttachUtilities.ItemDetachFromCharacter(EntityManager, pickupState.PickupedEntity,
-                Entity.Null, float3.zero, float3.zero);
-                        
-
-            var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
-            ItemAttachUtilities.ItemAttachToTable(EntityManager, pickupState.PickupedEntity,
-                triggerEntity,slotSetting.Pos);
-
-            slot.FilledInEntity = pickupState.PickupedEntity;
-            EntityManager.SetComponentData(triggerEntity, slot);
-
-            pickupState.PickupedEntity = Entity.Null;
-        }
+      
 
         protected override void OnUpdate()
         {
@@ -68,10 +17,10 @@ namespace FootStone.Kitchen
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     int entityInQueryIndex,
-                    ref PickupPredictedState pickupState,
-                    in PickupSetting setting,
+                  //  ref PickupPredictedState pickupState,
+                 //   in PickupSetting setting,
                     in TriggerPredictedState triggerState,
-                    in ReplicatedEntityData replicatedEntityData,
+                    in SlotPredictedState slotState,
                     in UserCommand command) =>
                 {
                     //未按键返回
@@ -90,11 +39,12 @@ namespace FootStone.Kitchen
                     var worldTick = GetSingleton<WorldTime>().Tick;
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
+                    var pickupEntity = slotState.FilledInEntity;
                     FSLog.Info($"worldTick:{worldTick},CharacterPickupTableSystem Update," +
-                               $"PickupedEntity:{pickupState.PickupedEntity}," +
+                               $"PickupedEntity:{pickupEntity}," +
                                $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledInEntity}");
 
-                    if (pickupState.PickupedEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
+                    if (pickupEntity == Entity.Null && slot.FilledInEntity != Entity.Null)
                     {
 
                         //the item is not sliced,can't pickup
@@ -108,45 +58,22 @@ namespace FootStone.Kitchen
                         }
 
                         FSLog.Info($"PickUpItem,command tick:{command.RenderTick},worldTick:{worldTick}");
-                        ItemAttachUtilities.ItemDetachFromTable(EntityManager, slot.FilledInEntity, triggerEntity);
-                        ItemAttachUtilities.ItemAttachToCharacter(EntityManager, slot.FilledInEntity, entity,
-                            replicatedEntityData.PredictingPlayerId);
+                        ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+                            slot.FilledInEntity, entity,triggerEntity);
 
-                        pickupState.PickupedEntity = slot.FilledInEntity;
-
-                        slot.FilledInEntity = Entity.Null;
-                        EntityManager.SetComponentData(triggerEntity, slot);
+                     
                     }
-                    else if (pickupState.PickupedEntity != Entity.Null && IsFilledInEmpty(slot.FilledInEntity))
+                    else if (pickupEntity != Entity.Null && slot.FilledInEntity == Entity.Null)
                     {
-                        PutDownItem(ref pickupState, ref slot, triggerEntity);
-                    }
-                    else if (pickupState.PickupedEntity != Entity.Null &&
-                             IsFilledInPlate(EntityManager, slot.FilledInEntity))
-                    {
-                     //   FSLog.Info($"PutDownItem to plate:{slot.FilledInEntity}");
-                        var pickupEntity = pickupState.PickupedEntity;
-                        if (!EntityManager.HasComponent<Slice>(pickupEntity))
-                            return;
-                        var newTriggerEntity = slot.FilledInEntity;
-                        var plateState = EntityManager.GetComponentData<PlatePredictedState>(newTriggerEntity);
-                       
-                        //盘子已满
-                        if(plateState.IsFull())
-                            return;
-                        //盘子已有该材料
-                        if (HasMaterial(plateState, pickupEntity))
-                            return;
-
-                        var newSlot = EntityManager.GetComponentData<SlotPredictedState>(newTriggerEntity);
-                        PutDownItem(ref pickupState, ref newSlot, newTriggerEntity);
-
-                        plateState.FillIn(pickupEntity);
-
-                        EntityManager.SetComponentData(newTriggerEntity, plateState);
+                        ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+                            pickupEntity, triggerEntity,entity);
+                    
                     }
 
                 }).Run();
         }
+
+
+      
     }
 }

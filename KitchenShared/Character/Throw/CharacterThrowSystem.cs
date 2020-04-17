@@ -13,37 +13,34 @@ namespace FootStone.Kitchen
             Entities.WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    ref PickupPredictedState pickupState,
-                    in TransformPredictedState entityPredictData,
+                    in SlotPredictedState slotState,
+                    in TransformPredictedState transformState,
                     in ThrowSetting setting,
                     in UserCommand command) =>
                 {
                     //  FSLog.Info("PickSystem Update");
                     if (!command.Buttons.IsSet(UserCommand.Button.Throw))
                         return;
-                 //   FSLog.Info($"throw entity1:{pickupState.PickupedEntity}");
 
-                    if (pickupState.PickupedEntity == Entity.Null)
+                    var pickupedEntity = slotState.FilledInEntity;
+                    if (pickupedEntity == Entity.Null)
                         return;
-                  //  FSLog.Info($"throw entity2:{pickupState.PickupedEntity}");
-
-                    if(!EntityManager.HasComponent<Food>(pickupState.PickupedEntity))
+                
+                    if (EntityManager.HasComponent<Plate>(pickupedEntity))
                         return;
-           
-                  //  FSLog.Info($"throw entity3:{pickupState.PickupedEntity}");
-
-                    Vector3 linear = math.mul(entityPredictData.Rotation, Vector3.forward);
+          
+                    Vector3 linear = math.mul(transformState.Rotation, Vector3.forward);
                     linear.y = 0.25f;
                     linear.Normalize();
                     linear *= setting.Velocity;
 
-                    ItemAttachUtilities.ItemDetachFromCharacter(EntityManager,
-                        pickupState.PickupedEntity,
+                    ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
+                        pickupedEntity,
                         entity,
-                        entityPredictData.Position + math.mul(entityPredictData.Rotation, new float3(0, 0.2f, 1.3f)),
+                        transformState.Position + math.mul(transformState.Rotation, new float3(0, 0.2f, 1.3f)),
                         linear);
 
-                    pickupState.PickupedEntity = Entity.Null;
+                 
                 }).Run();
         }
     }

@@ -17,6 +17,7 @@ namespace FootStone.Kitchen
 
     public struct PlatePredictedState : IComponentData, IPredictedState<PlatePredictedState>
     {
+        public Entity Product;
         public Entity Material1;
         public Entity Material2;
         public Entity Material3;
@@ -24,6 +25,8 @@ namespace FootStone.Kitchen
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
+            context.RefSerializer.DeserializeReference(ref reader, ref Product);
+
             context.RefSerializer.DeserializeReference(ref reader, ref Material1);
             context.RefSerializer.DeserializeReference(ref reader, ref Material2);
             context.RefSerializer.DeserializeReference(ref reader, ref Material3);
@@ -33,6 +36,8 @@ namespace FootStone.Kitchen
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
+            context.RefSerializer.SerializeReference(ref writer, "Product", Product);
+
             context.RefSerializer.SerializeReference(ref writer, "Material1", Material1);
             context.RefSerializer.SerializeReference(ref writer, "Material2", Material2);
             context.RefSerializer.SerializeReference(ref writer, "Material3", Material3);
@@ -41,7 +46,8 @@ namespace FootStone.Kitchen
 
         public bool VerifyPrediction(ref PlatePredictedState state)
         {
-            return Material1.Equals(state.Material1) 
+            return Product.Equals(state.Product) 
+                && Material1.Equals(state.Material1) 
                 && Material2.Equals(state.Material2)
                 && Material3.Equals(state.Material3)
                 && Material4.Equals(state.Material4);

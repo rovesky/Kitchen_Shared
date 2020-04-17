@@ -1,8 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
-using Unity.Mathematics;
+
 
 
 namespace FootStone.Kitchen
@@ -10,10 +9,36 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class PlateServedSystem : SystemBase
     {
+        protected override void OnUpdate()
+        {
+            Entities.WithAll<ServerEntity, Plate>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    in PlatePredictedState plateState,
+                    in OwnerPredictedState itemState,
+                    in PlateServedRequest request) =>
+                {
 
-       
+                    FSLog.Info("PlateServedSystem OnUpdate");
 
-        private void Despawn(Entity entity, ref PlatePredictedState plateState)
+                    //add score
+                    ushort score = CaculateScore(plateState);
+                    AddScore(score);
+
+                    EntityManager.RemoveComponent<PlateServedRequest>(entity);
+
+                    //Despawn
+                    Despawn(entity, plateState);
+
+                    EntityManager.SetComponentData(itemState.Owner, new SlotPredictedState()
+                    {
+                        FilledInEntity = Entity.Null
+                    });
+
+                }).Run();
+        }
+
+        private void Despawn(Entity entity, PlatePredictedState plateState)
         {
             //Despawn
             EntityManager.AddComponentData(entity, new Despawn());
@@ -48,38 +73,7 @@ namespace FootStone.Kitchen
 
         }
 
-        protected override void OnUpdate()
-        {
-            Entities.WithAll<ServerEntity, Plate>()
-                .WithStructuralChanges()
-                .ForEach((Entity entity,
-                    ref PlatePredictedState plateState,
-                    in ItemPredictedState itemState,
-                    in PlateServedRequest request) =>
-                {
-
-                    FSLog.Info("PlateServedSystem OnUpdate");
-                
-                    //add score
-                    ushort score = CaculateScore(ref plateState);
-                    AddScore(score);
-
-                    EntityManager.RemoveComponent<PlateServedRequest>(entity);
-
-                    //Despawn
-                    Despawn(entity, ref plateState);
-
-                    EntityManager.SetComponentData(itemState.Owner, new SlotPredictedState()
-                    {
-                        FilledInEntity = Entity.Null
-                    });
-
-                }).Run();
-        }
-
-
-        
-        private ushort CaculateScore(ref PlatePredictedState plateState)
+        private ushort CaculateScore(PlatePredictedState plateState)
         {
             var query = GetEntityQuery(new EntityQueryDesc
             {
@@ -91,7 +85,7 @@ namespace FootStone.Kitchen
 
             ushort score = 0;
             var entities = query.ToEntityArray(Allocator.TempJob);
-         
+
 
             for (var i = 0; i < entities.Length; ++i)
             {
@@ -100,10 +94,12 @@ namespace FootStone.Kitchen
 
                 if (IsMatch(menu, ref plateState))
                 {
+                    EntityManager.AddComponentData(menuEntity, new Despawn());
                     score = (ushort) (menu.MaterialCount() * 50);
                     break;
                 }
             }
+
             entities.Dispose();
             return score;
         }
@@ -112,7 +108,7 @@ namespace FootStone.Kitchen
         {
             if (entity == Entity.Null)
                 return false;
-            var food = EntityManager.GetComponentData<Food>(entity);
+            var food = EntityManager.GetComponentData<Item>(entity);
             return menu.HasMaterial((ushort) food.Type);
         }
 
@@ -127,18 +123,18 @@ namespace FootStone.Kitchen
                 return HasMaterial(menu, plateState.Material1);
 
             if (plateMaterialCount == 2)
-                return HasMaterial(menu, plateState.Material1)&&
+                return HasMaterial(menu, plateState.Material1) &&
                        HasMaterial(menu, plateState.Material2);
 
             if (plateMaterialCount == 3)
-                return HasMaterial(menu, plateState.Material1)&&
-                       HasMaterial(menu, plateState.Material2)&&
+                return HasMaterial(menu, plateState.Material1) &&
+                       HasMaterial(menu, plateState.Material2) &&
                        HasMaterial(menu, plateState.Material3);
-            
+
             if (plateMaterialCount == 4)
-                return HasMaterial(menu, plateState.Material1)&&
-                       HasMaterial(menu, plateState.Material2)&&
-                       HasMaterial(menu, plateState.Material3)&&
+                return HasMaterial(menu, plateState.Material1) &&
+                       HasMaterial(menu, plateState.Material2) &&
+                       HasMaterial(menu, plateState.Material3) &&
                        HasMaterial(menu, plateState.Material3);
             return true;
         }
@@ -164,5 +160,3 @@ namespace FootStone.Kitchen
         }
     }
 }
-
-  
