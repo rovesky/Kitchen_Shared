@@ -52,6 +52,7 @@ namespace FootStone.Kitchen
                 if (!menuTemplate.ContainsKey(spawnMenu.Type))
                     continue;
 
+              
                 var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(Menu),typeof(GameEntity));
                 EntityManager.SetComponentData(e, new ReplicatedEntityData()
                 {
@@ -66,6 +67,7 @@ namespace FootStone.Kitchen
                 var menu = menuTemplate[spawnMenu.Type];
                 menu.Index = spawnMenu.index;
                 EntityManager.SetComponentData(e, menu);
+                FSLog.Info($"Spawn Menu:{spawnMenu.Type},index:{ menu.Index }");
             }
 
             array.Dispose();

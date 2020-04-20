@@ -21,7 +21,7 @@ namespace FootStone.Kitchen
                 if (command.Buttons.IsSet(UserCommand.Button.Throw))
                    return;
 
-                var pickupEntity = slotState.FilledInEntity;
+                var pickupEntity = slotState.FilledIn;
                
                 if (pickupEntity != Entity.Null || triggerState.TriggeredEntity == Entity.Null) 
                     return;;

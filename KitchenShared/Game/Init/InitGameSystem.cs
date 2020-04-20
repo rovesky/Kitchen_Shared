@@ -6,7 +6,7 @@ namespace FootStone.Kitchen
     public class InitGameSystem : ComponentSystem
     {
         private bool isSpawned;
-        public const ushort TotalTime = 300;
+        public const ushort TotalTime = 10;
 
         protected override void OnUpdate()
         {
@@ -18,7 +18,6 @@ namespace FootStone.Kitchen
             var requests = EntityManager.GetBuffer<SpawnGameRequest>(GetSingletonEntity<SpawnGameArray>());
             requests.Add(new SpawnGameRequest()
             {
-              //  ReplicateId = -1,
                 TotalTime = TotalTime,
                 Score = 0
             });

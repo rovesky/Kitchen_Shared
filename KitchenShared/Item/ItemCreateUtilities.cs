@@ -34,6 +34,10 @@ namespace FootStone.Kitchen
             RegisterPrefabs(EntityType.Cucumber, "Cucumber");
             RegisterPrefabs(EntityType.CucumberSlice, "CucumberSlice");
             RegisterPrefabs(EntityType.Plate, "Plate");
+            RegisterPrefabs(EntityType.PlateDirty, "PlateDirty");
+            RegisterPrefabs(EntityType.PotEmpty, "PotEmpty");
+            RegisterPrefabs(EntityType.PotFull, "PotFull");
+            RegisterPrefabs(EntityType.FireExtinguisher, "FireExtinguisher");
         }
 
         public static Entity CreateItem(EntityManager entityManager, 

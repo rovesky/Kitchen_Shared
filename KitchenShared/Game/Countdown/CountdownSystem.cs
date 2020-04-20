@@ -1,4 +1,5 @@
 ﻿using System;
+using FootStone.ECS;
 using Unity.Entities;
 
 namespace FootStone.Kitchen
@@ -10,14 +11,20 @@ namespace FootStone.Kitchen
         {
             Entities
                 .ForEach((Entity entity,
-                    ref Countdown time) =>
+                    ref Countdown countdown,
+                    in GameStateComponent gameState) =>
                 {
-                    if(time.Value <= 0)
+                   // FSLog.Info($"CountdownSystem，value：{ time.Value}");
+                    if(gameState.State != GameState.Playing &&
+                       gameState.State != GameState.Preparing )
                         return;
 
-                    var timeSpan = new DateTime(time.EndTime) - DateTime.Now;
-                    time.Value = (ushort) timeSpan.TotalSeconds;
-                 //   FSLog.Info($"ReciprocalSystem，reciprocal：{ reciprocal.Value},timeSpan.TotalSeconds:{timeSpan.TotalSeconds}");
+                    if(countdown.Value <= 0)
+                        return;
+
+                    var timeSpan = new DateTime(countdown.EndTime) - DateTime.Now;
+                    countdown.Value = (ushort) timeSpan.TotalSeconds;
+                //    FSLog.Info($"CountdownSystem，value：{ countdown.Value}");
 
                 }).Run();
         }

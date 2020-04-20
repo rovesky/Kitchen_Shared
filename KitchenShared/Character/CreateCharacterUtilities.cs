@@ -84,7 +84,7 @@ namespace FootStone.Kitchen
             });
             entityManager.AddComponentData(e, new SlotPredictedState()
             {
-                FilledInEntity = Entity.Null
+                FilledIn = Entity.Null
             });
 
 

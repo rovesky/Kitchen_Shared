@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                         return;
 
                     //没有拾取返回
-                    var pickupEntity = slotState.FilledInEntity;
+                    var pickupEntity = slotState.FilledIn;
                     if (pickupEntity == Entity.Null)
                         return;
 
@@ -42,14 +42,14 @@ namespace FootStone.Kitchen
 
                     //Table上没有道具返回
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
-                    if (slot.FilledInEntity == Entity.Null)
+                    if (slot.FilledIn == Entity.Null)
                         return;
 
                     //Table上不是盘子返回
-                    if (!EntityManager.HasComponent<Plate>(slot.FilledInEntity))
+                    if (!EntityManager.HasComponent<Plate>(slot.FilledIn))
                         return;
 
-                    var plateEntity = slot.FilledInEntity;
+                    var plateEntity = slot.FilledIn;
                     var plateState = EntityManager.GetComponentData<PlatePredictedState>(plateEntity);
 
                     //盘子已满

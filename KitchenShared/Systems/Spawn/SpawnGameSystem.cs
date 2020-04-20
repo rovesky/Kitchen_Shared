@@ -28,7 +28,8 @@ namespace FootStone.Kitchen
 
             foreach (var spawnGame in array)
             {
-                var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(Countdown), typeof(Score), typeof(GameEntity));
+                var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData),
+                    typeof(Countdown), typeof(Score), typeof(GameEntity), typeof(GameStateComponent));
                 EntityManager.SetComponentData(e, new ReplicatedEntityData()
                 {
                     Id = -1,
@@ -49,6 +50,11 @@ namespace FootStone.Kitchen
                 EntityManager.SetComponentData(e, new Score()
                 {
                     Value =  spawnGame.Score
+                });
+
+                EntityManager.SetComponentData(e, new GameStateComponent()
+                {
+                    State =  GameState.Ending
                 });
             }
 

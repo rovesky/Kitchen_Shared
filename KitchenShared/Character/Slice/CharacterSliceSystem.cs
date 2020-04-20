@@ -21,7 +21,7 @@ namespace FootStone.Kitchen
                     in UserCommand command) =>
                 {
 
-                    var pickupedEntity = slotState.FilledInEntity;
+                    var pickupedEntity = slotState.FilledIn;
                     if (pickupedEntity != Entity.Null)
                     {
                         sliceState.IsSlicing = false;
@@ -48,19 +48,19 @@ namespace FootStone.Kitchen
                     }
 
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerState.TriggeredEntity);
-                    if (slot.FilledInEntity == Entity.Null)
+                    if (slot.FilledIn == Entity.Null)
                     {
                         sliceState.IsSlicing = false;
                         return;
                     }
 
-                    if (EntityManager.HasComponent<Material>(slot.FilledInEntity))
+                    if (EntityManager.HasComponent<Material>(slot.FilledIn))
                     {
                         sliceState.IsSlicing = false;
                         return;
                     }
 
-                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledInEntity))
+                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledIn))
                     {
                         sliceState.IsSlicing = false;
                         return;
@@ -102,7 +102,7 @@ namespace FootStone.Kitchen
                     if (!sliceState.IsSlicing)
                         return;
 
-                    var pickupedEntity = slotState.FilledInEntity;
+                    var pickupedEntity = slotState.FilledIn;
                     if (pickupedEntity != Entity.Null)
                         return;
 
@@ -116,27 +116,27 @@ namespace FootStone.Kitchen
                         return;
 
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerState.TriggeredEntity);
-                    if (slot.FilledInEntity == Entity.Null)
+                    if (slot.FilledIn == Entity.Null)
                         return;
 
-                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledInEntity))
+                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledIn))
                         return;
 
-                    var itemSliceState = EntityManager.GetComponentData<FoodSlicedState>(slot.FilledInEntity);
-                    var itemSliceSetting = EntityManager.GetComponentData<FoodSlicedSetting>(slot.FilledInEntity);
+                    var itemSliceState = EntityManager.GetComponentData<FoodSlicedState>(slot.FilledIn);
+                    var itemSliceSetting = EntityManager.GetComponentData<FoodSlicedSetting>(slot.FilledIn);
 
                     if (itemSliceState.CurSliceTick < itemSliceSetting.TotalSliceTick)
                     {
                         // itemSliceState.IsSlicing = true;
                         itemSliceState.CurSliceTick++;
-                        EntityManager.SetComponentData(slot.FilledInEntity, itemSliceState);
+                        EntityManager.SetComponentData(slot.FilledIn, itemSliceState);
                         return;
                     }
 
                     //  itemSliceState.IsSlicing = false;
                     sliceState.IsSlicing = false;
 
-                    EntityManager.AddComponentData(slot.FilledInEntity, new FoodSlicedRequest()
+                    EntityManager.AddComponentData(slot.FilledIn, new FoodSlicedRequest()
                     {
                         Character = entity
                     });

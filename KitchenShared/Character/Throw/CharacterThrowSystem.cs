@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
                     if (!command.Buttons.IsSet(UserCommand.Button.Throw))
                         return;
 
-                    var pickupedEntity = slotState.FilledInEntity;
+                    var pickupedEntity = slotState.FilledIn;
                     if (pickupedEntity == Entity.Null)
                         return;
                 

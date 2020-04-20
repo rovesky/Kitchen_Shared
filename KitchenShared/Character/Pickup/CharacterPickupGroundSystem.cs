@@ -27,7 +27,7 @@ namespace FootStone.Kitchen
                     //   FSLog.Info($"CharacterPickupGroundSystem:{pickupState.PickupedEntity},{triggerState.TriggeredEntity}");
 
                     //pickup item
-                    var pickupedEntity = slotState.FilledInEntity;
+                    var pickupedEntity = slotState.FilledIn;
                     var triggeredEntity = triggerState.TriggeredEntity;
                     if (pickupedEntity == Entity.Null && triggeredEntity != Entity.Null)
                     {

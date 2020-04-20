@@ -32,7 +32,7 @@ namespace FootStone.Kitchen
                     return;
 
                 var slot = EntityManager.GetComponentData<SlotPredictedState>(triggeredEntity);
-                if (slot.FilledInEntity != Entity.Null)
+                if (slot.FilledIn != Entity.Null)
                     return;
 
                 FSLog.Info("ItemMoveToTableSystem OnUpdate!");
@@ -41,7 +41,7 @@ namespace FootStone.Kitchen
                 ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                     entity, triggeredEntity,Entity.Null);
 
-                slot.FilledInEntity = entity;
+                slot.FilledIn = entity;
                 EntityManager.SetComponentData(triggeredEntity,slot);
             
             }).Run();

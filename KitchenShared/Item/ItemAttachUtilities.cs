@@ -11,21 +11,21 @@ namespace FootStone.Kitchen
             Entity owner,Entity preOwner)
         {
 
-            if(!entityManager.HasComponent<SlotPredictedState>(owner))
-                return;
-
             if (preOwner != Entity.Null)
             {
                 if (!entityManager.HasComponent<SlotPredictedState>(preOwner))
                     return;
 
                 var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
-                preOwnerSlotState.FilledInEntity = Entity.Null;
+                preOwnerSlotState.FilledIn = Entity.Null;
                 entityManager.SetComponentData(preOwner, preOwnerSlotState);
             }
 
+            if(!entityManager.HasComponent<SlotPredictedState>(owner))
+                return;
+
             var ownerSlotState = entityManager.GetComponentData<SlotPredictedState>(owner);
-            ownerSlotState.FilledInEntity = item;
+            ownerSlotState.FilledIn = item;
             entityManager.SetComponentData(owner,ownerSlotState);
 
 
@@ -100,7 +100,7 @@ namespace FootStone.Kitchen
                 return;
 
             var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
-            preOwnerSlotState.FilledInEntity = Entity.Null;
+            preOwnerSlotState.FilledIn = Entity.Null;
             entityManager.SetComponentData(preOwner,preOwnerSlotState);
 
             var triggerState = entityManager.GetComponentData<TriggerPredictedState>(itemEntity);

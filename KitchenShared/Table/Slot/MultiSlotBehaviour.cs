@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public class SlotBehaviour : MonoBehaviour, IConvertGameObjectToEntity
+   
+    public class MultiSlotBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
         public GameObject Slot;
 
@@ -18,15 +19,22 @@ namespace FootStone.Kitchen
 
             var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
 
-            dstManager.AddComponentData(entity, new SlotSetting
+            dstManager.AddComponentData(entity, new MultiSlotSetting
             {
-                Pos = dstManager.GetComponentData<Translation>(slotEntity).Value
+                Pos = dstManager.GetComponentData<Translation>(slotEntity).Value,
+                Offset = new float3(0, 0.1f, 0)
+
             });
 
-            dstManager.AddComponentData(entity, new SlotPredictedState
+            dstManager.AddComponentData(entity, new MultiSlotPredictedState
             {
-                FilledIn = Entity.Null
+                FilledIn1 = Entity.Null,
+                FilledIn2 = Entity.Null,
+                FilledIn3 = Entity.Null,
+                FilledIn4 = Entity.Null,
             });
         }
     }
+
+
 }

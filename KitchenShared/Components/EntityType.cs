@@ -4,19 +4,34 @@ namespace FootStone.Kitchen
 {
     public enum EntityType
     {
+        None,
         Character,
         Plate,
+        PlateDirty,
+        PotEmpty,
+        PotFull,
+        FireExtinguisher,
+  
+        LitterBox,
         Table,
-
-        /*foods*/
+      
+        UnSlicedBegin,
         Shrimp,
-        ShrimpSlice,
-        Rice,
-        RiceCooked,
-        KelpSlice,
         Cucumber,
+        UnSlicedEnd,
+
+        SlicedBegin,
+        KelpSlice,
+        ShrimpSlice,
         CucumberSlice,
-        /*foods*/
+        SlicedEnd,
+
+        UnCookedBegin,
+        Rice,
+        UnCookedEnd,
+        CookedBegin,
+        RiceCooked,
+        CookedEnd,
 
         Game,
         Menu

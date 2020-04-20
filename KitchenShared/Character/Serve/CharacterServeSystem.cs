@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                     if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                         return;
 
-                    var pickupedEntity = slotState.FilledInEntity;
+                    var pickupedEntity = slotState.FilledIn;
                     if (pickupedEntity == Entity.Null)
                         return;
 
@@ -36,7 +36,7 @@ namespace FootStone.Kitchen
                         return;
 
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
-                    if (slot.FilledInEntity != Entity.Null)
+                    if (slot.FilledIn != Entity.Null)
                         return;
 
                     if (!EntityManager.HasComponent<Plate>(pickupedEntity))

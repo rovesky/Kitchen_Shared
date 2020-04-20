@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
                 
                     EntityManager.SetComponentData(itemState.Owner,new SlotPredictedState()
                     {
-                        FilledInEntity = Entity.Null
+                        FilledIn = Entity.Null
                     });
 
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(itemState.Owner);

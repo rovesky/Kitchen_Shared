@@ -15,11 +15,11 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     in SlotPredictedState slotState) =>
                 {
-                    if(slotState.FilledInEntity == Entity.Null)
+                    if(slotState.FilledIn == Entity.Null)
                         return;
 
                     FSLog.Info("TableServeSystem OnUpdate");
-                    var filledInEntity = slotState.FilledInEntity;
+                    var filledInEntity = slotState.FilledIn;
 
                     if(!EntityManager.HasComponent<Plate>(filledInEntity))
                         return;
