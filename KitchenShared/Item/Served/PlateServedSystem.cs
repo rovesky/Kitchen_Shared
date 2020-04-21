@@ -1,4 +1,5 @@
-﻿using FootStone.ECS;
+﻿using System.Linq;
+using FootStone.ECS;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -77,18 +78,25 @@ namespace FootStone.Kitchen
             {
                 All = new ComponentType[]
                 {
-                    typeof(Menu)
+                    typeof(MenuItem)
                 }
             });
 
             ushort score = 0;
             var entities = query.ToEntityArray(Allocator.TempJob);
 
-
-            for (var i = 0; i < entities.Length; ++i)
+            var entityList = entities.ToList();
+            entityList.Sort((a, b) =>
             {
-                var menuEntity = entities[i];
-                var menu = EntityManager.GetComponentData<Menu>(menuEntity);
+                var sa = EntityManager.GetComponentData<MenuItem>(a).Index;
+                var sb = EntityManager.GetComponentData<MenuItem>(b).Index;
+
+                return sa.CompareTo(sb);
+            });
+
+            foreach (var menuEntity in entityList)
+            {
+                var menu = EntityManager.GetComponentData<MenuItem>(menuEntity);
 
                 if (IsMatch(menu, ref plateState))
                 {
@@ -102,38 +110,38 @@ namespace FootStone.Kitchen
             return score;
         }
 
-        private bool HasMaterial(Menu menu, Entity entity)
+        private bool HasMaterial(MenuItem menuItem, Entity entity)
         {
             if (entity == Entity.Null)
                 return false;
             var food = EntityManager.GetComponentData<GameEntity>(entity);
-            return menu.HasMaterial((ushort) food.Type);
+            return menuItem.HasMaterial((ushort) food.Type);
         }
 
-        private bool IsMatch(Menu menu, ref PlatePredictedState plateState)
+        private bool IsMatch(MenuItem menuItem, ref PlatePredictedState plateState)
         {
             var plateMaterialCount = plateState.MaterialCount();
-            if (menu.MaterialCount() != plateMaterialCount)
+            if (menuItem.MaterialCount() != plateMaterialCount)
                 return false;
 
 
             if (plateMaterialCount == 1)
-                return HasMaterial(menu, plateState.Material1);
+                return HasMaterial(menuItem, plateState.Material1);
 
             if (plateMaterialCount == 2)
-                return HasMaterial(menu, plateState.Material1) &&
-                       HasMaterial(menu, plateState.Material2);
+                return HasMaterial(menuItem, plateState.Material1) &&
+                       HasMaterial(menuItem, plateState.Material2);
 
             if (plateMaterialCount == 3)
-                return HasMaterial(menu, plateState.Material1) &&
-                       HasMaterial(menu, plateState.Material2) &&
-                       HasMaterial(menu, plateState.Material3);
+                return HasMaterial(menuItem, plateState.Material1) &&
+                       HasMaterial(menuItem, plateState.Material2) &&
+                       HasMaterial(menuItem, plateState.Material3);
 
             if (plateMaterialCount == 4)
-                return HasMaterial(menu, plateState.Material1) &&
-                       HasMaterial(menu, plateState.Material2) &&
-                       HasMaterial(menu, plateState.Material3) &&
-                       HasMaterial(menu, plateState.Material3);
+                return HasMaterial(menuItem, plateState.Material1) &&
+                       HasMaterial(menuItem, plateState.Material2) &&
+                       HasMaterial(menuItem, plateState.Material3) &&
+                       HasMaterial(menuItem, plateState.Material3);
             return true;
         }
 

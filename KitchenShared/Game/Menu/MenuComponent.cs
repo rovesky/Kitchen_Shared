@@ -3,7 +3,7 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-    public struct Menu : IComponentData,IReplicatedState
+    public struct MenuItem : IComponentData,IReplicatedState
     {
         public ushort Index;
         public ushort ProductId;
@@ -36,7 +36,7 @@ namespace FootStone.Kitchen
 
         public static IReplicatedStateSerializerFactory CreateSerializerFactory()
         {
-            return new ReplicatedStateSerializerFactory<Menu>();
+            return new ReplicatedStateSerializerFactory<MenuItem>();
         }
 
         public int MaterialCount()

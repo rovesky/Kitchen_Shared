@@ -41,41 +41,39 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     in GameStateComponent gameState) =>
                 {
+                    if (gameState.State == GameState.Preparing)
+                        index = 0;
+
                     if (gameState.State != GameState.Playing)
                         return;
 
-                    var now = DateTime.Now;
-
                     var timeSpan = DateTime.Now - new DateTime(gameState.StartTime);
                     var totalSeconds = (int) timeSpan.TotalSeconds;
-                    if (totalSeconds != lastSecond && totalSeconds % Duration == 0)
+                    if (totalSeconds == lastSecond || totalSeconds % Duration != 0)
+                        return;
+
+                    lastSecond = totalSeconds;
+
+                    var query = GetEntityQuery(new EntityQueryDesc
                     {
-
-                        //   lastTime = now;
-                        lastSecond = totalSeconds;
-                        var query = GetEntityQuery(new EntityQueryDesc
+                        All = new ComponentType[]
                         {
-                            All = new ComponentType[]
-                            {
-                                typeof(Menu)
-                            }
-                        });
-                        if (query.CalculateEntityCount() < 4)
-                        {
-                        
-                            var spawnFoodEntity = GetSingletonEntity<SpawnMenuArray>();
-                            var requests = EntityManager.GetBuffer<SpawnMenuRequest>(spawnFoodEntity);
-                            requests.Add(new SpawnMenuRequest()
-                            {
-                                Type = menuList[index],
-                                index = index
-                            });
-                            index++;
-                            FSLog.Info($"SpawnMenuRequest:{index}");
+                            typeof(MenuItem)
                         }
-                    }
-                }).Run();
+                    });
+                    if (query.CalculateEntityCount() >= 4)
+                        return;
 
+                    var spawnFoodEntity = GetSingletonEntity<SpawnMenuArray>();
+                    var requests = EntityManager.GetBuffer<SpawnMenuRequest>(spawnFoodEntity);
+                    requests.Add(new SpawnMenuRequest()
+                    {
+                        Type = menuList[index],
+                        index = index
+                    });
+                    index++;
+                    FSLog.Info($"SpawnMenuRequest:{index}");
+                }).Run();
         }
     }
 }

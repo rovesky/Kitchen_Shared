@@ -1,4 +1,5 @@
 ﻿using FootStone.ECS;
+using Unity.Collections;
 using Unity.Entities;
 
 namespace FootStone.Kitchen
@@ -28,11 +29,35 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSetSliceSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSliceSystem>());
 
-
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
+        }
+
+        protected override void OnUpdate()
+        {
+            var gameQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(GameStateComponent)
+                }
+            });
+
+            if (gameQuery.CalculateEntityCount() < 1)
+                return;
+
+            var gameEntities = gameQuery.ToEntityArray(Allocator.TempJob);
+            var gameState = EntityManager.GetComponentData<GameStateComponent>(gameEntities[0]);
+            if (gameState.State != GameState.Playing)
+            {
+                gameEntities.Dispose();
+                return;
+            }
+            gameEntities.Dispose();
+
+            base.OnUpdate();
         }
     }
 }

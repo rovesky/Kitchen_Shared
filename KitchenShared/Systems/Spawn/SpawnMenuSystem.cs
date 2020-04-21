@@ -8,7 +8,7 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class SpawnMenuSystem : SystemBase
     {
-        private Dictionary<MenuType, Menu> menuTemplate = new Dictionary<MenuType, Menu>();
+        private Dictionary<MenuType, MenuItem> menuTemplate = new Dictionary<MenuType, MenuItem>();
 
         protected override void OnCreate()
         {
@@ -25,7 +25,7 @@ namespace FootStone.Kitchen
         private void RegisterMenu(MenuType type, int productId,
             int material1, int material2 = 0, int material3 = 0, int material4 = 0)
         {
-            menuTemplate.Add(type, new Menu()
+            menuTemplate.Add(type, new MenuItem()
             {
                 Index = 0,
                 ProductId = (ushort) productId,
@@ -53,17 +53,19 @@ namespace FootStone.Kitchen
                     continue;
 
               
-                var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(Menu),typeof(GameEntity));
-                EntityManager.SetComponentData(e, new ReplicatedEntityData()
-                {
-                    Id = -1,
-                    PredictingPlayerId = -1
-                });
+                //var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(MenuItem),typeof(GameEntity));
+                //EntityManager.SetComponentData(e, new ReplicatedEntityData()
+                //{
+                //    Id = -1,
+                //    PredictingPlayerId = -1
+                //});
 
-                EntityManager.SetComponentData(e, new GameEntity()
-                { 
-                    Type = EntityType.Menu
-                }); 
+                //EntityManager.SetComponentData(e, new GameEntity()
+                //{ 
+                //    Type = EntityType.Menu
+                //}); 
+
+                var e = GameCreateUtilities.CreateMenuItem(EntityManager);
                 var menu = menuTemplate[spawnMenu.Type];
                 menu.Index = spawnMenu.index;
                 EntityManager.SetComponentData(e, menu);

@@ -28,34 +28,7 @@ namespace FootStone.Kitchen
 
             foreach (var spawnGame in array)
             {
-                var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData),
-                    typeof(Countdown), typeof(Score), typeof(GameEntity), typeof(GameStateComponent));
-                EntityManager.SetComponentData(e, new ReplicatedEntityData()
-                {
-                    Id = -1,
-                    PredictingPlayerId = -1
-                });
-
-                EntityManager.SetComponentData(e, new GameEntity()
-                { 
-                    Type = EntityType.Game
-                }); 
-
-                EntityManager.SetComponentData(e, new Countdown()
-                {
-                    Value = spawnGame.TotalTime,
-                    EndTime = DateTime.Now.AddSeconds( spawnGame.TotalTime).Ticks
-                });
-
-                EntityManager.SetComponentData(e, new Score()
-                {
-                    Value =  spawnGame.Score
-                });
-
-                EntityManager.SetComponentData(e, new GameStateComponent()
-                {
-                    State =  GameState.Ending
-                });
+                 GameCreateUtilities.CreateGame(EntityManager);
             }
 
             array.Dispose();

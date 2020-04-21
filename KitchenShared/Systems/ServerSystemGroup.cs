@@ -3,7 +3,6 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
-
     [DisableAutoCreation]
     public class ServerSystemGroup : NoSortComponentSystemGroup
     {
@@ -20,8 +19,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<GameStartSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<GameEndSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<GamePrepareSystem>());
-
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<MenuSystem>());
+     
         }
     }
 

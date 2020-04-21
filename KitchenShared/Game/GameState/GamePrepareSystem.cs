@@ -22,16 +22,16 @@ namespace FootStone.Kitchen
                     {
                         All = new ComponentType[]
                         {
-                            typeof(Connection)
+                            typeof(Character)
                         }
                     });
                     if (query.CalculateEntityCount() == 0)
                         return;
 
                     gameState.State = GameState.Preparing;
-                    countdown.Value = 10;
-                    countdown.EndTime = DateTime.Now.AddSeconds(countdown.Value).Ticks;
-
+                    gameState.IsSceneReady = false;
+                    countdown.SetValue(5);
+                 
                     
                     FSLog.Info($"Game Prepare");
 

@@ -1,4 +1,5 @@
-﻿using FootStone.ECS;
+﻿using System;
+using FootStone.ECS;
 using Unity.Entities;
 
 namespace FootStone.Kitchen
@@ -7,6 +8,12 @@ namespace FootStone.Kitchen
     {
         public long EndTime;
         public ushort Value;
+
+        public void SetValue(ushort value)
+        {
+            Value = value;
+            EndTime = DateTime.Now.AddSeconds(Value).Ticks;
+        }
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
