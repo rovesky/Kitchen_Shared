@@ -15,10 +15,11 @@ namespace FootStone.Kitchen
         LitterBox,
         Table,
       
-        UnSlicedBegin,
+        FoodBegin,
+        UnslicedBegin,
         Shrimp,
         Cucumber,
-        UnSlicedEnd,
+        UnslicedEnd,
 
         SlicedBegin,
         KelpSlice,
@@ -29,9 +30,11 @@ namespace FootStone.Kitchen
         UnCookedBegin,
         Rice,
         UnCookedEnd,
+
         CookedBegin,
         RiceCooked,
         CookedEnd,
+        FoodEnd,
 
         Game,
         Menu

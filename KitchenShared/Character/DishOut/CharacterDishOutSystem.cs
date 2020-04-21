@@ -28,7 +28,7 @@ namespace FootStone.Kitchen
                     if (pickupEntity == Entity.Null)
                         return;
 
-                    if (!EntityManager.HasComponent<Material>(pickupEntity))
+                    if (!EntityManager.HasComponent<Sliced>(pickupEntity))
                         return;
 
                     //没有触发返回

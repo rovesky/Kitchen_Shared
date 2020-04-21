@@ -54,7 +54,7 @@ namespace FootStone.Kitchen
                         return;
                     }
 
-                    if (EntityManager.HasComponent<Material>(slot.FilledIn))
+                    if (EntityManager.HasComponent<Sliced>(slot.FilledIn))
                     {
                         sliceState.IsSlicing = false;
                         return;

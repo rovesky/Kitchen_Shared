@@ -9,12 +9,12 @@ namespace FootStone.Kitchen
     {
         private const int MaxPlateCount = 4;
 
-        private const int checkDuration = 10;
-        private DateTime lastCheckTime;
+        private const int checkDuration = 1;
+        private int lastSecond  = -1;
 
         protected override void OnCreate()
         {
-            lastCheckTime = DateTime.Now;
+            
         }
 
         protected override void OnUpdate()
@@ -28,11 +28,12 @@ namespace FootStone.Kitchen
                     if(gameState.State != GameState.Playing)
                         return;
 
-                    var now = DateTime.Now;
-                    var timeSpan = DateTime.Now - lastCheckTime;
-                    if ((int) timeSpan.TotalSeconds != checkDuration)
+                    var timeSpan = DateTime.Now - new DateTime(gameState.StartTime);
+                    var totalSeconds = (int) timeSpan.TotalSeconds;
+                    if (totalSeconds == lastSecond || totalSeconds % checkDuration != 0)
                         return;
-                    lastCheckTime = now;
+
+                    lastSecond = totalSeconds;
 
 
                     var queryPlate = GetEntityQuery(new EntityQueryDesc
@@ -55,10 +56,8 @@ namespace FootStone.Kitchen
                     });
                     if (queryTable.CalculateEntityCount() < 1)
                         return;
-
-
+                    
                     var entities = queryTable.ToEntityArray(Allocator.TempJob);
-
 
                     var spawnItemEntity = GetSingletonEntity<SpawnItemArray>();
                     var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnItemEntity);

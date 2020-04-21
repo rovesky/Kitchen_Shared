@@ -19,7 +19,7 @@ namespace FootStone.Kitchen
 
             var slotEntity = conversionSystem.GetPrimaryEntity(Slot);
 
-            dstManager.AddComponentData(entity, new MultiSlotSetting
+            dstManager.AddComponentData(entity, new SlotSetting
             {
                 Pos = dstManager.GetComponentData<Translation>(slotEntity).Value,
                 Offset = new float3(0, 0.1f, 0)

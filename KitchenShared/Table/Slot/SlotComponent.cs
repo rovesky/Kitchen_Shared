@@ -7,6 +7,7 @@ namespace FootStone.Kitchen
     public struct SlotSetting : IComponentData
     {
         public float3 Pos;
+        public float3 Offset;
     }
 
     public struct SlotPredictedState : IComponentData, IPredictedState<SlotPredictedState>
@@ -80,6 +81,22 @@ namespace FootStone.Kitchen
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
         {
             return new PredictedStateSerializerFactory<MultiSlotPredictedState>();
+        }
+
+        public int Count()
+        {
+            var count = 0;
+
+            if (FilledIn1 != Entity.Null)
+                count++;
+            if (FilledIn2 != Entity.Null)
+                count++;
+            if (FilledIn3 != Entity.Null)
+                count++;
+            if (FilledIn4 != Entity.Null)
+                count++;
+
+            return count;
         }
 
         public bool IsFull()
@@ -162,6 +179,23 @@ namespace FootStone.Kitchen
             }
 
             return ret;
+        }
+
+        public Entity GetTail()
+        {
+            if (FilledIn4 != Entity.Null)
+                return FilledIn4;
+
+            if (FilledIn3 != Entity.Null)
+                return FilledIn3;
+
+            if (FilledIn2 != Entity.Null)
+                return FilledIn2;
+
+            if (FilledIn1 != Entity.Null)
+                return FilledIn1;
+
+            return Entity.Null;
         }
     }
 }

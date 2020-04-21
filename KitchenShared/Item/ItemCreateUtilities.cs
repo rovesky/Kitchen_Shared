@@ -131,9 +131,11 @@ namespace FootStone.Kitchen
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);
 
-            if (IsSliced(type))
+            if(IsFood(type))
+                entityManager.AddComponentData(e, new Food());
+
+            if (IsUnsliced(type))
             {
-              //  entityManager.AddComponentData(e, new Food());
                 entityManager.AddComponentData(e, new FoodSlicedSetting()
                 {
                     TotalSliceTick = 150,
@@ -145,11 +147,10 @@ namespace FootStone.Kitchen
                 });
             }
 
-            if (IsMaterial(type))
-            {
-                entityManager.AddComponentData(e, new Material());
+            if (IsSliced(type))
+                entityManager.AddComponentData(e, new Sliced());
              
-            }
+            
 
             if (type == EntityType.Plate)
             {
@@ -166,20 +167,29 @@ namespace FootStone.Kitchen
             return e;
         }
 
-        private static bool IsSliced(EntityType type)
+        private static bool IsFood(EntityType type)
         {
-            return (type == EntityType.Shrimp
-                    || type == EntityType.Rice
-                    || type == EntityType.Cucumber);
-
+            return type > EntityType.FoodBegin && type < EntityType.FoodEnd;
         }
 
-        private static bool IsMaterial(EntityType type)
+        private static bool IsUnsliced(EntityType type)
         {
-            return (type == EntityType.CucumberSlice
-                    || type == EntityType.KelpSlice
-                    || type == EntityType.ShrimpSlice
-                    || type ==EntityType.RiceCooked);
+            return type > EntityType.UnslicedBegin && type < EntityType.UnslicedEnd;
+        }
+
+        private static bool IsSliced(EntityType type)
+        {
+            return type > EntityType.SlicedBegin && type < EntityType.SlicedEnd;
+        }
+
+        private static bool IsUncooked(EntityType type)
+        {
+            return type > EntityType.UnCookedBegin && type < EntityType.UnCookedEnd;
+        }
+
+        private static bool IsCooked(EntityType type)
+        {
+            return type > EntityType.CookedBegin && type < EntityType.CookedEnd;
         }
     }
 }

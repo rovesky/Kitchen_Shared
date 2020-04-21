@@ -7,26 +7,49 @@ namespace FootStone.Kitchen
 
     public static class ItemAttachUtilities
     {
-        public static void ItemAttachToOwner(EntityManager entityManager, Entity item, 
-            Entity owner,Entity preOwner)
+        public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
+            Entity owner, Entity preOwner)
         {
 
             if (preOwner != Entity.Null)
             {
-                if (!entityManager.HasComponent<SlotPredictedState>(preOwner))
-                    return;
+                if (entityManager.HasComponent<SlotPredictedState>(preOwner))
+                {
+                    var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
+                    preOwnerSlotState.FilledIn = Entity.Null;
+                    entityManager.SetComponentData(preOwner, preOwnerSlotState);
+                }
+                else if (entityManager.HasComponent<MultiSlotPredictedState>(preOwner))
+                {
+                    var preOwnerSlotState = entityManager.GetComponentData<MultiSlotPredictedState>(preOwner);
+                    preOwnerSlotState.TakeOut();
+                    entityManager.SetComponentData(preOwner, preOwnerSlotState);
 
-                var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
-                preOwnerSlotState.FilledIn = Entity.Null;
-                entityManager.SetComponentData(preOwner, preOwnerSlotState);
+                }
+                else
+                {
+                    return;
+                }
             }
 
-            if(!entityManager.HasComponent<SlotPredictedState>(owner))
-                return;
+            if (entityManager.HasComponent<SlotPredictedState>(owner))
+            {
+                var slotState = entityManager.GetComponentData<SlotPredictedState>(owner);
+                slotState.FilledIn = item;
+                entityManager.SetComponentData(owner, slotState);
+            }
+            else if (entityManager.HasComponent<MultiSlotPredictedState>(owner))
+            {
+                var slotState = entityManager.GetComponentData<MultiSlotPredictedState>(owner);
+                slotState.FillIn(item);
+                entityManager.SetComponentData(owner, slotState);
 
-            var ownerSlotState = entityManager.GetComponentData<SlotPredictedState>(owner);
-            ownerSlotState.FilledIn = item;
-            entityManager.SetComponentData(owner,ownerSlotState);
+            }
+            else
+            {
+                return;
+            }
+
 
 
             var triggerState = entityManager.GetComponentData<TriggerPredictedState>(item);
@@ -43,9 +66,20 @@ namespace FootStone.Kitchen
             var ownerSlot = entityManager.GetComponentData<SlotSetting>(owner);
             var offset = entityManager.GetComponentData<OffsetSetting>(item);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(item);
-            transformPredictedState.Position = ownerSlot.Pos + offset.Pos;
+
+            if (entityManager.HasComponent<MultiSlotPredictedState>(owner))
+            {
+                var slotState = entityManager.GetComponentData<MultiSlotPredictedState>(owner);
+
+                transformPredictedState.Position = ownerSlot.Pos + ownerSlot.Offset * slotState.Count() + offset.Pos;
+            }
+            else
+            {
+                transformPredictedState.Position = ownerSlot.Pos  + offset.Pos;
+
+            }
             transformPredictedState.Rotation = offset.Rot;
-        //    FSLog.Info($"ItemAttachToCharacter,Rotation:{transformPredictedState.Rotation.value}");
+            FSLog.Info($"ItemAttachToCharacter,Position:{transformPredictedState.Position}");
             entityManager.SetComponentData(item, transformPredictedState);
 
 
@@ -66,42 +100,37 @@ namespace FootStone.Kitchen
             }
         }
 
-        //public static void ItemAttachToTable(EntityManager entityManager, Entity itemEntity, Entity tableEntity,
-        //    float3 slotPos)
-        //{
-        //    var triggerState = entityManager.GetComponentData<TriggerPredictedState>(itemEntity);
-        //    triggerState.TriggeredEntity = Entity.Null;
-        //    triggerState.IsAllowTrigger = false;
-        //    entityManager.SetComponentData(itemEntity, triggerState);
 
-        //    var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
-        //    var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-        //    transformPredictedState.Position = slotPos + offset.Pos;
-        //    transformPredictedState.Rotation = offset.Rot;
-        //    entityManager.SetComponentData(itemEntity, transformPredictedState);
-
-        //    var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(itemEntity);
-        //    velocityPredictedState.Linear = float3.zero;
-        //    velocityPredictedState.Angular = float3.zero;
-        //    velocityPredictedState.MotionType = MotionType.Static;
-        //    entityManager.SetComponentData(itemEntity, velocityPredictedState);
-
-        //    var itemState = entityManager.GetComponentData<OwnerPredictedState>(itemEntity);
-        //    itemState.Owner = tableEntity;
-        //    entityManager.SetComponentData(itemEntity, itemState);
-        //    // entityManager.AddComponentData(itemEntity,new TriggeredSetting());
-        //}
 
 
         public static void ItemDetachFromOwner(EntityManager entityManager, Entity itemEntity,
-            Entity preOwner,float3 pos,float3 linearVelocity)
+            Entity preOwner, float3 pos, float3 linearVelocity)
         {
-            if(!entityManager.HasComponent<SlotPredictedState>(preOwner))
+            
+            if (entityManager.HasComponent<SlotPredictedState>(preOwner))
+            {
+                var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
+                preOwnerSlotState.FilledIn = Entity.Null;
+                entityManager.SetComponentData(preOwner, preOwnerSlotState);
+            }
+            else if (entityManager.HasComponent<MultiSlotPredictedState>(preOwner))
+            {
+                var preOwnerSlotState = entityManager.GetComponentData<MultiSlotPredictedState>(preOwner);
+                preOwnerSlotState.TakeOut();
+                entityManager.SetComponentData(preOwner, preOwnerSlotState);
+            }
+            else
+            {
                 return;
+            }
 
-            var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
-            preOwnerSlotState.FilledIn = Entity.Null;
-            entityManager.SetComponentData(preOwner,preOwnerSlotState);
+            //if (!entityManager.HasComponent<SlotPredictedState>(preOwner)
+            //    || !entityManager.HasComponent<MultiSlotPredictedState>(preOwner))
+            //    return;
+
+            //var preOwnerSlotState = entityManager.GetComponentData<SlotPredictedState>(preOwner);
+            //preOwnerSlotState.FilledIn = Entity.Null;
+            //entityManager.SetComponentData(preOwner, preOwnerSlotState);
 
             var triggerState = entityManager.GetComponentData<TriggerPredictedState>(itemEntity);
             triggerState.IsAllowTrigger = true;
@@ -127,19 +156,6 @@ namespace FootStone.Kitchen
             replicatedEntityData.PredictingPlayerId = -1;
             entityManager.SetComponentData(itemEntity, replicatedEntityData);
         }
-
-
-
-   
-
-        //public static void ItemDetachFromTable(EntityManager entityManager, Entity itemEntity,Entity tableEntity)
-        //{
-        //    var itemState =  entityManager.GetComponentData<OwnerPredictedState>(itemEntity);
-        //    itemState.Owner = Entity.Null;
-        //    itemState.PreOwner = tableEntity;
-        //    entityManager.SetComponentData(itemEntity, itemState);
-        //    // entityManager.AddComponentData(itemEntity,new TriggeredSetting());
-        //}
 
     }
 }

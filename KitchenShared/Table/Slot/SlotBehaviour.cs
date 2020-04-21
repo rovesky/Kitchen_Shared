@@ -20,7 +20,8 @@ namespace FootStone.Kitchen
 
             dstManager.AddComponentData(entity, new SlotSetting
             {
-                Pos = dstManager.GetComponentData<Translation>(slotEntity).Value
+                Pos = dstManager.GetComponentData<Translation>(slotEntity).Value,
+                Offset = float3.zero
             });
 
             dstManager.AddComponentData(entity, new SlotPredictedState
