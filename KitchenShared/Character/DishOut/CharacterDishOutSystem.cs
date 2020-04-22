@@ -1,18 +1,21 @@
 ﻿using FootStone.ECS;
-using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 食物装盘
+    /// </summary>
     [DisableAutoCreation]
     public class CharacterDishOutSystem : SystemBase
     {
-
         protected override void OnUpdate()
         {
             Entities
                 .WithAll<ServerEntity>()
-                .WithName("CharacterDishOutSystem")
+                .WithName("CharacterDishOut")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     in TriggerPredictedState triggerState,
@@ -28,7 +31,8 @@ namespace FootStone.Kitchen
                     if (pickupEntity == Entity.Null)
                         return;
 
-                    if (!EntityManager.HasComponent<Sliced>(pickupEntity))
+                    //拾取的道具不能装盘返回
+                    if (!EntityManager.HasComponent<CanDishOut>(pickupEntity))
                         return;
 
                     //没有触发返回
@@ -50,117 +54,74 @@ namespace FootStone.Kitchen
                         return;
 
                     var plateEntity = slot.FilledIn;
-                    var plateState = EntityManager.GetComponentData<PlatePredictedState>(plateEntity);
+                    var plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
 
                     //盘子已满
-                    if (plateState.IsFull())
-                        return;
-                    //盘子已有该材料
-                    if (HasMaterial(plateState, pickupEntity))
+                    if (plateSlotState.IsFull())
                         return;
 
-                    //改变Owner
+                    //食材重复
+                    if (plateSlotState.IsDuplicate(EntityManager,pickupEntity))
+                        return;
+
+                    //放入盘子
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                         pickupEntity, plateEntity, entity);
 
-                    plateState.FillIn(pickupEntity);
-                    EntityManager.SetComponentData(plateEntity, plateState);
+                    //未成品，直接返回
+                    plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
+                    var menuTemplate = MenuUtilities.MatchMenuTemplate(EntityManager, plateSlotState);
+                    if(menuTemplate == MenuTemplate.Null)
+                        return;
 
-
-                    var productId = CaculateProduct(plateState);
-                    if (productId != 0)
+                    
+                    //删除原来的道具
+                    var count = plateSlotState.Count();
+                    for (var i = 0; i < count; ++i)
                     {
-
+                        var fillIn = plateSlotState.TakeOut();
+                        if (fillIn != Entity.Null)
+                            EntityManager.AddComponentData(fillIn,new Despawn());
                     }
+                    EntityManager.SetComponentData(plateEntity,plateSlotState);
 
-
+            
+                    //生成新道具
+                    var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
+                    var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
+                    
+                    buffer.Add(new SpawnItemRequest()
+                    {
+                        Type = menuTemplate.Product,
+                        Pos = float3.zero,
+                        Owner = plateEntity
+                    });
 
                 }).Run();
         }
+    }
 
 
-        private bool IsSameMaterial(Entity material, GameEntity food)
+    [DisableAutoCreation]
+    public class UpdatePlateProductSystem : SystemBase
+    {
+        
+        protected override void OnUpdate()
         {
-            if (material == Entity.Null)
-                return false;
-            var food1 = EntityManager.GetComponentData<GameEntity>(material);
-            FSLog.Info($"food1.Type:{food1.Type},food.Type:{food.Type}");
-            return food1.Type == food.Type;
-        }
-
-        private bool HasMaterial(PlatePredictedState plateState, Entity material)
-        {
-            var food = EntityManager.GetComponentData<GameEntity>(material);
-
-            return IsSameMaterial(plateState.Material1, food)
-                   || IsSameMaterial(plateState.Material2, food)
-                   || IsSameMaterial(plateState.Material3, food)
-                   || IsSameMaterial(plateState.Material4, food);
-        }
-
-
-        private ushort CaculateProduct(PlatePredictedState plateState)
-        {
-            var query = GetEntityQuery(new EntityQueryDesc
-            {
-                All = new ComponentType[]
+            Entities.WithAll<ServerEntity>()
+                .WithStructuralChanges()
+                .ForEach((ref PlatePredictedState plateState,
+                    in MultiSlotPredictedState slotState) =>
                 {
-                    typeof(MenuItem)
-                }
-            });
+                  
+                    if(slotState.Count() != 1)
+                        return;
 
-            ushort productId = 0;
-            var entities = query.ToEntityArray(Allocator.TempJob);
+                    if (!EntityManager.HasComponent<Product>(slotState.FilledIn1))
+                        return;
+                    plateState.Product = slotState.FilledIn1;
 
-            for (var i = 0; i < entities.Length; ++i)
-            {
-                var menuEntity = entities[i];
-                var menu = EntityManager.GetComponentData<MenuItem>(menuEntity);
-
-                if (IsMatch(menu, ref plateState))
-                {
-                    productId = menu.ProductId;
-                    break;
-                }
-            }
-
-            entities.Dispose();
-            return productId;
-        }
-
-        private bool HasMaterial(MenuItem menuItem, Entity entity)
-        {
-            if (entity == Entity.Null)
-                return false;
-            var food = EntityManager.GetComponentData<GameEntity>(entity);
-            return menuItem.HasMaterial((ushort) food.Type);
-        }
-
-        private bool IsMatch(MenuItem menuItem, ref PlatePredictedState plateState)
-        {
-            var plateMaterialCount = plateState.MaterialCount();
-            if (menuItem.MaterialCount() != plateMaterialCount)
-                return false;
-
-
-            if (plateMaterialCount == 1)
-                return HasMaterial(menuItem, plateState.Material1);
-
-            if (plateMaterialCount == 2)
-                return HasMaterial(menuItem, plateState.Material1) &&
-                       HasMaterial(menuItem, plateState.Material2);
-
-            if (plateMaterialCount == 3)
-                return HasMaterial(menuItem, plateState.Material1) &&
-                       HasMaterial(menuItem, plateState.Material2) &&
-                       HasMaterial(menuItem, plateState.Material3);
-
-            if (plateMaterialCount == 4)
-                return HasMaterial(menuItem, plateState.Material1) &&
-                       HasMaterial(menuItem, plateState.Material2) &&
-                       HasMaterial(menuItem, plateState.Material3) &&
-                       HasMaterial(menuItem, plateState.Material3);
-            return true;
+                }).Run();
         }
     }
 }

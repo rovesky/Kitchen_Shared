@@ -3,6 +3,9 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 从盘子回收处拾取
+    /// </summary>
     [DisableAutoCreation]
     public class CharacterPickupPlateRecycleSystem : SystemBase
     {
@@ -22,8 +25,8 @@ namespace FootStone.Kitchen
                     if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                         return;
                     
+                    //已拾取物品返回
                     var pickupEntity = slotState.FilledIn;
-                    //未拾取物品返回
                     if(pickupEntity != Entity.Null)
                         return;
 
@@ -43,7 +46,6 @@ namespace FootStone.Kitchen
                     
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                         slot.GetTail(), entity,triggerEntity);
-                 
 
                 }).Run();
         }

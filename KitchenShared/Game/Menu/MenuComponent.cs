@@ -3,6 +3,7 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
+
     public struct MenuItem : IComponentData,IReplicatedState
     {
         public ushort Index;

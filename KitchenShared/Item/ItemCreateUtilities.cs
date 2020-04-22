@@ -1,4 +1,5 @@
 ﻿using FootStone.ECS;
+using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -28,11 +29,13 @@ namespace FootStone.Kitchen
         {
             RegisterPrefabs(EntityType.Shrimp, "Shrimp");
             RegisterPrefabs(EntityType.ShrimpSlice, "ShrimpSlice");
+            RegisterPrefabs(EntityType.ShrimpProduct, "ShrimpSlice");
             RegisterPrefabs(EntityType.KelpSlice, "KelpSlice");
             RegisterPrefabs(EntityType.Rice, "Rice");
             RegisterPrefabs(EntityType.RiceCooked, "RiceCooked");
             RegisterPrefabs(EntityType.Cucumber, "Cucumber");
             RegisterPrefabs(EntityType.CucumberSlice, "CucumberSlice");
+            RegisterPrefabs(EntityType.Sushi, "Sushi");
             RegisterPrefabs(EntityType.Plate, "Plate");
             RegisterPrefabs(EntityType.PlateDirty, "PlateDirty");
             RegisterPrefabs(EntityType.PotEmpty, "PotEmpty");
@@ -40,8 +43,8 @@ namespace FootStone.Kitchen
             RegisterPrefabs(EntityType.FireExtinguisher, "FireExtinguisher");
         }
 
-        public static Entity CreateItem(EntityManager entityManager, 
-            EntityType type, Vector3 position,Entity owner)
+        public static Entity CreateItem(EntityManager entityManager,
+            EntityType type, Vector3 position, Entity owner)
         {
             if (!prefabs.ContainsKey(type))
             {
@@ -53,15 +56,15 @@ namespace FootStone.Kitchen
 
             var translation = entityManager.GetComponentData<Translation>(e);
             var rotation = entityManager.GetComponentData<Rotation>(e);
-         //   FSLog.Info($"CreateItemComponent，translation：{translation.Value}");
-            entityManager.AddComponentData(e,new OffsetSetting()
+            //   FSLog.Info($"CreateItemComponent，translation：{translation.Value}");
+            entityManager.AddComponentData(e, new OffsetSetting()
             {
                 Pos = translation.Value,
                 Rot = rotation.Value
             });
             var newPosition = (float3) position + translation.Value;
-            entityManager.SetComponentData(e,new Translation{Value = newPosition});
-            entityManager.SetComponentData(e,new Rotation{Value = rotation.Value});
+            entityManager.SetComponentData(e, new Translation {Value = newPosition});
+            entityManager.SetComponentData(e, new Rotation {Value = rotation.Value});
 
             entityManager.AddComponentData(e, new ReplicatedEntityData
             {
@@ -112,7 +115,7 @@ namespace FootStone.Kitchen
                 IsAllowTrigger = false
             });
 
-          
+
             if (entityManager.HasComponent<CompositeScale>(e))
             {
                 var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
@@ -131,15 +134,17 @@ namespace FootStone.Kitchen
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);
 
-            if(IsFood(type))
+            if (IsFood(type))
                 entityManager.AddComponentData(e, new Food());
 
             if (IsUnsliced(type))
             {
+                entityManager.AddComponentData(e, new Unsliced());
+
                 entityManager.AddComponentData(e, new FoodSlicedSetting()
                 {
                     TotalSliceTick = 150,
-                    OffPos = new float3(0,1.7f,0)
+                    OffPos = new float3(0, 1.7f, 0)
                 });
                 entityManager.AddComponentData(e, new FoodSlicedState()
                 {
@@ -149,22 +154,35 @@ namespace FootStone.Kitchen
 
             if (IsSliced(type))
                 entityManager.AddComponentData(e, new Sliced());
-             
-            
 
-            if (type == EntityType.Plate)
+            if (IsUncooked(type))
+            {
+                entityManager.AddComponentData(e, new Uncooked());
+            }
+
+            if (IsCooked(type))
+                entityManager.AddComponentData(e, new Cooked());
+
+            if (CanDishOut(type))
+                entityManager.AddComponentData(e, new CanDishOut());
+
+            if (IsProduct(type))
+                entityManager.AddComponentData(e, new Product());
+
+            if(IsPlate(type))
             {
                 entityManager.AddComponentData(e, new Plate());
                 entityManager.AddComponentData(e, new PlatePredictedState()
                 {
-                    Material1 = Entity.Null,
-                    Material2 = Entity.Null,
-                    Material3 = Entity.Null,
-                    Material4 = Entity.Null
+                    Product = Entity.Null
                 });
             }
-
             return e;
+        }
+
+        private static bool IsProduct(EntityType type)
+        {
+            return type > EntityType.ProductBegin && type < EntityType.ProductEnd;
         }
 
         private static bool IsFood(EntityType type)
@@ -184,12 +202,22 @@ namespace FootStone.Kitchen
 
         private static bool IsUncooked(EntityType type)
         {
-            return type > EntityType.UnCookedBegin && type < EntityType.UnCookedEnd;
+            return type > EntityType.UncookedBegin && type < EntityType.UncookedEnd;
         }
 
         private static bool IsCooked(EntityType type)
         {
             return type > EntityType.CookedBegin && type < EntityType.CookedEnd;
+        }
+
+        private static bool CanDishOut(EntityType type)
+        {
+            return type > EntityType.CanDishOutBegin && type < EntityType.CanDishOutEnd;
+        }
+
+        private static bool IsPlate(EntityType type)
+        {
+            return type == EntityType.Plate;
         }
     }
 }

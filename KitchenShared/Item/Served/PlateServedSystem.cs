@@ -21,13 +21,13 @@ namespace FootStone.Kitchen
                     FSLog.Info("PlateServedSystem OnUpdate");
 
                     //add score
-                    ushort score = CaculateScore(plateState);
+                    ushort score = CalculateScore(plateState.Product);
                     AddScore(score);
 
                     EntityManager.RemoveComponent<PlateServedRequest>(entity);
-
+                    
                     //Despawn
-                    Despawn(entity, plateState);
+                    Despawn(entity);
 
                     EntityManager.SetComponentData(itemState.Owner, new SlotPredictedState()
                     {
@@ -37,43 +37,35 @@ namespace FootStone.Kitchen
                 }).Run();
         }
 
-        private void Despawn(Entity entity, PlatePredictedState plateState)
+        private void Despawn(Entity entity)
         {
+            var slotState = EntityManager.GetComponentData<MultiSlotPredictedState>(entity);
+            var count = slotState.Count();
+        //    FSLog.Info($"Count:{count}");
+            for (var i = 0; i < count; ++i)
+            {
+                var fillIn = slotState.TakeOut();
+                if (fillIn != Entity.Null)
+                    EntityManager.AddComponentData(fillIn, new Despawn());
+            }
             //Despawn
             EntityManager.AddComponentData(entity, new Despawn());
 
-            if (plateState.Material1 != Entity.Null)
-            {
-
-                EntityManager.AddComponentData(plateState.Material1, new Despawn());
-                plateState.Material1 = Entity.Null;
-            }
-
-            if (plateState.Material2 != Entity.Null)
-            {
-
-                EntityManager.AddComponentData(plateState.Material2, new Despawn());
-                plateState.Material2 = Entity.Null;
-            }
-
-            if (plateState.Material3 != Entity.Null)
-            {
-
-                EntityManager.AddComponentData(plateState.Material3, new Despawn());
-                plateState.Material3 = Entity.Null;
-            }
-
-            if (plateState.Material4 != Entity.Null)
-            {
-
-                EntityManager.AddComponentData(plateState.Material4, new Despawn());
-                plateState.Material4 = Entity.Null;
-            }
-
         }
 
-        private ushort CaculateScore(PlatePredictedState plateState)
+        private ushort CalculateScore(Entity product)
         {
+            EntityType productType;
+            if (product == Entity.Null)
+            {
+                productType = EntityType.None;
+            }
+            else
+            {
+                var gameEntity = EntityManager.GetComponentData<GameEntity>(product);
+                productType = gameEntity.Type;
+            }
+
             var query = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -97,8 +89,8 @@ namespace FootStone.Kitchen
             foreach (var menuEntity in entityList)
             {
                 var menu = EntityManager.GetComponentData<MenuItem>(menuEntity);
-
-                if (IsMatch(menu, ref plateState))
+                
+                if (IsMatch(menu,productType))
                 {
                     EntityManager.AddComponentData(menuEntity, new Despawn());
                     score = (ushort) (menu.MaterialCount() * 50);
@@ -110,39 +102,11 @@ namespace FootStone.Kitchen
             return score;
         }
 
-        private bool HasMaterial(MenuItem menuItem, Entity entity)
+     
+
+        private bool IsMatch(MenuItem menuItem, EntityType productType)
         {
-            if (entity == Entity.Null)
-                return false;
-            var food = EntityManager.GetComponentData<GameEntity>(entity);
-            return menuItem.HasMaterial((ushort) food.Type);
-        }
-
-        private bool IsMatch(MenuItem menuItem, ref PlatePredictedState plateState)
-        {
-            var plateMaterialCount = plateState.MaterialCount();
-            if (menuItem.MaterialCount() != plateMaterialCount)
-                return false;
-
-
-            if (plateMaterialCount == 1)
-                return HasMaterial(menuItem, plateState.Material1);
-
-            if (plateMaterialCount == 2)
-                return HasMaterial(menuItem, plateState.Material1) &&
-                       HasMaterial(menuItem, plateState.Material2);
-
-            if (plateMaterialCount == 3)
-                return HasMaterial(menuItem, plateState.Material1) &&
-                       HasMaterial(menuItem, plateState.Material2) &&
-                       HasMaterial(menuItem, plateState.Material3);
-
-            if (plateMaterialCount == 4)
-                return HasMaterial(menuItem, plateState.Material1) &&
-                       HasMaterial(menuItem, plateState.Material2) &&
-                       HasMaterial(menuItem, plateState.Material3) &&
-                       HasMaterial(menuItem, plateState.Material3);
-            return true;
+            return (EntityType) menuItem.ProductId == productType;
         }
 
         private void AddScore(ushort value)

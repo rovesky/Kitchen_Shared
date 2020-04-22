@@ -13,6 +13,9 @@ using static FootStone.Kitchen.CharacterMoveUtilities;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 角色移动
+    /// </summary>
     [DisableAutoCreation]
     public class CharacterMoveSystem : JobComponentSystem
     {

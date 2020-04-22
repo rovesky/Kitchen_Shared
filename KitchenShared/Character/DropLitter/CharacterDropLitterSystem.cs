@@ -3,15 +3,17 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 扔垃圾
+    /// </summary>
     [DisableAutoCreation]
-    public class CharacterPickupLitterBoxSystem : SystemBase
+    public class CharacterDropLitterSystem : SystemBase
     {
-
         protected override void OnUpdate()
         {
             Entities
                 .WithAll<ServerEntity>()
-                .WithName("CharacterPickupLitterBox")
+                .WithName("CharacterDropLitter")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     ref SlotPredictedState slotState,
@@ -21,10 +23,10 @@ namespace FootStone.Kitchen
                     //未按键返回
                     if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
                         return;
-                    
+
                     var pickupEntity = slotState.FilledIn;
                     //未拾取物品返回
-                    if(pickupEntity == Entity.Null)
+                    if (pickupEntity == Entity.Null)
                         return;
 
                     //没有触发返回
@@ -32,19 +34,19 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    //触发的不是PlateRecycle返回
+                    //触发的不是垃圾桶返回
                     if (!EntityManager.HasComponent<LitterBox>(triggerEntity))
                         return;
 
-                    if(!EntityManager.HasComponent<Food>(pickupEntity))
+                    //不是食物返回
+                    if (!EntityManager.HasComponent<Food>(pickupEntity))
                         return;
 
                     EntityManager.AddComponentData(pickupEntity, new Despawn());
                     slotState.FilledIn = Entity.Null;
 
-
                 }).Run();
         }
-      
+
     }
 }

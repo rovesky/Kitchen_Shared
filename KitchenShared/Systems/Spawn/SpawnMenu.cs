@@ -3,17 +3,16 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-    public enum MenuType
-    {
-        Shrimp,
-        Sushi
-    }
+    //public enum MenuType
+    //{
+    //    Shrimp,
+    //    Sushi
+    //}
 
     [InternalBufferCapacity(16)]
     public struct SpawnMenuRequest : IBufferElementData
     {
-        public MenuType Type;
-     //   public int ReplicateId;
+        public EntityType Type;
         public ushort index;
     }
 

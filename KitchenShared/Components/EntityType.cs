@@ -6,6 +6,7 @@ namespace FootStone.Kitchen
     {
         None,
         Character,
+
         Plate,
         PlateDirty,
         PotEmpty,
@@ -16,25 +17,37 @@ namespace FootStone.Kitchen
         Table,
       
         FoodBegin,
+        CannotDishOutBegin,
         UnslicedBegin,
         Shrimp,
         Cucumber,
         UnslicedEnd,
 
+        UncookedBegin,
+        Rice,
+        UncookedEnd,
+        CannotDishOutEnd,
+
+        CanDishOutBegin,
         SlicedBegin,
         KelpSlice,
         ShrimpSlice,
         CucumberSlice,
         SlicedEnd,
 
-        UnCookedBegin,
-        Rice,
-        UnCookedEnd,
-
         CookedBegin,
         RiceCooked,
         CookedEnd,
+        CanDishOutEnd,
+
+        ProductBegin,
+        ShrimpProduct,
+        Sushi,
+        ProductEnd,
+
+
         FoodEnd,
+
 
         Game,
         Menu

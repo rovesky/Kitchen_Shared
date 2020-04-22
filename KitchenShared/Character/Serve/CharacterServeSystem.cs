@@ -1,9 +1,11 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 
-
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 上菜
+    /// </summary>
     [DisableAutoCreation]
     public class CharacterServeSystem : SystemBase
     {

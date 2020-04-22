@@ -8,37 +8,18 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class SpawnMenuSystem : SystemBase
     {
-        private Dictionary<MenuType, MenuItem> menuTemplate = new Dictionary<MenuType, MenuItem>();
-
         protected override void OnCreate()
         {
             var entity = EntityManager.CreateEntity(typeof(SpawnMenuArray));
             SetSingleton(new SpawnMenuArray());
             EntityManager.AddBuffer<SpawnMenuRequest>(entity);
-
-            RegisterMenu(MenuType.Shrimp, 1, (ushort) EntityType.ShrimpSlice);
-            RegisterMenu(MenuType.Sushi, 2, (ushort) EntityType.KelpSlice,
-                (ushort) EntityType.RiceCooked, (ushort) EntityType.CucumberSlice);
-
+            MenuUtilities.Init();
         }
 
-        private void RegisterMenu(MenuType type, int productId,
-            int material1, int material2 = 0, int material3 = 0, int material4 = 0)
-        {
-            menuTemplate.Add(type, new MenuItem()
-            {
-                Index = 0,
-                ProductId = (ushort) productId,
-                MaterialId1 = (ushort) material1,
-                MaterialId2 = (ushort) material2,
-                MaterialId3 = (ushort) material3,
-                MaterialId4 = (ushort) material4,
-            });
-        }
+      
 
         protected override void OnUpdate()
         {
-
             var entity = GetSingletonEntity<SpawnMenuArray>();
             var requests = EntityManager.GetBuffer<SpawnMenuRequest>(entity);
             if (requests.Length == 0)
@@ -46,28 +27,20 @@ namespace FootStone.Kitchen
 
             var array = requests.ToNativeArray(Allocator.Temp);
             requests.Clear();
-
             foreach (var spawnMenu in array)
             {
-                if (!menuTemplate.ContainsKey(spawnMenu.Type))
+                var menuTemplate = MenuUtilities.GetMenuTemplate(spawnMenu.Type);
+                if (menuTemplate == MenuTemplate.Null)
                     continue;
 
-              
-                //var e = EntityManager.CreateEntity(typeof(ReplicatedEntityData), typeof(MenuItem),typeof(GameEntity));
-                //EntityManager.SetComponentData(e, new ReplicatedEntityData()
-                //{
-                //    Id = -1,
-                //    PredictingPlayerId = -1
-                //});
-
-                //EntityManager.SetComponentData(e, new GameEntity()
-                //{ 
-                //    Type = EntityType.Menu
-                //}); 
-
                 var e = GameCreateUtilities.CreateMenuItem(EntityManager);
-                var menu = menuTemplate[spawnMenu.Type];
+                var menu = EntityManager.GetComponentData<MenuItem>(e);
                 menu.Index = spawnMenu.index;
+                menu.ProductId = (ushort) menuTemplate.Product;
+                menu.MaterialId1 = (ushort) menuTemplate.Material1;
+                menu.MaterialId2 = (ushort) menuTemplate.Material2;
+                menu.MaterialId3 = (ushort) menuTemplate.Material3;
+                menu.MaterialId4 = (ushort) menuTemplate.Material4;
                 EntityManager.SetComponentData(e, menu);
                 FSLog.Info($"Spawn Menu:{spawnMenu.Type},index:{ menu.Index }");
             }

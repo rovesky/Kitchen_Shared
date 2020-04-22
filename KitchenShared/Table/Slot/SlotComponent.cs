@@ -197,5 +197,27 @@ namespace FootStone.Kitchen
 
             return Entity.Null;
         }
+
+        
+        private static bool IsSame(EntityManager entityManager,Entity entity, Entity entity1)
+        {
+            if (entity == Entity.Null)
+                return false;
+
+            var food = entityManager.GetComponentData<GameEntity>(entity);
+            var food1 = entityManager.GetComponentData<GameEntity>(entity1);
+            FSLog.Info($"food1.Type:{food1.Type},food.Type:{food.Type}");
+            return food1.Type == food.Type;
+        }
+
+       
+
+        public bool IsDuplicate(EntityManager entityManager, Entity entity)
+        {
+            return IsSame(entityManager,FilledIn1,entity)
+                   || IsSame(entityManager,FilledIn2,entity)
+                   || IsSame(entityManager,FilledIn3,entity)
+                   || IsSame(entityManager,FilledIn4,entity);
+        }
     }
 }

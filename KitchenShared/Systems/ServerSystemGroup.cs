@@ -15,6 +15,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<PlateServedSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<MenuSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<PlateRecycleSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdatePlateProductSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<GameStartSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<GameEndSystem>());

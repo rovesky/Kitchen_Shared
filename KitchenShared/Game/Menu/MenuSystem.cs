@@ -12,20 +12,20 @@ namespace FootStone.Kitchen
         private int lastSecond = -1;
         private ushort index = 0;
 
-        private MenuType[] menuList = new MenuType[]
+        private EntityType[] menuList = new EntityType[]
         {
-            MenuType.Shrimp,
-            MenuType.Sushi,
-            MenuType.Shrimp,
-            MenuType.Sushi,
-            MenuType.Shrimp,
-            MenuType.Sushi,
-            MenuType.Shrimp,
-            MenuType.Sushi,
-            MenuType.Shrimp,
-            MenuType.Sushi,
-            MenuType.Shrimp,
-            MenuType.Sushi
+            EntityType.ShrimpProduct,
+            EntityType.Sushi,
+            EntityType.ShrimpProduct,
+            EntityType.Sushi,
+            EntityType.ShrimpProduct,
+            EntityType.Sushi,
+            EntityType.ShrimpProduct,
+            EntityType.Sushi,
+            EntityType.ShrimpProduct,
+            EntityType.Sushi,
+            EntityType.ShrimpProduct,
+            EntityType.Sushi
         };
 
         protected override void OnCreate()
