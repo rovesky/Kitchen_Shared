@@ -10,6 +10,7 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities
+                .WithoutBurst()
                 .ForEach((Entity entity,
                     ref Countdown countdown,
                     in GameStateComponent gameState) =>
