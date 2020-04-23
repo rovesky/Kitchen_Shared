@@ -22,6 +22,9 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupPlateRecycleSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
+
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPutDownSinkSystem>());
+
             
           //  m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDishOutSystem>());
           //  m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupBoxSystem>());

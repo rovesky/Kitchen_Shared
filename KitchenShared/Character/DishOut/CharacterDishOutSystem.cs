@@ -57,11 +57,11 @@ namespace FootStone.Kitchen
                     var plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
 
                     //盘子已满
-                    if (plateSlotState.IsFull())
+                    if (plateSlotState.Value.IsFull())
                         return;
 
                     //食材重复
-                    if (plateSlotState.IsDuplicate(EntityManager,pickupEntity))
+                    if (plateSlotState.Value.IsDuplicate(EntityManager,pickupEntity))
                         return;
 
                     //放入盘子
@@ -76,10 +76,10 @@ namespace FootStone.Kitchen
 
                     
                     //删除原来的道具
-                    var count = plateSlotState.Count();
+                    var count = plateSlotState.Value.Count();
                     for (var i = 0; i < count; ++i)
                     {
-                        var fillIn = plateSlotState.TakeOut();
+                        var fillIn = plateSlotState.Value.TakeOut();
                         if (fillIn != Entity.Null)
                             EntityManager.AddComponentData(fillIn,new Despawn());
                     }
@@ -114,12 +114,12 @@ namespace FootStone.Kitchen
                     in MultiSlotPredictedState slotState) =>
                 {
                   
-                    if(slotState.Count() != 1)
+                    if(slotState.Value.Count() != 1)
                         return;
 
-                    if (!EntityManager.HasComponent<Product>(slotState.FilledIn1))
+                    if (!EntityManager.HasComponent<Product>(slotState.Value.FilledIn1))
                         return;
-                    plateState.Product = slotState.FilledIn1;
+                    plateState.Product = slotState.Value.FilledIn1;
 
                 }).Run();
         }

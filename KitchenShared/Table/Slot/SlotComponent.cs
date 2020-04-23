@@ -35,5 +35,7 @@ namespace FootStone.Kitchen
         {
             return new PredictedStateSerializerFactory<SlotPredictedState>();
         }
+
+
     }
 }

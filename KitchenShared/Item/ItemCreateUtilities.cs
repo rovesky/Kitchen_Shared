@@ -177,7 +177,17 @@ namespace FootStone.Kitchen
                     Product = Entity.Null
                 });
             }
+
+            if(IsPlateDirty(type))
+            {
+                entityManager.AddComponentData(e, new PlateDirty());
+            }
             return e;
+        }
+
+        private static bool IsPlateDirty(EntityType type)
+        {
+            return type == EntityType.PlateDirty;
         }
 
         private static bool IsProduct(EntityType type)

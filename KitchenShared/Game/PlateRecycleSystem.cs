@@ -7,7 +7,7 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class PlateRecycleSystem : SystemBase
     {
-        private const int MaxPlateCount = 4;
+        private const int MaxPlateCount = 8;
 
         private const int checkDuration = 1;
         private int lastSecond  = -1;
@@ -38,13 +38,15 @@ namespace FootStone.Kitchen
 
                     var queryPlate = GetEntityQuery(new EntityQueryDesc
                     {
-                        All = new ComponentType[]
+                        Any = new ComponentType[]
                         {
-                            typeof(Plate)
+                            typeof(Plate),
+                            typeof(PlateDirty)
                         }
                     });
 
-                    if (queryPlate.CalculateEntityCount() >= MaxPlateCount)
+                    var plateCount = queryPlate.CalculateEntityCount();
+                    if ( plateCount>= MaxPlateCount)
                         return;
 
                     var queryTable = GetEntityQuery(new EntityQueryDesc
@@ -63,7 +65,7 @@ namespace FootStone.Kitchen
                     var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnItemEntity);
                     buffer.Add(new SpawnItemRequest()
                     {
-                        Type = EntityType.Plate,
+                        Type = EntityType.PlateDirty,
                         Owner = entities[0]
                     });
 

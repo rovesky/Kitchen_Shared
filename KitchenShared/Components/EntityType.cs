@@ -13,9 +13,17 @@ namespace FootStone.Kitchen
         PotFull,
         FireExtinguisher,
   
-        LitterBox,
+        TableBegin,
         Table,
-      
+        LitterBox,
+        PlateRecycle,
+        FoodBox,
+        Slice,
+        Sink,
+        Cook,
+        Serve,
+        TableEnd,
+
         FoodBegin,
         CannotDishOutBegin,
         UnslicedBegin,

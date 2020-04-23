@@ -40,11 +40,11 @@ namespace FootStone.Kitchen
         private void Despawn(Entity entity)
         {
             var slotState = EntityManager.GetComponentData<MultiSlotPredictedState>(entity);
-            var count = slotState.Count();
+            var count = slotState.Value.Count();
         //    FSLog.Info($"Count:{count}");
             for (var i = 0; i < count; ++i)
             {
-                var fillIn = slotState.TakeOut();
+                var fillIn = slotState.Value.TakeOut();
                 if (fillIn != Entity.Null)
                     EntityManager.AddComponentData(fillIn, new Despawn());
             }

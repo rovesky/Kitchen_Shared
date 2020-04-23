@@ -28,10 +28,11 @@ namespace FootStone.Kitchen
 
             dstManager.AddComponentData(entity, new MultiSlotPredictedState
             {
-                FilledIn1 = Entity.Null,
+                Value =
+                {FilledIn1 = Entity.Null,
                 FilledIn2 = Entity.Null,
                 FilledIn3 = Entity.Null,
-                FilledIn4 = Entity.Null,
+                FilledIn4 = Entity.Null}
             });
         }
     }

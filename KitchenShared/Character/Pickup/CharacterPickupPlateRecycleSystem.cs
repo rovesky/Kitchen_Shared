@@ -1,5 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
+using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -16,7 +18,7 @@ namespace FootStone.Kitchen
                 .WithAll<ServerEntity>()
                 .WithName("CharacterPickupTable")
                 .WithStructuralChanges()
-                .ForEach((Entity entity,
+                .ForEach((Entity characterEntity,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
                     in UserCommand command) =>
@@ -41,11 +43,32 @@ namespace FootStone.Kitchen
         
                     //slot为空返回
                     var slot = EntityManager.GetComponentData<MultiSlotPredictedState>(triggerEntity);
-                    if(slot.IsEmpty())
+                    if(slot.Value.IsEmpty())
                         return;
-                    
+
+
+                    //将盘子叠起来
+                    var count = slot.Value.Count();
+
+                    var firstEntity = slot.Value.GetTail();
+                    var prePlateEntity = Entity.Null;
+                    for (var i = 0; i < count; ++i)
+                    {
+                        slot = EntityManager.GetComponentData<MultiSlotPredictedState>(triggerEntity);
+                        var plateEntity = slot.Value.GetTail();
+
+                        if (prePlateEntity == Entity.Null)
+                            ItemAttachUtilities.ItemDetachFromOwner(EntityManager, plateEntity,
+                                triggerEntity, float3.zero, float3.zero);
+                        else
+                            ItemAttachUtilities.ItemAttachToOwner(EntityManager,
+                                plateEntity, prePlateEntity, triggerEntity);
+
+                        prePlateEntity = plateEntity;
+                    }
+
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
-                        slot.GetTail(), entity,triggerEntity);
+                        firstEntity, characterEntity,triggerEntity);
 
                 }).Run();
         }

@@ -4,9 +4,8 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-    
 
-    public struct MultiSlotPredictedState : IComponentData, IPredictedState<MultiSlotPredictedState>
+    public struct MultiSlot
     {
         // 放入的对象
         public Entity FilledIn1;
@@ -14,38 +13,8 @@ namespace FootStone.Kitchen
         public Entity FilledIn3;
         public Entity FilledIn4;
 
-        public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
-        {
-            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn1);
-            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn2);
-            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn3);
-            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn4);
 
-            // FSLog.Info($"SlotPredictedState DeserializeReference:{FilledInEntity}");
-        }
-
-        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
-        {
-            context.RefSerializer.SerializeReference(ref writer, "FilledIn1", FilledIn1);
-            context.RefSerializer.SerializeReference(ref writer, "FilledIn2", FilledIn2);
-            context.RefSerializer.SerializeReference(ref writer, "FilledIn3", FilledIn3);
-            context.RefSerializer.SerializeReference(ref writer, "FilledIn4", FilledIn4);
-        }
-
-        public bool VerifyPrediction(ref MultiSlotPredictedState state)
-        {
-            return FilledIn1.Equals(state.FilledIn1) &&
-                   FilledIn2.Equals(state.FilledIn2) &&
-                   FilledIn3.Equals(state.FilledIn3) &&
-                   FilledIn4.Equals(state.FilledIn4);
-        }
-
-        public static IPredictedStateSerializerFactory CreateSerializerFactory()
-        {
-            return new PredictedStateSerializerFactory<MultiSlotPredictedState>();
-        }
-
-        public int Count()
+                public int Count()
         {
             var count = 0;
 
@@ -171,9 +140,7 @@ namespace FootStone.Kitchen
             FSLog.Info($"food1.Type:{food1.Type},food.Type:{food.Type}");
             return food1.Type == food.Type;
         }
-
-       
-
+        
         public bool IsDuplicate(EntityManager entityManager, Entity entity)
         {
             return IsSame(entityManager,FilledIn1,entity)
@@ -181,5 +148,61 @@ namespace FootStone.Kitchen
                    || IsSame(entityManager,FilledIn3,entity)
                    || IsSame(entityManager,FilledIn4,entity);
         }
+
+        
+        public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
+        {
+            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn1);
+            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn2);
+            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn3);
+            context.RefSerializer.DeserializeReference(ref reader, ref FilledIn4);
+
+            // FSLog.Info($"SlotPredictedState DeserializeReference:{FilledInEntity}");
+        }
+
+        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
+        {
+            context.RefSerializer.SerializeReference(ref writer, "FilledIn1", FilledIn1);
+            context.RefSerializer.SerializeReference(ref writer, "FilledIn2", FilledIn2);
+            context.RefSerializer.SerializeReference(ref writer, "FilledIn3", FilledIn3);
+            context.RefSerializer.SerializeReference(ref writer, "FilledIn4", FilledIn4);
+        }
+
+        public bool VerifyPrediction(ref MultiSlot state)
+        {
+            return FilledIn1.Equals(state.FilledIn1) &&
+                   FilledIn2.Equals(state.FilledIn2) &&
+                   FilledIn3.Equals(state.FilledIn3) &&
+                   FilledIn4.Equals(state.FilledIn4);
+        }
+    }
+    
+
+    public struct MultiSlotPredictedState : IComponentData, IPredictedState<MultiSlotPredictedState>
+    {
+        public MultiSlot Value;
+
+        public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
+        {
+            Value.Deserialize(ref context, ref reader);
+        }
+
+        public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
+        {
+            Value.Serialize(ref context,ref writer);
+
+        }
+
+        public bool VerifyPrediction(ref MultiSlotPredictedState state)
+        {
+            return Value.VerifyPrediction(ref state.Value);
+        }
+
+        public static IPredictedStateSerializerFactory CreateSerializerFactory()
+        {
+            return new PredictedStateSerializerFactory<MultiSlotPredictedState>();
+        }
+
+
     }
 }

@@ -124,26 +124,26 @@ namespace FootStone.Kitchen
 
         private static bool IsMatch(EntityManager entityManager,MenuTemplate menuTemplate,MultiSlotPredictedState plateState)
         {
-            if (plateState.Count() != menuTemplate.MaterialCount())
+            if (plateState.Value.Count() != menuTemplate.MaterialCount())
                 return false;
 
-            if (plateState.Count() == 1)
-                return HasMaterial(entityManager, menuTemplate, plateState.FilledIn1);
+            if (plateState.Value.Count() == 1)
+                return HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn1);
 
-            if (plateState.Count() == 2)
-                return HasMaterial(entityManager, menuTemplate, plateState.FilledIn1) &&
-                       HasMaterial(entityManager, menuTemplate, plateState.FilledIn2);
+            if (plateState.Value.Count() == 2)
+                return HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn1) &&
+                       HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn2);
 
-            if (plateState.Count() == 3)
-                return HasMaterial(entityManager, menuTemplate, plateState.FilledIn1) &&
-                       HasMaterial(entityManager, menuTemplate, plateState.FilledIn2)&&
-                       HasMaterial(entityManager, menuTemplate, plateState.FilledIn3);
+            if (plateState.Value.Count() == 3)
+                return HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn1) &&
+                       HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn2)&&
+                       HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn3);
 
-            if (plateState.Count() == 4)
-                return HasMaterial(entityManager, menuTemplate, plateState.FilledIn1) &&
-                       HasMaterial(entityManager, menuTemplate, plateState.FilledIn2) &&
-                       HasMaterial(entityManager, menuTemplate, plateState.FilledIn3) &&
-                       HasMaterial(entityManager, menuTemplate, plateState.FilledIn4);
+            if (plateState.Value.Count() == 4)
+                return HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn1) &&
+                       HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn2) &&
+                       HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn3) &&
+                       HasMaterial(entityManager, menuTemplate, plateState.Value.FilledIn4);
 
             return true;
         }
