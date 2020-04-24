@@ -11,6 +11,7 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class CharacterPutDownSinkSystem : SystemBase
     {
+        
 
         protected override void OnUpdate()
         {
@@ -50,7 +51,7 @@ namespace FootStone.Kitchen
                     var i = 0;
                     while (true)
                     {
-                        var nextPlate = PutDownSink(plateDirty, triggerEntity, preOwner,i);
+                        var nextPlate = PutDownSink(plateDirty, triggerEntity, preOwner);
                         if(nextPlate == Entity.Null)
                             break;
                         preOwner = plateDirty;
@@ -63,24 +64,29 @@ namespace FootStone.Kitchen
           
         }
 
-        private Entity PutDownSink(Entity plateDirty,Entity sink,Entity preOwner,int index)
+        private Entity PutDownSink(Entity plateDirty,Entity sink,Entity preOwner)
         {
             var slot = EntityManager.GetComponentData<SlotPredictedState>(plateDirty);
             var ret = slot.FilledIn;
             slot.FilledIn = Entity.Null;
             EntityManager.SetComponentData(plateDirty,slot);
 
+            var scale = EntityManager.GetComponentData<ScaleSetting>(plateDirty);
+            scale.Scale = new float3(0.6f,0.6f,0.6f);
+            EntityManager.SetComponentData(plateDirty,scale);
+
 
             var sinkState = EntityManager.GetComponentData<SinkPredictedState>(sink);
             sinkState.Value.FillIn(plateDirty);
             EntityManager.SetComponentData(sink,sinkState);
 
-                  
+            var index = sinkState.Value.Count() - 1;
+
             var sinkSetting = EntityManager.GetComponentData<SinkSetting>(sink);
             ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                 plateDirty, sink, preOwner,
-                sinkSetting.SlotWashing + new float3(0.1f,0.1f,0f)*index,
-                quaternion.identity);
+                sinkSetting.SlotWashing+new float3(0f,-0.1f,0f) + new float3(0f,0.1f,0f)*index,
+                quaternion.Euler(math.radians(new float3(0,0,-25- 15*index))));
 
             return ret;
 

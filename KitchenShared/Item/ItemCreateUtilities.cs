@@ -181,6 +181,17 @@ namespace FootStone.Kitchen
             if(IsPlateDirty(type))
             {
                 entityManager.AddComponentData(e, new PlateDirty());
+
+                
+                entityManager.AddComponentData(e, new FoodSlicedSetting()
+                {
+                    TotalSliceTick = 150,
+                    OffPos = new float3(0, 1.7f, 0)
+                });
+                entityManager.AddComponentData(e, new FoodSlicedState()
+                {
+                    CurSliceTick = 0
+                });
             }
             return e;
         }

@@ -21,19 +21,22 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupGroundSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupPlateRecycleSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
-
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPutDownSinkSystem>());
-
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupSinkSystem>());
             
+          
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPutDownSinkSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashSystemGroup>());
+           
           //  m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDishOutSystem>());
           //  m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupBoxSystem>());
+         // m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterServeSystem>());
 
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSetSliceSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSliceSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicingSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicedSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
 

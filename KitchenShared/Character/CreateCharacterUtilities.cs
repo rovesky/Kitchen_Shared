@@ -104,6 +104,13 @@ namespace FootStone.Kitchen
               IsSlicing = false
             });
 
+            entityManager.AddComponentData(e, new WashSetting());
+
+            entityManager.AddComponentData(e, new WashPredictedState()
+            {
+                IsWashing = false
+            });
+
             entityManager.AddComponentData(e, new ServeSetting());
         }
     }

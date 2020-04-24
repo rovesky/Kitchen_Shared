@@ -1,13 +1,13 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 正在切菜
+    /// </summary>
     [DisableAutoCreation]
-    public class CharacterSetSliceSystem : SystemBase
+    public class CharacterSlicingSystem : SystemBase
     {
         protected override void OnUpdate()
         {
@@ -76,10 +76,10 @@ namespace FootStone.Kitchen
     }
 
     /// <summary>
-    /// 切菜
+    /// 切菜完成
     /// </summary>
     [DisableAutoCreation]
-    public class CharacterSliceSystem : SystemBase
+    public class CharacterSlicedSystem : SystemBase
     {
         protected override void OnUpdate()
         {

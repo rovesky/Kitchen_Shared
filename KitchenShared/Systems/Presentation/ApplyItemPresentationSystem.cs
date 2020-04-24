@@ -27,10 +27,11 @@ namespace FootStone.Kitchen
                     var parent = EntityManager.GetComponentData<Parent>(entity);
                   //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
                     if (parent.Value == interpolatedData.Owner)
-                        return;
+                       return;
                     parent.Value = interpolatedData.Owner;
                     EntityManager.SetComponentData(entity, parent);
                     
+                   
                     var scale = EntityManager.GetComponentData<CompositeScale>(entity);
                     var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
                     var parentScale = EntityManager.GetComponentData<CompositeScale>(interpolatedData.Owner);
@@ -47,12 +48,6 @@ namespace FootStone.Kitchen
                    // var parent =  EntityManager.GetComponentData<Parent>(entity);
                    // var parentScale = EntityManager.GetComponentData<CompositeScale>(parent.Value);
                     var scale = EntityManager.GetComponentData<CompositeScale>(entity);
-
-                
-                    //scale.Value.c0.x *= parentScale.Value.c0.x;
-                    //scale.Value.c1.y *= parentScale.Value.c1.y;
-                    //scale.Value.c2.z *= parentScale.Value.c2.z;
-
                     var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
                     scale.Value.c0.x = scaleSetting.Scale.x;
                     scale.Value.c1.y = scaleSetting.Scale.y;

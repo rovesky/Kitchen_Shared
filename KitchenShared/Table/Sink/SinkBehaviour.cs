@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -13,8 +14,7 @@ namespace FootStone.Kitchen
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-
-            if (SlotWashed == null)
+            if (SlotWashed == null || SlotWashing == null)
                 return;
 
             var slotWashedEntity = conversionSystem.GetPrimaryEntity(SlotWashed);
@@ -26,7 +26,27 @@ namespace FootStone.Kitchen
                 SlotWashing =  dstManager.GetComponentData<Translation>(slotWashingEntity).Value,
 
             });
+
+            
+            dstManager.AddComponentData(entity, new SlotSetting
+            {
+                Pos = dstManager.GetComponentData<Translation>(slotWashedEntity).Value,
+                Offset = new float3(0, 0.1f, 0)
+
+            });
+       
             dstManager.AddComponentData(entity, new SinkPredictedState()
+            {
+                Value =
+                {
+                    FilledIn1 = Entity.Null,
+                    FilledIn2 = Entity.Null,
+                    FilledIn3 = Entity.Null,
+                    FilledIn4 = Entity.Null,
+                }
+            });
+
+            dstManager.AddComponentData(entity, new MultiSlotPredictedState()
             {
                 Value =
                 {

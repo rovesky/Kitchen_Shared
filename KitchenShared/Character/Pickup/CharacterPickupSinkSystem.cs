@@ -6,17 +6,17 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
     /// <summary>
-    /// 从盘子回收处拾取
+    /// 从洗碗池处拾取
     /// </summary>
     [DisableAutoCreation]
-    public class CharacterPickupPlateRecycleSystem : SystemBase
+    public class CharacterPickupSinkSystem : SystemBase
     {
 
         protected override void OnUpdate()
         {
             Entities
                 .WithAll<ServerEntity>()
-                .WithName("CharacterPickupPlateRecycle")
+                .WithName("CharacterPickupSink")
                 .WithStructuralChanges()
                 .ForEach((Entity characterEntity,
                     in TriggerPredictedState triggerState,
@@ -37,8 +37,8 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    //触发的不是PlateRecycle返回
-                    if (!EntityManager.HasComponent<PlateRecycle>(triggerEntity))
+                    //触发的不是洗碗池返回
+                    if (!EntityManager.HasComponent<SinkSetting>(triggerEntity))
                         return;
         
                     //slot为空返回
@@ -46,24 +46,10 @@ namespace FootStone.Kitchen
                     if(slot.Value.IsEmpty())
                         return;
 
-
-                    //将盘子叠起来
-                    var count = slot.Value.Count();
-
-                    var prePlateEntity = Entity.Null;
-                    for (var i = 0; i < count; ++i)
-                    {
-                        slot = EntityManager.GetComponentData<MultiSlotPredictedState>(triggerEntity);
-                        var plateEntity = slot.Value.GetTail();
-
-                        ItemAttachUtilities.ItemAttachToOwner(EntityManager,
-                            plateEntity, prePlateEntity == Entity.Null ? characterEntity : prePlateEntity,
-                            triggerEntity);
-
-                        prePlateEntity = plateEntity;
-                    }
-
-
+                    //拾取盘子
+                    ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+                        slot.Value.GetTail(), characterEntity,triggerEntity);
+                    
                 }).Run();
         }
       
