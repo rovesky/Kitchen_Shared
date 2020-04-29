@@ -28,12 +28,21 @@ namespace FootStone.Kitchen
             var array = requests.ToNativeArray(Allocator.Temp);
             requests.Clear();
 
-            foreach (var spawnItem in array)
+            foreach (var t in array)
             {
+                var spawnItem = t;
+                if (spawnItem.DeferFrame > 0)
+                {
+                    spawnItem.DeferFrame = spawnItem.DeferFrame - 1;
+                    requests.Add(spawnItem);
+                    continue;
+                }
+
                 FSLog.Info($"Spawn item:{spawnItem.Type}");
 
+
                 var e = ItemCreateUtilities.CreateItem(EntityManager, spawnItem.Type,
-                    spawnItem.Pos, spawnItem.Owner);
+                    spawnItem.OffPos, spawnItem.Owner);
 
                 if (e == Entity.Null)
                     continue;
@@ -41,9 +50,10 @@ namespace FootStone.Kitchen
                 if (spawnItem.Owner == Entity.Null)
                     continue;
 
-                ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+                ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                     e, spawnItem.Owner, Entity.Null);
-               
+
+
             }
 
             array.Dispose();

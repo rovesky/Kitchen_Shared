@@ -10,7 +10,14 @@ namespace FootStone.Kitchen
         {
             var meshRenderer = gameObject.GetComponent<MeshRenderer>();
 
-            var material = new UnityEngine.Material(meshRenderer.sharedMaterial);
+            if (meshRenderer == null)
+                meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+
+            if(meshRenderer == null)
+                return;
+
+            var material = new Material(meshRenderer.sharedMaterial);
+          //  var brightness = material.GetFloat("_Brightness");
             material.SetFloat("_Brightness", 1.4f);
             dstManager.AddComponentData(entity, new TriggeredSetting
             {

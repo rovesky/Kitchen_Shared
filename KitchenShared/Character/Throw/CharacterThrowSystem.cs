@@ -26,7 +26,8 @@ namespace FootStone.Kitchen
                     if (pickupedEntity == Entity.Null)
                         return;
                 
-                    if (EntityManager.HasComponent<Plate>(pickupedEntity))
+                    //非食物返回
+                    if (!EntityManager.HasComponent<Food>(pickupedEntity))
                         return;
           
                     Vector3 linear = math.mul(transformState.Rotation, Vector3.forward);
@@ -38,6 +39,7 @@ namespace FootStone.Kitchen
                         pickupedEntity,
                         entity,
                         transformState.Position + math.mul(transformState.Rotation, new float3(0, 0.2f, 1.3f)),
+                        transformState.Rotation,
                         linear);
 
                  

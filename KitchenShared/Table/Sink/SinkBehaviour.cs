@@ -31,6 +31,7 @@ namespace FootStone.Kitchen
             dstManager.AddComponentData(entity, new SlotSetting
             {
                 Pos = dstManager.GetComponentData<Translation>(slotWashedEntity).Value,
+                Rot = dstManager.GetComponentData<Rotation>(slotWashedEntity).Value,
                 Offset = new float3(0, 0.1f, 0)
 
             });

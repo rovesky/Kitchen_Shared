@@ -2,6 +2,7 @@
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
@@ -37,7 +38,7 @@ namespace FootStone.Kitchen
                         {
                             typeof(BoxSetting),
                             typeof(TableSlice),
-                            typeof(FireCookSetting)
+                            typeof(CookedSetting)
                         }
                     });
                     var entities = query.ToEntityArray(Allocator.TempJob);
@@ -65,7 +66,7 @@ namespace FootStone.Kitchen
                         if (entityType == EntityType.None)
                             continue;
 
-                        SpawnItem(e, entityType);
+                        SpawnItem(e, entityType,float3.zero, quaternion.identity);
                     }
 
                     entities.Dispose();
@@ -75,7 +76,7 @@ namespace FootStone.Kitchen
                     {
                         All = new ComponentType[]
                         {
-                            typeof(FireCookSetting)
+                            typeof(FirePresentation)
                         }
                     });
                     var fireCooks = queryFireCook.ToEntityArray(Allocator.TempJob);
@@ -83,7 +84,8 @@ namespace FootStone.Kitchen
                     for (var i = 0; i < fireCooks.Length; ++i)
                     {
                         var e = fireCooks[i];
-                        SpawnItem(e, EntityType.PotEmpty);
+                        SpawnItem(e, EntityType.Pot,float3.zero, quaternion.Euler(
+                            math.radians(new float3(0,90,0))));
                     }
 
                     fireCooks.Dispose();
@@ -92,15 +94,15 @@ namespace FootStone.Kitchen
                 }).Run();
         }
 
-        private void SpawnItem(Entity entity, EntityType entityType)
+        private void SpawnItem(Entity entity, EntityType entityType,float3 offPos,quaternion offRot)
         {
-            var slotData = EntityManager.GetComponentData<SlotSetting>(entity);
             var spawnItemEntity = GetSingletonEntity<SpawnItemArray>();
             var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnItemEntity);
             buffer.Add(new SpawnItemRequest()
             {
                 Type = entityType,
-                Pos = slotData.Pos,
+                OffPos = offPos,
+                OffRot = offRot,
                 Owner = entity
             });
         }

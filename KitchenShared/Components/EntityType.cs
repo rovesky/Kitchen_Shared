@@ -9,8 +9,7 @@ namespace FootStone.Kitchen
 
         Plate,
         PlateDirty,
-        PotEmpty,
-        PotFull,
+        Pot,
         FireExtinguisher,
   
         TableBegin,
@@ -52,10 +51,7 @@ namespace FootStone.Kitchen
         ShrimpProduct,
         Sushi,
         ProductEnd,
-
-
         FoodEnd,
-
 
         Game,
         Menu

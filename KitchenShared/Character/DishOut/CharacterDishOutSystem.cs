@@ -31,6 +31,17 @@ namespace FootStone.Kitchen
                     if (pickupEntity == Entity.Null)
                         return;
 
+                    var preOwner = entity;
+                    //拾取的道具是锅，获取锅里的道具
+                    if (EntityManager.HasComponent<Pot>(pickupEntity))
+                    {
+                        preOwner = pickupEntity;
+                        pickupEntity = EntityManager.GetComponentData<SlotPredictedState>(pickupEntity).FilledIn;
+                    }
+
+                    if (pickupEntity == Entity.Null)
+                         return;
+                   
                     //拾取的道具不能装盘返回
                     if (!EntityManager.HasComponent<CanDishOut>(pickupEntity))
                         return;
@@ -66,7 +77,7 @@ namespace FootStone.Kitchen
 
                     //放入盘子
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager,
-                        pickupEntity, plateEntity, entity);
+                        pickupEntity, plateEntity, preOwner);
 
                     //未成品，直接返回
                     plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
@@ -93,7 +104,8 @@ namespace FootStone.Kitchen
                     buffer.Add(new SpawnItemRequest()
                     {
                         Type = menuTemplate.Product,
-                        Pos = float3.zero,
+                        DeferFrame = 0,
+                        OffPos = float3.zero,
                         Owner = plateEntity
                     });
 

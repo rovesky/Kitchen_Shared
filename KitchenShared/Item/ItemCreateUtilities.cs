@@ -38,8 +38,8 @@ namespace FootStone.Kitchen
             RegisterPrefabs(EntityType.Sushi, "Sushi");
             RegisterPrefabs(EntityType.Plate, "Plate");
             RegisterPrefabs(EntityType.PlateDirty, "PlateDirty");
-            RegisterPrefabs(EntityType.PotEmpty, "PotEmpty");
-            RegisterPrefabs(EntityType.PotFull, "PotFull");
+            RegisterPrefabs(EntityType.Pot, "Pot");
+          //  RegisterPrefabs(EntityType.PotFull, "PotFull");
             RegisterPrefabs(EntityType.FireExtinguisher, "FireExtinguisher");
         }
 
@@ -181,7 +181,6 @@ namespace FootStone.Kitchen
             if(IsPlateDirty(type))
             {
                 entityManager.AddComponentData(e, new PlateDirty());
-
                 
                 entityManager.AddComponentData(e, new FoodSlicedSetting()
                 {
@@ -193,7 +192,38 @@ namespace FootStone.Kitchen
                     CurSliceTick = 0
                 });
             }
+
+            if (IsPot(type))
+            {
+                entityManager.AddComponentData(e, new Pot());
+
+                entityManager.AddComponentData(e, new FoodSlicedSetting()
+                {
+                    TotalSliceTick = 150,
+                    OffPos = new float3(0, -1f, 0)
+                });
+                entityManager.AddComponentData(e, new FoodSlicedState()
+                {
+                    CurSliceTick = 0
+                });
+                
+                entityManager.AddComponentData(e, new CookedSetting()
+                {
+                    TotalCookTick =150,
+                    TotalFireAlertTick = 150
+                });
+                entityManager.AddComponentData(e, new CookedPredictedState()
+                {
+                   CurCookTick = 0,
+                   CurFireAlertTick = 0
+                });
+            }
             return e;
+        }
+
+        private static bool IsPot(EntityType type)
+        {
+            return type == EntityType.Pot;
         }
 
         private static bool IsPlateDirty(EntityType type)

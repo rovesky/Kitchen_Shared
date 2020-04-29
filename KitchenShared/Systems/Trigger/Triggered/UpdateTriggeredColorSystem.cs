@@ -1,5 +1,9 @@
-﻿using Unity.Entities;
+﻿using Unity.Collections;
+using Unity.Entities;
+using Unity.Physics;
 using Unity.Rendering;
+using Unity.Transforms;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -31,9 +35,29 @@ namespace FootStone.Kitchen
                     in TriggeredState state,
                     in TriggeredSetting setting) =>
                 {
-                    var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
-                    volumeRenderMesh.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
-                    EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
+                    if (EntityManager.HasComponent<RenderMesh>(entity))
+                    {
+                        var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
+
+                     //   var fbx = Resources.Load("test_01/nomal_pot_01") as GameObject;
+
+
+                      //  volumeRenderMesh.mesh = fbx.GetComponent<MeshFilter>().sharedMesh;
+                        volumeRenderMesh.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
+                        EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
+                       // return;
+                    }
+
+                    if (!EntityManager.HasComponent<Presentation>(entity))
+                        return;
+                    var presentationEntity = EntityManager.GetComponentData<Presentation>(entity).Value;
+                    var presentationObject = EntityManager.GetComponentObject<Transform>(presentationEntity).gameObject;
+                    var renderers = presentationObject.GetComponentsInChildren<MeshRenderer>();
+
+                    foreach (var renderer in renderers)
+                    {
+                        renderer.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
+                    }
                 }).Run();
         }
     }

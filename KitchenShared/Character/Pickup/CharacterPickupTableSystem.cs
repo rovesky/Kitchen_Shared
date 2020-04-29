@@ -42,7 +42,8 @@ namespace FootStone.Kitchen
                     if (pickupEntity == Entity.Null && slot.FilledIn != Entity.Null)
                     {
                         //the item is not sliced,can't pickup
-                        if (EntityManager.HasComponent<FoodSlicedState>(slot.FilledIn))
+                        if (EntityManager.HasComponent<Unsliced>(slot.FilledIn) &&
+                            EntityManager.HasComponent<FoodSlicedState>(slot.FilledIn))
                         {
                             var itemSliceState = EntityManager.GetComponentData<FoodSlicedState>(slot.FilledIn);
                             FSLog.Info($"PickUpItem,itemSliceState.CurSliceTick:{itemSliceState.CurSliceTick}");

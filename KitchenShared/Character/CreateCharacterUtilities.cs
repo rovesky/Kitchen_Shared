@@ -78,14 +78,14 @@ namespace FootStone.Kitchen
                IsAllowTrigger = true
             });
 
-            entityManager.AddComponentData(e, new SlotSetting()
-            {
-                Pos = new float3(0f,0.1f,0.8f)
-            });
-            entityManager.AddComponentData(e, new SlotPredictedState()
-            {
-                FilledIn = Entity.Null
-            });
+            //entityManager.AddComponentData(e, new SlotSetting()
+            //{
+            //    Pos = new float3(0f,0.1f,0.8f)
+            //});
+            //entityManager.AddComponentData(e, new SlotPredictedState()
+            //{
+            //    FilledIn = Entity.Null
+            //});
 
 
             entityManager.AddComponentData(e, new ThrowSetting

@@ -44,7 +44,8 @@ namespace FootStone.Kitchen
                 entityManager.SetComponentData(item, replicatedEntityData);
             }
         }
-
+        
+   
 
         public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
             Entity owner, Entity preOwner)
@@ -118,14 +119,16 @@ namespace FootStone.Kitchen
 
             }
 
-            ItemAttachToOwner(entityManager, item, owner, preOwner,pos,offset.Rot);
+            var rot = math.mul(offset.Rot, ownerSlot.Rot);
+
+            ItemAttachToOwner(entityManager, item, owner, preOwner,pos,rot);
         }
 
 
 
 
         public static void ItemDetachFromOwner(EntityManager entityManager, Entity itemEntity,
-            Entity preOwner, float3 pos, float3 linearVelocity)
+            Entity preOwner, float3 pos,quaternion rot, float3 linearVelocity)
         {
             
             if (entityManager.HasComponent<SlotPredictedState>(preOwner))
@@ -163,8 +166,8 @@ namespace FootStone.Kitchen
 
             var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
-            transformPredictedState.Position = pos + offset.Pos;
-            transformPredictedState.Rotation = offset.Rot;
+            transformPredictedState.Position = pos;//+ offset.Pos;
+            transformPredictedState.Rotation = math.mul(offset.Rot,rot);
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
             var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(itemEntity);

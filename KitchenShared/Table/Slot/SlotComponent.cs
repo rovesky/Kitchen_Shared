@@ -7,6 +7,7 @@ namespace FootStone.Kitchen
     public struct SlotSetting : IComponentData
     {
         public float3 Pos;
+        public quaternion Rot;
         public float3 Offset;
     }
 

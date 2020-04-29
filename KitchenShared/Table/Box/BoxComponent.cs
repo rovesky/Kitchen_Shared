@@ -18,4 +18,8 @@ namespace FootStone.Kitchen
         public BoxType Type;
     }
 
+    public struct BoxOpenRequest: IComponentData
+    {
+    
+    }
 }

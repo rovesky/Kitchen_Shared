@@ -7,7 +7,7 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class PlateRecycleSystem : SystemBase
     {
-        private const int MaxPlateCount = 8;
+        private const int MaxPlateCount = 4;
 
         private const int checkDuration = 1;
         private int lastSecond  = -1;

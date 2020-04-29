@@ -45,7 +45,7 @@ namespace FootStone.Kitchen
                     buffer.Add(new SpawnItemRequest()
                     {
                         Type = FoodToSlice(food.Type),
-                        Pos = slotSetting.Pos,
+                        OffPos = slotSetting.Pos,
                         Owner = itemState.Owner
                     });
 

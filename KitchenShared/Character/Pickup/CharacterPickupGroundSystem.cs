@@ -1,6 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -49,7 +50,8 @@ namespace FootStone.Kitchen
                         ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
                             pickupedEntity,
                             entity,
-                            transformState.Position + math.mul(transformState.Rotation, new float3(0, -0.2f, 1.3f)),
+                            transformState.Position + math.mul(transformState.Rotation,Vector3.forward)*1.3f,
+                            transformState.Rotation,
                             velocityState.Linear);
 
                     }

@@ -39,7 +39,7 @@ namespace FootStone.Kitchen
     }
 
     /// <summary>
-    /// 已煮好食物标签
+    /// 已煮好的食物标签
     /// </summary>
     public struct Cooked : IComponentData
     {
@@ -47,7 +47,7 @@ namespace FootStone.Kitchen
 
    
     /// <summary>
-    /// 能装盘食物标签
+    /// 能装盘的食物标签
     /// </summary>
     public struct CanDishOut : IComponentData
     {
@@ -77,18 +77,13 @@ namespace FootStone.Kitchen
 
     
     /// <summary>
-    /// 空锅标签
+    /// 锅标签
     /// </summary>
-    public struct PotEmpty : IComponentData
+    public struct Pot : IComponentData
     {
     }
 
-    /// <summary>
-    /// 已装食物锅标签
-    /// </summary>
-    public struct PotFull : IComponentData
-    {
-    }
+  
 
     public struct ScaleSetting : IComponentData
     {
