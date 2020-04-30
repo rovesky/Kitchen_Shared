@@ -54,6 +54,9 @@ namespace FootStone.Kitchen
                     if(!EntityManager.HasComponent<BoxSetting>(triggerEntity))
                         return;
 
+                    if(EntityManager.HasComponent<CatchFire>(triggerEntity))
+                        return;
+
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
                     if(slot.FilledIn != Entity.Null)
                         return;

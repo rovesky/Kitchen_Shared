@@ -13,6 +13,7 @@ namespace FootStone.Kitchen
         protected override void OnUpdate()
         {
             Entities.WithAll<ServerEntity, FirePresentation>()
+                .WithNone<CatchFire>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     in SlotPredictedState slotState) =>
@@ -39,7 +40,7 @@ namespace FootStone.Kitchen
                     var cookedSetting = EntityManager.GetComponentData<FoodSlicedSetting>(slotState.FilledIn);
                     var cookedState = EntityManager.GetComponentData<FoodSlicedState>(slotState.FilledIn);
 
-                    FSLog.Info($"cookedState.CurSliceTick :{cookedState.CurSliceTick}");
+                  //  FSLog.Info($"cookedState.CurSliceTick :{cookedState.CurSliceTick}");
                     if (cookedState.CurSliceTick < cookedSetting.TotalSliceTick)
                     {
                         cookedState.CurSliceTick ++;

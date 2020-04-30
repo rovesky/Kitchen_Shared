@@ -41,7 +41,7 @@ namespace FootStone.Kitchen
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CookSystem>());
-        //    m_systemsToUpdate.Add(World.GetOrCreateSystem<CatchFireSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CatchFireSystem>());
             
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
