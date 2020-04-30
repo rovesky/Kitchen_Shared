@@ -36,9 +36,13 @@ namespace FootStone.Kitchen
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicingSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicedSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishSystemGroup>());
+       
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CookSystem>());
+        //    m_systemsToUpdate.Add(World.GetOrCreateSystem<CatchFireSystem>());
+            
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());

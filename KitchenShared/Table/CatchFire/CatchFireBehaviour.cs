@@ -3,19 +3,15 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public class FirePresentationBehaviour : MonoBehaviour, IConvertGameObjectToEntity
+    public class CatchFireBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
-        public GameObject PresentationObject;
-
-
+        public bool IsCatchFire = false;
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-            
-               
-            dstManager.AddComponentData(entity, new FirePresentation
+            dstManager.AddComponentData(entity, new CatchFirePredictedState()
             {
-                Value = PresentationObject
+                IsCatchFire = IsCatchFire
             });
         }
     }

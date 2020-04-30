@@ -83,6 +83,14 @@ namespace FootStone.Kitchen
     {
     }
 
+
+      
+    /// <summary>
+    /// Ãð»ðÆ÷±êÇ©
+    /// </summary>
+    public struct Extinguisher : IComponentData
+    {
+    }
   
 
     public struct ScaleSetting : IComponentData

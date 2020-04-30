@@ -218,7 +218,25 @@ namespace FootStone.Kitchen
                    CurFireAlertTick = 0
                 });
             }
+
+            if (IsExtinguisher(type))
+            {
+                entityManager.AddComponentData(e, new Extinguisher());
+
+                entityManager.AddComponentData(e, new ExtinguisherPredictedState()
+                {
+                    Distance = 0
+                });
+
+                
+
+            }
             return e;
+        }
+
+        private static bool IsExtinguisher(EntityType type)
+        {
+            return type == EntityType.FireExtinguisher;
         }
 
         private static bool IsPot(EntityType type)
