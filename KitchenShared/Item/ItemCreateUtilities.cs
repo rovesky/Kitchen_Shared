@@ -217,6 +217,12 @@ namespace FootStone.Kitchen
                 {
                    CurTick = 0
                 });
+
+                entityManager.AddComponentData(e, new BurntPredictedState()
+                {
+                    IsBurnt = false
+                });
+                
             }
 
             if (IsExtinguisher(type))

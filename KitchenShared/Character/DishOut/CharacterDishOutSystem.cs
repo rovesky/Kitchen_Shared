@@ -32,8 +32,9 @@ namespace FootStone.Kitchen
                         return;
 
                     var preOwner = entity;
-                    //拾取的道具是锅，获取锅里的道具
-                    if (EntityManager.HasComponent<Pot>(pickupEntity))
+                    //拾取的道具是锅，并且锅没有糊，获取锅里的道具
+                    if (EntityManager.HasComponent<Pot>(pickupEntity) && 
+                        !EntityManager.HasComponent<Burnt>(pickupEntity))
                     {
                         preOwner = pickupEntity;
                         pickupEntity = EntityManager.GetComponentData<SlotPredictedState>(pickupEntity).FilledIn;

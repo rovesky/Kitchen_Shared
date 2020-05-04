@@ -1,7 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
+
 
 namespace FootStone.Kitchen
 {
@@ -56,6 +55,10 @@ namespace FootStone.Kitchen
                     var potEntity = slot.FilledIn;
                     var potSlotState = EntityManager.GetComponentData<SlotPredictedState>(potEntity);
 
+                    //锅已烧糊
+                    if(EntityManager.HasComponent<Burnt>(potEntity))
+                        return;
+
                     //锅已满
                     if (potSlotState.FilledIn != Entity.Null)
                         return;
@@ -63,7 +66,6 @@ namespace FootStone.Kitchen
                     //放入锅里
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                         pickupEntity, potEntity, entity);
-
                  
 
                 }).Run();

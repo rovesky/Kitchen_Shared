@@ -4,10 +4,10 @@ using Unity.Entities;
 namespace FootStone.Kitchen
 {
     /// <summary>
-    /// 燃气灶着火
+    /// 烧糊,燃气灶着火
     /// </summary>
     [DisableAutoCreation]
-    public class CatchFireSystem : SystemBase
+    public class BurntSystem : SystemBase
     {
         protected override void OnUpdate()
         {
@@ -27,10 +27,12 @@ namespace FootStone.Kitchen
                     if (!EntityManager.HasComponent<Pot>(slotState.FilledIn))
                         return;
 
-                    if (!EntityManager.HasComponent<SlotPredictedState>(slotState.FilledIn))
+                    var potEntity = slotState.FilledIn;
+                    if (!EntityManager.HasComponent<SlotPredictedState>(potEntity))
                         return;
 
-                    var potSlot = EntityManager.GetComponentData<SlotPredictedState>(slotState.FilledIn);
+                  
+                    var potSlot = EntityManager.GetComponentData<SlotPredictedState>(potEntity);
                     if (potSlot.FilledIn == Entity.Null)
                         return;
 
@@ -38,22 +40,30 @@ namespace FootStone.Kitchen
                     if(EntityManager.HasComponent<Uncooked>(potSlot.FilledIn))
                         return;
 
-                    if(!EntityManager.HasComponent<FireAlertSetting>(slotState.FilledIn))
+                    //没有着火警告组件返回
+                    if(!EntityManager.HasComponent<FireAlertSetting>(potEntity))
                         return;
 
-                    var cookedSetting = EntityManager.GetComponentData<FireAlertSetting>(slotState.FilledIn);
-                    var cookedState = EntityManager.GetComponentData<FireAlertPredictedState>(slotState.FilledIn);
+                    var fireAlertSetting = EntityManager.GetComponentData<FireAlertSetting>(potEntity);
+                    var fireAlertState = EntityManager.GetComponentData<FireAlertPredictedState>(potEntity);
 
-                    FSLog.Info($"cookedState.CurFireAlertTick :{cookedState.CurTick}");
-                    if (cookedState.CurTick < cookedSetting.TotalTick)
+                    FSLog.Info($"cookedState.CurFireAlertTick :{fireAlertState.CurTick}");
+                    if (fireAlertState.CurTick < fireAlertSetting.TotalTick)
                     {
-                        cookedState.CurTick ++;
-                        EntityManager.SetComponentData(slotState.FilledIn, cookedState);
+                        fireAlertState.CurTick ++;
+                        EntityManager.SetComponentData(potEntity, fireAlertState);
                         return;
                     }
 
+                    //燃气灶着火
                     catchFireState.IsCatchFire = true;
                     EntityManager.AddComponentData(entity, new CatchFire());
+
+                    //锅烧糊
+                    var burntState = EntityManager.GetComponentData<BurntPredictedState>(potEntity);
+                    burntState.IsBurnt = true;
+                    EntityManager.SetComponentData(potEntity,burntState);
+                    EntityManager.AddComponentData(potEntity, new Burnt());
 
                 }).Run();
         }

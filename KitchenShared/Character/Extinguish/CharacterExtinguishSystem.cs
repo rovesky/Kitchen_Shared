@@ -31,7 +31,7 @@ namespace FootStone.Kitchen
                     if(extinguisherState.Distance > 0)
                         return;
 
-                    extinguisherState.Distance = 5;
+                    extinguisherState.Distance = 1;
 
                     EntityManager.SetComponentData(pickupedEntity,extinguisherState);
                   
@@ -59,7 +59,7 @@ namespace FootStone.Kitchen
 
                     var extinguisherState = EntityManager.GetComponentData<ExtinguisherPredictedState>(pickupedEntity);
                   
-                    if(extinguisherState.Distance == 0 || extinguisherState.Distance  == 10)
+                    if(extinguisherState.Distance == 0 || extinguisherState.Distance  == 3)
                         return;
 
                     extinguisherState.Distance++;
@@ -94,7 +94,7 @@ namespace FootStone.Kitchen
                         return;
 
                     var extinguisherState = EntityManager.GetComponentData<ExtinguisherPredictedState>(pickupedEntity);
-                    if(extinguisherState.Distance  < 10)
+                    if(extinguisherState.Distance  < 3)
                         return;
 
                     extinguisherState.Distance = 0;
