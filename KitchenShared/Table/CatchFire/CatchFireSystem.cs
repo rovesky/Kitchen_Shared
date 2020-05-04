@@ -38,16 +38,16 @@ namespace FootStone.Kitchen
                     if(EntityManager.HasComponent<Uncooked>(potSlot.FilledIn))
                         return;
 
-                    if(!EntityManager.HasComponent<CookedSetting>(slotState.FilledIn))
+                    if(!EntityManager.HasComponent<FireAlertSetting>(slotState.FilledIn))
                         return;
 
-                    var cookedSetting = EntityManager.GetComponentData<CookedSetting>(slotState.FilledIn);
-                    var cookedState = EntityManager.GetComponentData<CookedPredictedState>(slotState.FilledIn);
+                    var cookedSetting = EntityManager.GetComponentData<FireAlertSetting>(slotState.FilledIn);
+                    var cookedState = EntityManager.GetComponentData<FireAlertPredictedState>(slotState.FilledIn);
 
-                    FSLog.Info($"cookedState.CurFireAlertTick :{cookedState.CurFireAlertTick}");
-                    if (cookedState.CurFireAlertTick < cookedSetting.TotalFireAlertTick)
+                    FSLog.Info($"cookedState.CurFireAlertTick :{cookedState.CurTick}");
+                    if (cookedState.CurTick < cookedSetting.TotalTick)
                     {
-                        cookedState.CurFireAlertTick ++;
+                        cookedState.CurTick ++;
                         EntityManager.SetComponentData(slotState.FilledIn, cookedState);
                         return;
                     }
@@ -55,11 +55,7 @@ namespace FootStone.Kitchen
                     catchFireState.IsCatchFire = true;
                     EntityManager.AddComponentData(entity, new CatchFire());
 
-
                 }).Run();
         }
     }
 }
-
-
-   

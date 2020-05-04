@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public class BoxSettingBehaviour : MonoBehaviour, IConvertGameObjectToEntity
+    public class BoxBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
-        public BoxType Type;
+        public EntityType Type;
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)

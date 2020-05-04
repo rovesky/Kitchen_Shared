@@ -140,14 +140,15 @@ namespace FootStone.Kitchen
             {
                 entityManager.AddComponentData(e, new Unsliced());
 
-                entityManager.AddComponentData(e, new FoodSlicedSetting()
+                entityManager.AddComponentData(e, new ProgressSetting()
                 {
-                    TotalSliceTick = 150,
+                    Type = ProgressType.Slice,
+                    TotalTick = 150,
                     OffPos = new float3(0, 1.7f, 0)
                 });
-                entityManager.AddComponentData(e, new FoodSlicedState()
+                entityManager.AddComponentData(e, new ProgressPredictState()
                 {
-                    CurSliceTick = 0
+                    CurTick = 0
                 });
             }
 
@@ -181,14 +182,15 @@ namespace FootStone.Kitchen
             {
                 entityManager.AddComponentData(e, new PlateDirty());
                 
-                entityManager.AddComponentData(e, new FoodSlicedSetting()
+                entityManager.AddComponentData(e, new ProgressSetting()
                 {
-                    TotalSliceTick = 150,
+                    Type = ProgressType.Wash,
+                    TotalTick = 150,
                     OffPos = new float3(0, 1.7f, 0)
                 });
-                entityManager.AddComponentData(e, new FoodSlicedState()
+                entityManager.AddComponentData(e, new ProgressPredictState()
                 {
-                    CurSliceTick = 0
+                    CurTick = 0
                 });
             }
 
@@ -196,25 +198,24 @@ namespace FootStone.Kitchen
             {
                 entityManager.AddComponentData(e, new Pot());
 
-                entityManager.AddComponentData(e, new FoodSlicedSetting()
+                entityManager.AddComponentData(e, new ProgressSetting()
                 {
-                    TotalSliceTick = 150,
+                    Type = ProgressType.Cook,
+                    TotalTick = 150,
                     OffPos = new float3(0, -1f, 0)
                 });
-                entityManager.AddComponentData(e, new FoodSlicedState()
+                entityManager.AddComponentData(e, new ProgressPredictState()
                 {
-                    CurSliceTick = 0
+                    CurTick = 0
                 });
                 
-                entityManager.AddComponentData(e, new CookedSetting()
+                entityManager.AddComponentData(e, new FireAlertSetting()
                 {
-                    TotalCookTick =150,
-                    TotalFireAlertTick = 150
+                    TotalTick = 150
                 });
-                entityManager.AddComponentData(e, new CookedPredictedState()
+                entityManager.AddComponentData(e, new FireAlertPredictedState()
                 {
-                   CurCookTick = 0,
-                   CurFireAlertTick = 0
+                   CurTick = 0
                 });
             }
 

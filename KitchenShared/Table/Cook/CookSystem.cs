@@ -34,16 +34,16 @@ namespace FootStone.Kitchen
                     if(EntityManager.HasComponent<Cooked>(potSlot.FilledIn))
                         return;
 
-                    if(!EntityManager.HasComponent<CookedSetting>(slotState.FilledIn))
+                    if(!EntityManager.HasComponent<FireAlertSetting>(slotState.FilledIn))
                         return;
 
-                    var cookedSetting = EntityManager.GetComponentData<FoodSlicedSetting>(slotState.FilledIn);
-                    var cookedState = EntityManager.GetComponentData<FoodSlicedState>(slotState.FilledIn);
+                    var cookedSetting = EntityManager.GetComponentData<ProgressSetting>(slotState.FilledIn);
+                    var cookedState = EntityManager.GetComponentData<ProgressPredictState>(slotState.FilledIn);
 
                   //  FSLog.Info($"cookedState.CurSliceTick :{cookedState.CurSliceTick}");
-                    if (cookedState.CurSliceTick < cookedSetting.TotalSliceTick)
+                    if (cookedState.CurTick < cookedSetting.TotalTick)
                     {
-                        cookedState.CurSliceTick ++;
+                        cookedState.CurTick ++;
                         EntityManager.SetComponentData(slotState.FilledIn, cookedState);
                         return;
                     }
@@ -51,10 +51,8 @@ namespace FootStone.Kitchen
 
                     if (!HasSingleton<SpawnItemArray>())
                         return;
+
                     //删除生米饭
-                    //ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
-                    //    potSlot.FilledIn,slotState.FilledIn,
-                    //    float3.zero, quaternion.identity,float3.zero);
                     EntityManager.AddComponentData(potSlot.FilledIn, new Despawn()
                     {
                         Frame = 1

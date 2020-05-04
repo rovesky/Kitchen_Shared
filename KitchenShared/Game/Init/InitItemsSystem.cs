@@ -38,7 +38,7 @@ namespace FootStone.Kitchen
                         {
                             typeof(TableBox),
                             typeof(TableSlice),
-                            typeof(CookedSetting)
+                            typeof(FireAlertSetting)
                         }
                     });
                     var entities = query.ToEntityArray(Allocator.TempJob);

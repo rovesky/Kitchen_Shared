@@ -60,7 +60,7 @@ namespace FootStone.Kitchen
                         return;
                     }
 
-                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledIn))
+                    if (!EntityManager.HasComponent<ProgressPredictState>(slot.FilledIn))
                     {
                         sliceState.IsSlicing = false;
                         return;
@@ -111,16 +111,22 @@ namespace FootStone.Kitchen
                     if (slot.FilledIn == Entity.Null)
                         return;
 
-                    if (!EntityManager.HasComponent<FoodSlicedState>(slot.FilledIn))
+                    if (!EntityManager.HasComponent<ProgressPredictState>(slot.FilledIn))
                         return;
 
-                    var itemSliceState = EntityManager.GetComponentData<FoodSlicedState>(slot.FilledIn);
-                    var itemSliceSetting = EntityManager.GetComponentData<FoodSlicedSetting>(slot.FilledIn);
+                    if (!EntityManager.HasComponent<ProgressSetting>(slot.FilledIn))
+                        return;
 
-                    if (itemSliceState.CurSliceTick < itemSliceSetting.TotalSliceTick)
+                    var progressSetting = EntityManager.GetComponentData<ProgressSetting>(slot.FilledIn);
+                    if(progressSetting.Type != ProgressType.Slice)
+                        return;
+
+                    var itemSliceState = EntityManager.GetComponentData<ProgressPredictState>(slot.FilledIn);
+
+                    if (itemSliceState.CurTick < progressSetting.TotalTick)
                     {
                         // itemSliceState.IsSlicing = true;
-                        itemSliceState.CurSliceTick++;
+                        itemSliceState.CurTick++;
                         EntityManager.SetComponentData(slot.FilledIn, itemSliceState);
                         return;
                     }

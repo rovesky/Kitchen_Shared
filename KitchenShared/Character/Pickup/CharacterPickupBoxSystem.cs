@@ -3,31 +3,12 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 从箱子拾取食品
+    /// </summary>
     [DisableAutoCreation]
     public class CharacterPickupBoxSystem : SystemBase 
     {
-
-        protected override void OnCreate()
-        {
-              }
-
-        private EntityType BoxTypeToEntityType(BoxType boxType)
-        {
-            switch (boxType)
-            {
-                case BoxType.Shrimp:
-                    return EntityType.Shrimp;
-                case BoxType.Rice :
-                    return EntityType.Rice;
-                case BoxType.Kelp :
-                    return EntityType.KelpSlice;
-                case BoxType.Cucumber :
-                    return EntityType.Cucumber;
-                default:
-                    return EntityType.Shrimp;
-            }
-        }
-
         protected override void OnUpdate()
         {
             Entities
@@ -61,8 +42,7 @@ namespace FootStone.Kitchen
                     if(slot.FilledIn != Entity.Null)
                         return;
 
-
-                    FSLog.Info("pick up box!");
+                  //  FSLog.Info("pick up box!");
 
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
                     var boxSetting = EntityManager.GetComponentData<TableBox>(triggerEntity);
@@ -72,7 +52,7 @@ namespace FootStone.Kitchen
                     
                     buffer.Add(new SpawnItemRequest()
                     {
-                        Type = BoxTypeToEntityType(boxSetting.Type),
+                        Type = boxSetting.Type,
                         OffPos = slotSetting.Pos,
                         DeferFrame = 15,
                         Owner = entity

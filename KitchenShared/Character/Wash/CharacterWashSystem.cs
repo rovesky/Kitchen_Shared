@@ -1,6 +1,5 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -74,23 +73,21 @@ namespace FootStone.Kitchen
                         return;
                     }
 
+                    //未触发或者触发的不是水槽，打断清洗操作
                     var triggeredEntity = triggerState.TriggeredEntity;
-                    if (triggeredEntity == Entity.Null)
-
-                        if (!EntityManager.HasComponent<TableSink>(triggeredEntity))
-                        {
-                            washState.IsWashing = false;
-                            return;
-                        }
-
-                    var sink = EntityManager.GetComponentData<SinkPredictedState>(triggeredEntity);
-                    if (sink.Value.IsEmpty())
+                    if (triggeredEntity == Entity.Null ||
+                        !EntityManager.HasComponent<TableSink>(triggeredEntity))
                     {
                         washState.IsWashing = false;
                         return;
                     }
 
-                   // FSLog.Info($"Character Wash Interrupt!");
+                    //水槽脏盘子已经洗完，打断清洗操作
+                    var sink = EntityManager.GetComponentData<SinkPredictedState>(triggeredEntity);
+                    if (sink.Value.IsEmpty())
+                    {
+                        washState.IsWashing = false;
+                    }
 
                 }).Run();
         }
@@ -114,33 +111,31 @@ namespace FootStone.Kitchen
                     if (!washState.IsWashing)
                         return;
 
-
                     var triggeredEntity = triggerState.TriggeredEntity;
-                    var sinkSetting = EntityManager.GetComponentData<TableSink>(triggeredEntity);
+                     //水槽没有脏盘子
                     var sinkState = EntityManager.GetComponentData<SinkPredictedState>(triggeredEntity);
                     if (sinkState.Value.IsEmpty())
                         return;
 
-                    var multiSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(triggeredEntity);
-
-
                     var plateDirty = sinkState.Value.GetTail();
 
-                    var itemSliceState = EntityManager.GetComponentData<FoodSlicedState>(plateDirty);
-                    var itemSliceSetting = EntityManager.GetComponentData<FoodSlicedSetting>(plateDirty);
+                    //该脏盘子还未洗完
+                    var washProgressState = EntityManager.GetComponentData<ProgressPredictState>(plateDirty);
+                    var washProgressSetting = EntityManager.GetComponentData<ProgressSetting>(plateDirty);
 
-                    if (itemSliceState.CurSliceTick < itemSliceSetting.TotalSliceTick)
+                    if (washProgressState.CurTick < washProgressSetting.TotalTick)
                     {
-                        itemSliceState.CurSliceTick++;
-                        EntityManager.SetComponentData(plateDirty, itemSliceState);
+                        washProgressState.CurTick++;
+                        EntityManager.SetComponentData(plateDirty, washProgressState);
                         return;
                     }
 
-                    //水槽中取出
+                    //脏盘子已经洗完
+                   
+                    //从水槽中取出
                     sinkState.Value.TakeOut();
-                    EntityManager.SetComponentData(triggeredEntity,sinkState);
-                    
-                 
+                    EntityManager.SetComponentData(triggeredEntity, sinkState);
+
                     if (HasSingleton<SpawnItemArray>())
                     {
                         //删除脏盘子
@@ -149,7 +144,7 @@ namespace FootStone.Kitchen
                             Frame = 1
                         });
 
-                           
+
                         //生成干净盘子
                         var spawnItemEntity = GetSingletonEntity<SpawnItemArray>();
                         var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnItemEntity);

@@ -9,16 +9,15 @@ namespace FootStone.Kitchen
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new CookedSetting
+            dstManager.AddComponentData(entity, new FireAlertSetting
             {
-                TotalCookTick = 150,
-                TotalFireAlertTick = 150
+              
+                TotalTick = 150
             });
 
-            dstManager.AddComponentData(entity, new CookedPredictedState()
+            dstManager.AddComponentData(entity, new FireAlertPredictedState()
             {
-               CurCookTick = 0,
-               CurFireAlertTick = 0
+               CurTick = 0
             });
         }
     }

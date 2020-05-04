@@ -1,6 +1,4 @@
-﻿using Unity.Entities;
-
-namespace FootStone.Kitchen
+﻿namespace FootStone.Kitchen
 {
     public enum EntityType
     {
@@ -56,9 +54,5 @@ namespace FootStone.Kitchen
         Game,
         Menu
     }
-
-    public  struct GameEntity : IComponentData
-    {
-        public EntityType Type;
-    }
+ 
 }
