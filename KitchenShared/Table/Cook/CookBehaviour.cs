@@ -3,16 +3,13 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public class CatchFirePresentationBehaviour : MonoBehaviour, IConvertGameObjectToEntity
+    public class CookBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     {
-      
+
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new CatchFirePresentation
-            {
-                Value = null
-            });
+            dstManager.AddComponentData(entity, new TableCook());
         }
     }
 }

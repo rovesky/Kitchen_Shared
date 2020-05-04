@@ -12,7 +12,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities.WithAll<ServerEntity, FirePresentation>()
+            Entities.WithAll<ServerEntity, TableCook>()
                 .WithNone<CatchFire>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,

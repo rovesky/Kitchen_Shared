@@ -11,11 +11,7 @@ namespace FootStone.Kitchen
 
         private const int checkDuration = 1;
         private int lastSecond  = -1;
-
-        protected override void OnCreate()
-        {
-            
-        }
+      
 
         protected override void OnUpdate()
         {
@@ -53,7 +49,7 @@ namespace FootStone.Kitchen
                     {
                         All = new ComponentType[]
                         {
-                            typeof(PlateRecycle)
+                            typeof(TablePlateRecycle)
                         }
                     });
                     if (queryTable.CalculateEntityCount() < 1)

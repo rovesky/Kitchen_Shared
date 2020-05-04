@@ -10,7 +10,7 @@ namespace FootStone.Kitchen
         Plate,
         PlateDirty,
         Pot,
-        FireExtinguisher,
+        Extinguisher,
   
         TableBegin,
         Table,

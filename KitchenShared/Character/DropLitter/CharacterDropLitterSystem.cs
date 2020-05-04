@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
                         return;
 
                     //触发的不是垃圾桶返回
-                    if (!EntityManager.HasComponent<LitterBox>(triggerEntity))
+                    if (!EntityManager.HasComponent<TableLitterBox>(triggerEntity))
                         return;
 
                     //不是食物返回

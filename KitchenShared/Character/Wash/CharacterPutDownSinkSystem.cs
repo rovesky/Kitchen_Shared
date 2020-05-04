@@ -34,7 +34,7 @@ namespace FootStone.Kitchen
                         return;
 
                     //触发的不是Sink返回
-                    if (!EntityManager.HasComponent<SinkSetting>(triggerEntity))
+                    if (!EntityManager.HasComponent<TableSink>(triggerEntity))
                         return;
 
 
@@ -82,7 +82,7 @@ namespace FootStone.Kitchen
 
             var index = sinkState.Value.Count() - 1;
 
-            var sinkSetting = EntityManager.GetComponentData<SinkSetting>(sink);
+            var sinkSetting = EntityManager.GetComponentData<TableSink>(sink);
             ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                 plateDirty, sink, preOwner,
                 sinkSetting.SlotWashing+new float3(0f,-0.1f,0f) + new float3(0f,0.1f,0f)*index,

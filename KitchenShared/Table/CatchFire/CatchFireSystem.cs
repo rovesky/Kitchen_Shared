@@ -3,12 +3,15 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
+    /// <summary>
+    /// 燃气灶着火
+    /// </summary>
     [DisableAutoCreation]
     public class CatchFireSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.WithAll<ServerEntity,FirePresentation>()
+            Entities.WithAll<ServerEntity,TableCook>()
                 .WithStructuralChanges()
                 .WithNone<CatchFire>()
                 .ForEach((Entity entity,

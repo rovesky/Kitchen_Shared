@@ -38,7 +38,7 @@ namespace FootStone.Kitchen
                         return;
 
                     //触发的不是洗碗池返回
-                    if (!EntityManager.HasComponent<SinkSetting>(triggerEntity))
+                    if (!EntityManager.HasComponent<TableSink>(triggerEntity))
                         return;
         
                     //slot为空返回

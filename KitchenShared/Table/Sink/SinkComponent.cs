@@ -4,12 +4,13 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-  
-    public struct SinkSetting : IComponentData
+    /// <summary>
+    /// 水槽桌子
+    /// </summary>
+    public struct TableSink : IComponentData
     {
         public float3 SlotWashed;
         public float3 SlotWashing;
-
     }
 
 

@@ -34,7 +34,7 @@ namespace FootStone.Kitchen
                     if (triggeredEntity == Entity.Null)
                         return;
 
-                    if (!EntityManager.HasComponent<SinkSetting>(triggeredEntity))
+                    if (!EntityManager.HasComponent<TableSink>(triggeredEntity))
                         return;
 
                     var sink = EntityManager.GetComponentData<SinkPredictedState>(triggeredEntity);
@@ -77,7 +77,7 @@ namespace FootStone.Kitchen
                     var triggeredEntity = triggerState.TriggeredEntity;
                     if (triggeredEntity == Entity.Null)
 
-                        if (!EntityManager.HasComponent<SinkSetting>(triggeredEntity))
+                        if (!EntityManager.HasComponent<TableSink>(triggeredEntity))
                         {
                             washState.IsWashing = false;
                             return;
@@ -116,7 +116,7 @@ namespace FootStone.Kitchen
 
 
                     var triggeredEntity = triggerState.TriggeredEntity;
-                    var sinkSetting = EntityManager.GetComponentData<SinkSetting>(triggeredEntity);
+                    var sinkSetting = EntityManager.GetComponentData<TableSink>(triggeredEntity);
                     var sinkState = EntityManager.GetComponentData<SinkPredictedState>(triggeredEntity);
                     if (sinkState.Value.IsEmpty())
                         return;

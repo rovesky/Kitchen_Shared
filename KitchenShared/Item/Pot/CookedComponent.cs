@@ -10,7 +10,6 @@ namespace FootStone.Kitchen
        
     }
 
-
     public struct CookedPredictedState : IComponentData, IPredictedState<CookedPredictedState>
     {
         public byte CurCookTick;

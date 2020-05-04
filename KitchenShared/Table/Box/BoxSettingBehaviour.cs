@@ -10,7 +10,7 @@ namespace FootStone.Kitchen
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager,
             GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new BoxSetting
+            dstManager.AddComponentData(entity, new TableBox
             {
                 Type =  Type
             });

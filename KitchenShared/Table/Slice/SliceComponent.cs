@@ -1,9 +1,11 @@
-﻿using System;
-using Unity.Entities;
+﻿using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
   
+    /// <summary>
+    /// 砧板桌子
+    /// </summary>
     public struct TableSlice : IComponentData
     {
      

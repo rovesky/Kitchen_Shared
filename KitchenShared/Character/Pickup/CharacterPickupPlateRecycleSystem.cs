@@ -38,7 +38,7 @@ namespace FootStone.Kitchen
                         return;
 
                     //触发的不是PlateRecycle返回
-                    if (!EntityManager.HasComponent<PlateRecycle>(triggerEntity))
+                    if (!EntityManager.HasComponent<TablePlateRecycle>(triggerEntity))
                         return;
         
                     //slot为空返回

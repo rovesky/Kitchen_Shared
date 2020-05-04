@@ -39,8 +39,7 @@ namespace FootStone.Kitchen
             RegisterPrefabs(EntityType.Plate, "Plate");
             RegisterPrefabs(EntityType.PlateDirty, "PlateDirty");
             RegisterPrefabs(EntityType.Pot, "Pot");
-          //  RegisterPrefabs(EntityType.PotFull, "PotFull");
-            RegisterPrefabs(EntityType.FireExtinguisher, "FireExtinguisher");
+            RegisterPrefabs(EntityType.Extinguisher, "Extinguisher");
         }
 
         public static Entity CreateItem(EntityManager entityManager,
@@ -227,16 +226,13 @@ namespace FootStone.Kitchen
                 {
                     Distance = 0
                 });
-
-                
-
             }
             return e;
         }
 
         private static bool IsExtinguisher(EntityType type)
         {
-            return type == EntityType.FireExtinguisher;
+            return type == EntityType.Extinguisher;
         }
 
         private static bool IsPot(EntityType type)

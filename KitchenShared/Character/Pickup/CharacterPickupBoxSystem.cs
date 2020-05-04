@@ -51,7 +51,7 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    if(!EntityManager.HasComponent<BoxSetting>(triggerEntity))
+                    if(!EntityManager.HasComponent<TableBox>(triggerEntity))
                         return;
 
                     if(EntityManager.HasComponent<CatchFire>(triggerEntity))
@@ -65,7 +65,7 @@ namespace FootStone.Kitchen
                     FSLog.Info("pick up box!");
 
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
-                    var boxSetting = EntityManager.GetComponentData<BoxSetting>(triggerEntity);
+                    var boxSetting = EntityManager.GetComponentData<TableBox>(triggerEntity);
 
                     var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
                     var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);

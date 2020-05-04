@@ -5,8 +5,6 @@ using Unity.Mathematics;
 namespace FootStone.Kitchen
 {
 
-   
-
     public struct FoodSlicedSetting: IComponentData
     {
         public byte TotalSliceTick;

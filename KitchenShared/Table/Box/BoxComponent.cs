@@ -13,7 +13,11 @@ namespace FootStone.Kitchen
         Cucumber = 3 << 1,
         Rice = 4 << 1
     }
-    public struct BoxSetting : IComponentData
+
+    /// <summary>
+    /// 食物箱桌子
+    /// </summary>
+    public struct TableBox : IComponentData
     {
         public BoxType Type;
     }

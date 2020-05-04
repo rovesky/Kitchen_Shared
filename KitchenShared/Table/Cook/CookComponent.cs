@@ -2,13 +2,13 @@
 
 namespace FootStone.Kitchen
 {
-  
-    /// <summary>
-    /// 食物丢弃桌子
-    /// </summary>
-    public struct TableLitterBox : IComponentData
-    {
-     
-    }
 
+    /// <summary>
+    /// 煮饭桌子
+    /// </summary>
+    public struct TableCook : IComponentData
+    {
+        
+    }
+  
 }

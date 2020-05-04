@@ -1,17 +1,8 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    public class FireExtinguisherPresentation : IComponentData
-    {
-        public GameObject Smog;
-        public float3 SmogPos;
-
-    }
-
    
     public struct ExtinguisherPredictedState : IComponentData, IPredictedState<ExtinguisherPredictedState>
     {

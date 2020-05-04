@@ -36,7 +36,7 @@ namespace FootStone.Kitchen
                         },
                         None = new ComponentType[]
                         {
-                            typeof(BoxSetting),
+                            typeof(TableBox),
                             typeof(TableSlice),
                             typeof(CookedSetting)
                         }
@@ -60,7 +60,7 @@ namespace FootStone.Kitchen
                         //         translation.Value.x.Equals(0.0f) && translation.Value.z.Equals(1.6f))
                         //    entityType = EntityType.CucumberSlice;
                         else if (translation.Value.x.Equals(3.82f) && translation.Value.z.Equals(8.85f))
-                            entityType = EntityType.FireExtinguisher;
+                            entityType = EntityType.Extinguisher;
 
 
                         if (entityType == EntityType.None)
@@ -76,7 +76,7 @@ namespace FootStone.Kitchen
                     {
                         All = new ComponentType[]
                         {
-                            typeof(FirePresentation)
+                            typeof(TableCook)
                         }
                     });
                     var fireCooks = queryFireCook.ToEntityArray(Allocator.TempJob);

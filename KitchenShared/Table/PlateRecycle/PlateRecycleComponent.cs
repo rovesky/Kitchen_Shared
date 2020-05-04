@@ -5,9 +5,9 @@ namespace FootStone.Kitchen
 {
   
     /// <summary>
-    /// 上菜桌子
+    /// 盘子回收桌子
     /// </summary>
-    public struct TableServe : IComponentData
+    public struct TablePlateRecycle : IComponentData
     {
      
     }

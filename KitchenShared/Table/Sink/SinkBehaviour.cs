@@ -20,7 +20,8 @@ namespace FootStone.Kitchen
             var slotWashedEntity = conversionSystem.GetPrimaryEntity(SlotWashed);
             var slotWashingEntity = conversionSystem.GetPrimaryEntity(SlotWashing);
 
-            dstManager.AddComponentData(entity, new SinkSetting()
+
+            dstManager.AddComponentData(entity, new TableSink()
             {
                 SlotWashed =  dstManager.GetComponentData<Translation>(slotWashedEntity).Value,
                 SlotWashing =  dstManager.GetComponentData<Translation>(slotWashingEntity).Value,
