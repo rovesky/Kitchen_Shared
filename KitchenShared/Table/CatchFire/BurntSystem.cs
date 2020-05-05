@@ -57,6 +57,7 @@ namespace FootStone.Kitchen
 
                     //燃气灶着火
                     catchFireState.IsCatchFire = true;
+                    catchFireState.CurCatchFireTick = 0;
                  //   EntityManager.AddComponentData(entity, new CatchFire());
 
                     //锅烧糊
