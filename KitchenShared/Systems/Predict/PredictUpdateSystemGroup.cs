@@ -16,8 +16,7 @@ namespace FootStone.Kitchen
      
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterMoveSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<TriggerEntitiesSystem>());
-
+       
             
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupFlyingSystem>());
@@ -40,11 +39,12 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicingSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicedSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishSystemGroup>());
-       
+         
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CookSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BurntSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCatchFireFlagSystem>());
             
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());

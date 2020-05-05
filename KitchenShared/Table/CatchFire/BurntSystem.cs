@@ -57,7 +57,7 @@ namespace FootStone.Kitchen
 
                     //燃气灶着火
                     catchFireState.IsCatchFire = true;
-                    EntityManager.AddComponentData(entity, new CatchFire());
+                 //   EntityManager.AddComponentData(entity, new CatchFire());
 
                     //锅烧糊
                     var burntState = EntityManager.GetComponentData<BurntPredictedState>(potEntity);
