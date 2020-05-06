@@ -32,13 +32,13 @@ namespace FootStone.Kitchen
                     EntityManager.SetComponentData(entity, parent);
                     
                    
-                    var scale = EntityManager.GetComponentData<CompositeScale>(entity);
-                    var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
-                    var parentScale = EntityManager.GetComponentData<CompositeScale>(interpolatedData.Owner);
-                    scale.Value.c0.x = scaleSetting.Scale.x/parentScale.Value.c0.x;
-                    scale.Value.c1.y = scaleSetting.Scale.y/parentScale.Value.c1.y;
-                    scale.Value.c2.z = scaleSetting.Scale.z/parentScale.Value.c2.z;
-                    EntityManager.SetComponentData(entity, scale);
+                    //var scale = EntityManager.GetComponentData<CompositeScale>(entity);
+                    //var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
+                    //var parentScale = EntityManager.GetComponentData<CompositeScale>(interpolatedData.Owner);
+                    //scale.Value.c0.x = scaleSetting.Scale.x/parentScale.Value.c0.x;
+                    //scale.Value.c1.y = scaleSetting.Scale.y/parentScale.Value.c1.y;
+                    //scale.Value.c2.z = scaleSetting.Scale.z/parentScale.Value.c2.z;
+                    //EntityManager.SetComponentData(entity, scale);
                 }
                 else
                 {
@@ -47,12 +47,12 @@ namespace FootStone.Kitchen
                     
                    // var parent =  EntityManager.GetComponentData<Parent>(entity);
                    // var parentScale = EntityManager.GetComponentData<CompositeScale>(parent.Value);
-                    var scale = EntityManager.GetComponentData<CompositeScale>(entity);
-                    var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
-                    scale.Value.c0.x = scaleSetting.Scale.x;
-                    scale.Value.c1.y = scaleSetting.Scale.y;
-                    scale.Value.c2.z = scaleSetting.Scale.z;
-                    EntityManager.SetComponentData(entity, scale);
+                    //var scale = EntityManager.GetComponentData<CompositeScale>(entity);
+                    //var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
+                    //scale.Value.c0.x = scaleSetting.Scale.x;
+                    //scale.Value.c1.y = scaleSetting.Scale.y;
+                    //scale.Value.c2.z = scaleSetting.Scale.z;
+                    //EntityManager.SetComponentData(entity, scale);
 
                     EntityManager.RemoveComponent<Parent>(entity);
                     EntityManager.RemoveComponent<LocalToParent>(entity);

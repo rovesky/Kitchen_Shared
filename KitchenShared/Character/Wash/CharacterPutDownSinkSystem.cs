@@ -71,9 +71,9 @@ namespace FootStone.Kitchen
             slot.FilledIn = Entity.Null;
             EntityManager.SetComponentData(plateDirty,slot);
 
-            var scale = EntityManager.GetComponentData<ScaleSetting>(plateDirty);
-            scale.Scale = new float3(0.6f,0.6f,0.6f);
-            EntityManager.SetComponentData(plateDirty,scale);
+            //var scale = EntityManager.GetComponentData<ScaleSetting>(plateDirty);
+            //scale.Scale = new float3(0.6f,0.6f,0.6f);
+            //EntityManager.SetComponentData(plateDirty,scale);
 
 
             var sinkState = EntityManager.GetComponentData<SinkPredictedState>(sink);

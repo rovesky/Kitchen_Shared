@@ -4,16 +4,16 @@ using Unity.Entities;
 namespace FootStone.Kitchen
 {
     /// <summary>
-    /// 从箱子拾取食品
+    /// 从食品箱子获取食品
     /// </summary>
     [DisableAutoCreation]
-    public class CharacterPickupBoxSystem : SystemBase 
+    public class CharacterPickupBoxSystem : SystemBase
     {
         protected override void OnUpdate()
         {
             Entities
                 .WithAll<ServerEntity>()
-                .WithName("CharacterPickupBoxSystem")
+                .WithName("CharacterPickupBox")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     in SlotPredictedState slotState,
@@ -32,24 +32,22 @@ namespace FootStone.Kitchen
                     if (triggerEntity == Entity.Null)
                         return;
 
-                    if(!EntityManager.HasComponent<TableBox>(triggerEntity))
+                    if (!EntityManager.HasComponent<TableBox>(triggerEntity))
                         return;
 
-                    if(EntityManager.HasComponent<CatchFire>(triggerEntity))
+                    if (EntityManager.HasComponent<CatchFire>(triggerEntity))
                         return;
 
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
-                    if(slot.FilledIn != Entity.Null)
+                    if (slot.FilledIn != Entity.Null)
                         return;
-
-                  //  FSLog.Info("pick up box!");
-
+                
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
                     var boxSetting = EntityManager.GetComponentData<TableBox>(triggerEntity);
 
                     var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
                     var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
-                    
+
                     buffer.Add(new SpawnItemRequest()
                     {
                         Type = boxSetting.Type,
@@ -58,7 +56,7 @@ namespace FootStone.Kitchen
                         Owner = entity
                     });
 
-                     EntityManager.AddComponentData(triggerEntity,new BoxOpenRequest());
+                    EntityManager.AddComponentData(triggerEntity, new BoxOpenRequest());
 
                 }).Run();
         }

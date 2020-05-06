@@ -19,7 +19,7 @@ namespace FootStone.Kitchen
         private static void RegisterPrefabs(EntityType type, string res)
         {
             prefabs[type] = GameObjectConversionUtility.ConvertGameObjectHierarchy(
-                Resources.Load(res) as GameObject,
+                Resources.Load("Item/"+res) as GameObject,
                 GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld,
                     World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<ConvertToEntitySystem>().BlobAssetStore));
 
@@ -115,21 +115,21 @@ namespace FootStone.Kitchen
             });
 
 
-            if (entityManager.HasComponent<CompositeScale>(e))
-            {
-                var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
-                entityManager.AddComponentData(e, new ScaleSetting()
-                {
-                    Scale = new float3(compositeScale.Value.c0.x, compositeScale.Value.c1.y, compositeScale.Value.c2.z)
-                });
-            }
-            else
-            {
-                entityManager.AddComponentData(e, new ScaleSetting()
-                {
-                    Scale = new float3(1.0f, 1.0f, 1.0f)
-                });
-            }
+            //if (entityManager.HasComponent<CompositeScale>(e))
+            //{
+            //    var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
+            //    entityManager.AddComponentData(e, new ScaleSetting()
+            //    {
+            //        Scale = new float3(compositeScale.Value.c0.x, compositeScale.Value.c1.y, compositeScale.Value.c2.z)
+            //    });
+            //}
+            //else
+            //{
+            //    entityManager.AddComponentData(e, new ScaleSetting()
+            //    {
+            //        Scale = new float3(1.0f, 1.0f, 1.0f)
+            //    });
+            //}
 
             entityManager.RemoveComponent<PhysicsVelocity>(e);
 

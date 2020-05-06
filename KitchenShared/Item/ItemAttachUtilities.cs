@@ -115,7 +115,7 @@ namespace FootStone.Kitchen
             }
             else
             {
-                pos = ownerSlot.Pos  + offset.Pos;
+                pos = ownerSlot.Pos + math.mul(ownerSlot.Rot,offset.Pos);
 
             }
 

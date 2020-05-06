@@ -14,7 +14,6 @@ namespace FootStone.Kitchen
                 .WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-
                     ref TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
                     in UserCommand command,
@@ -46,11 +45,13 @@ namespace FootStone.Kitchen
                     {
                         FSLog.Info(
                             $"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");
+                        var ownerSlot = EntityManager.GetComponentData<SlotSetting>(entity);
+                        var offset = EntityManager.GetComponentData<OffsetSetting>(pickupedEntity);
 
                         ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
                             pickupedEntity,
                             entity,
-                            transformState.Position + math.mul(transformState.Rotation,Vector3.forward)*1.3f,
+                            transformState.Position + math.mul(transformState.Rotation,ownerSlot.Pos + offset.Pos)  ,
                             transformState.Rotation,
                             velocityState.Linear);
 
