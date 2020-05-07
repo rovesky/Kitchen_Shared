@@ -58,14 +58,12 @@ namespace FootStone.Kitchen
                     //燃气灶着火
                     catchFireState.IsCatchFire = true;
                     catchFireState.CurCatchFireTick = 0;
-                 //   EntityManager.AddComponentData(entity, new CatchFire());
-
+              
                     //锅烧糊
                     var burntState = EntityManager.GetComponentData<BurntPredictedState>(potEntity);
                     burntState.IsBurnt = true;
                     EntityManager.SetComponentData(potEntity,burntState);
-                    EntityManager.AddComponentData(potEntity, new Burnt());
-
+            
                 }).Run();
         }
     }

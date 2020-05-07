@@ -1,5 +1,4 @@
 ﻿using FootStone.ECS;
-using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -11,8 +10,6 @@ namespace FootStone.Kitchen
 {
     public static class ItemCreateUtilities
     {
-      
-
         private static Dictionary<EntityType,Entity> prefabs = new Dictionary<EntityType, Entity>();
 
 

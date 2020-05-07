@@ -71,17 +71,10 @@ namespace FootStone.Kitchen
                         if (!volumeEntities.Contains(e))
                             continue;
 
-                        //  FSLog.Info($"TriggerEntitiesSystem,entity:{e}");
-                        if (!EntityManager.HasComponent<CatchFirePredictedState>(e))
-                            continue;
-
-                        var catchFireSetting = EntityManager.GetComponentData<CatchFireSetting>(e);
-
-                        var catchFireState = EntityManager.GetComponentData<CatchFirePredictedState>(e);
-                        if (!catchFireState.IsCatchFire)
-                            continue;
-
                         //灭火
+                        var catchFireSetting = EntityManager.GetComponentData<CatchFireSetting>(e);
+                        var catchFireState = EntityManager.GetComponentData<CatchFirePredictedState>(e);
+
                         catchFireState.CurExtinguishTick++;
                         if (catchFireState.CurExtinguishTick >= catchFireSetting.TotalExtinguishTick)
                         {

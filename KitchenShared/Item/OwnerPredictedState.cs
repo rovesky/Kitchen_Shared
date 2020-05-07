@@ -12,7 +12,7 @@ namespace FootStone.Kitchen
         {
             context.RefSerializer.DeserializeReference(ref reader, ref Owner);
             context.RefSerializer.DeserializeReference(ref reader, ref PreOwner);
-            FSLog.Info($"Deserialize OwnerPredictedState,Owner:{Owner}");
+           // FSLog.Info($"Deserialize OwnerPredictedState,Owner:{Owner}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
