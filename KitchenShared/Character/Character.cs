@@ -6,4 +6,10 @@ namespace FootStone.Kitchen
     {
         public Entity PresentationEntity;
     }
+
+    
+    public struct LocalCharacter : IComponentData
+    {
+     
+    }
 }

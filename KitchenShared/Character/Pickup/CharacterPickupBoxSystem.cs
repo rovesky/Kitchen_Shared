@@ -41,7 +41,11 @@ namespace FootStone.Kitchen
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
                     if (slot.FilledIn != Entity.Null)
                         return;
-                
+
+                    EntityManager.AddComponentData(triggerEntity, new BoxOpenRequest());
+
+                    if (!HasSingleton<SpawnItemArray>()) 
+                        return;
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
                     var boxSetting = EntityManager.GetComponentData<TableBox>(triggerEntity);
 
@@ -56,7 +60,6 @@ namespace FootStone.Kitchen
                         Owner = entity
                     });
 
-                    EntityManager.AddComponentData(triggerEntity, new BoxOpenRequest());
 
                 }).Run();
         }

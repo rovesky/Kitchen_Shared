@@ -8,7 +8,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupBoxSystem>());
+          //  m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupBoxSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<FoodSlicedSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CountdownSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ServeSystem>());

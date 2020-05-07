@@ -24,6 +24,10 @@ namespace FootStone.Kitchen
                     if (!EntityManager.HasComponent<Pot>(slotState.FilledIn))
                         return;
 
+                    //已煮糊返回
+                    if(EntityManager.HasComponent<Burnt>(slotState.FilledIn))
+                        return;
+
                     if (!EntityManager.HasComponent<SlotPredictedState>(slotState.FilledIn))
                         return;
 

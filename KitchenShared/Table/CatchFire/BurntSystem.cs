@@ -31,6 +31,9 @@ namespace FootStone.Kitchen
                     if (!EntityManager.HasComponent<SlotPredictedState>(potEntity))
                         return;
 
+                    //已煮糊返回
+                    if(EntityManager.HasComponent<Burnt>(potEntity))
+                        return;
                   
                     var potSlot = EntityManager.GetComponentData<SlotPredictedState>(potEntity);
                     if (potSlot.FilledIn == Entity.Null)
@@ -39,6 +42,7 @@ namespace FootStone.Kitchen
                     //未煮熟返回
                     if(EntityManager.HasComponent<Uncooked>(potSlot.FilledIn))
                         return;
+                
 
                     //没有着火警告组件返回
                     if(!EntityManager.HasComponent<FireAlertSetting>(potEntity))
