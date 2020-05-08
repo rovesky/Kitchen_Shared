@@ -22,6 +22,8 @@ namespace FootStone.Kitchen
         {
             var entity = GetSingletonEntity<SpawnItemArray>();
             var requests = EntityManager.GetBuffer<SpawnItemRequest>(entity);
+
+          //  FSLog.Info($"Spwan item :{requests.Length}");
             if (requests.Length == 0)
                 return;
 

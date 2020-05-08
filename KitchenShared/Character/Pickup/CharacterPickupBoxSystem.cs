@@ -46,6 +46,8 @@ namespace FootStone.Kitchen
 
                     if (!HasSingleton<SpawnItemArray>()) 
                         return;
+
+                    FSLog.Info("pick up box");
                     var slotSetting = EntityManager.GetComponentData<SlotSetting>(triggerEntity);
                     var boxSetting = EntityManager.GetComponentData<TableBox>(triggerEntity);
 
@@ -56,7 +58,7 @@ namespace FootStone.Kitchen
                     {
                         Type = boxSetting.Type,
                         OffPos = slotSetting.Pos,
-                        DeferFrame = 15,
+                        DeferFrame = 0,
                         Owner = entity
                     });
 

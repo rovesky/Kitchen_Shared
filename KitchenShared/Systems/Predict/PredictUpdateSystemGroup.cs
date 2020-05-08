@@ -26,9 +26,10 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPutDownPotSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPutDownSinkSystem>());
            
-          //  m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDishOutSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDishOutSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterPickupBoxSystem>());
-         // m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushSystem>());
@@ -39,6 +40,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishSystemGroup>());
          
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<FoodSlicedSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdatePotStateSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateExtinguisherStateSystem>());
 

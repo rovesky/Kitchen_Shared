@@ -54,6 +54,7 @@ namespace FootStone.Kitchen
         }
     }
 
+
     [DisableAutoCreation]
     public class ApplyPredictedStateSystemGroup : NoSortComponentSystemGroup
     {
@@ -61,6 +62,7 @@ namespace FootStone.Kitchen
         {
          //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyTransformPredictedStateSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyVelocityPredictedStateSystem>());
+         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearSpawnRequestsSystem>());
         }
     }
 
