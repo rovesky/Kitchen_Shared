@@ -21,7 +21,7 @@ namespace FootStone.Kitchen
             SqrMagnitude = reader.ReadFloatQ();
             MaterialId = reader.ReadByte();
             ActionId = reader.ReadByte();
-           // FSLog.Info($"Deserialize,MaterialId:{MaterialId}");
+           // FSLog.Info($"Deserialize,Position:{Position}");
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
@@ -31,6 +31,8 @@ namespace FootStone.Kitchen
             writer.WriteFloatQ("sqrMagnitude", SqrMagnitude);
             writer.WriteByte("materialId", MaterialId);
             writer.WriteByte("ActionId", ActionId);
+
+          //  FSLog.Info($"Serialize,Position:{Position}");
         }
 
         public void Interpolate(ref SerializeContext context, ref CharacterInterpolatedState prevState,
