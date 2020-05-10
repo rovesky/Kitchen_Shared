@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -62,7 +63,8 @@ namespace FootStone.Kitchen
                     buffer.Add(new SpawnItemRequest()
                     {
                         Type = EntityType.PlateDirty,
-                        Owner = entities[0]
+                        Owner = entities[0],
+                        StartTick = GetSingleton<WorldTime>().Tick
                     });
 
                     entities.Dispose();

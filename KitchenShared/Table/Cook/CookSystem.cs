@@ -69,7 +69,8 @@ namespace FootStone.Kitchen
                     buffer.Add(new SpawnItemRequest()
                     {
                         Type = EntityType.RiceCooked,
-                        Owner = slotState.FilledIn
+                        Owner = slotState.FilledIn,
+                        StartTick = GetSingleton<WorldTime>().Tick
 
                     });
 

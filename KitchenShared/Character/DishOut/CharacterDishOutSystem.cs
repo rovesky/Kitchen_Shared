@@ -1,7 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -107,7 +106,8 @@ namespace FootStone.Kitchen
                         Type = menuTemplate.Product,
                         DeferFrame = 0,
                         OffPos = float3.zero,
-                        Owner = plateEntity
+                        Owner = plateEntity,
+                        StartTick = GetSingleton<WorldTime>().Tick
                     });
 
                 }).Run();

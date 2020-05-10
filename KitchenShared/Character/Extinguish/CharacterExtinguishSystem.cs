@@ -70,7 +70,6 @@ namespace FootStone.Kitchen
         }
     }
 
-
     [DisableAutoCreation]
     public class CharacterExtinguishStopSystem : SystemBase
     {
@@ -119,6 +118,3 @@ namespace FootStone.Kitchen
         }
     }
 }
-
-
-   

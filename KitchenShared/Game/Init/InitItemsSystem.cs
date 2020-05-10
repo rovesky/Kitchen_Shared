@@ -103,7 +103,8 @@ namespace FootStone.Kitchen
                 Type = entityType,
                 OffPos = offPos,
                 OffRot = offRot,
-                Owner = entity
+                Owner = entity,
+                StartTick = GetSingleton<WorldTime>().Tick
             });
         }
     }

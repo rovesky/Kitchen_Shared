@@ -46,7 +46,8 @@ namespace FootStone.Kitchen
                     {
                         Type = FoodToSlice(food.Type),
                         OffPos = slotSetting.Pos,
-                        Owner = itemState.Owner
+                        Owner = itemState.Owner,
+                        StartTick = GetSingleton<WorldTime>().Tick
                     });
 
                 }).Run();

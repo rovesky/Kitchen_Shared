@@ -32,7 +32,4 @@ namespace FootStone.Kitchen
             }).Run();
         }
     }
-
-
-   
 }

@@ -151,8 +151,8 @@ namespace FootStone.Kitchen
                         buffer.Add(new SpawnItemRequest()
                         {
                             Type = EntityType.Plate,
-                            Owner = triggeredEntity
-
+                            Owner = triggeredEntity,
+                            StartTick = GetSingleton<WorldTime>().Tick
                         });
                     }
 

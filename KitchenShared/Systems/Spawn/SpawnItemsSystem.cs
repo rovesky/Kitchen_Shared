@@ -20,6 +20,7 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
+          
             var entity = GetSingletonEntity<SpawnItemArray>();
             var requests = EntityManager.GetBuffer<SpawnItemRequest>(entity);
 

@@ -10,6 +10,7 @@ namespace FootStone.Kitchen
         public int DeferFrame;
         public float3 OffPos;
         public quaternion OffRot;
+        public uint StartTick;
         public Entity Owner;
 
     }

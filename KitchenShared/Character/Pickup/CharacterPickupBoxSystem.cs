@@ -59,7 +59,8 @@ namespace FootStone.Kitchen
                         Type = boxSetting.Type,
                         OffPos = slotSetting.Pos,
                         DeferFrame = 0,
-                        Owner = entity
+                        Owner = entity,
+                        StartTick = GetSingleton<WorldTime>().Tick
                     });
 
 

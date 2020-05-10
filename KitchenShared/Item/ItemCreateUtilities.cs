@@ -111,23 +111,6 @@ namespace FootStone.Kitchen
                 IsAllowTrigger = false
             });
 
-
-            //if (entityManager.HasComponent<CompositeScale>(e))
-            //{
-            //    var compositeScale = entityManager.GetComponentData<CompositeScale>(e);
-            //    entityManager.AddComponentData(e, new ScaleSetting()
-            //    {
-            //        Scale = new float3(compositeScale.Value.c0.x, compositeScale.Value.c1.y, compositeScale.Value.c2.z)
-            //    });
-            //}
-            //else
-            //{
-            //    entityManager.AddComponentData(e, new ScaleSetting()
-            //    {
-            //        Scale = new float3(1.0f, 1.0f, 1.0f)
-            //    });
-            //}
-
             entityManager.RemoveComponent<PhysicsVelocity>(e);
 
             if (IsFood(type))
