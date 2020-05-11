@@ -35,8 +35,8 @@ namespace FootStone.Kitchen
                 {
                     if (EntityManager.HasComponent<RenderMesh>(entity))
                     {
-                        if(state.IsTriggered)
-                           FSLog.Info($"entity:{entity},state.IsTriggered:{state.IsTriggered}");
+                      //  if(state.IsTriggered)
+                        //   FSLog.Info($"entity:{entity},state.IsTriggered:{state.IsTriggered}");
                         var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
                         volumeRenderMesh.material =
                             state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
