@@ -44,6 +44,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdatePotStateSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateExtinguisherStateSystem>());
 
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdatePlateProductSystem>());
             
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CookSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BurntSystem>());

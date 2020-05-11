@@ -24,9 +24,7 @@ namespace FootStone.Kitchen
                 {
                     interpolateData.Position = transformPredictData.Position;
                     interpolateData.Rotation = transformPredictData.Rotation;
-
-
-                //    FSLog.Info($"interpolateData.Position:{interpolateData.Position}");
+                    //   FSLog.Info($"velocityPredictData.SqrMagnitude:{velocityPredictData.SqrMagnitude}");
 
                     if (EntityManager.HasComponent<LocalCharacter>(entity))
                     {
