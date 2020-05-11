@@ -1,8 +1,6 @@
-﻿using Unity.Collections;
+﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Physics;
 using Unity.Rendering;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace FootStone.Kitchen
@@ -37,15 +35,13 @@ namespace FootStone.Kitchen
                 {
                     if (EntityManager.HasComponent<RenderMesh>(entity))
                     {
+                        if(state.IsTriggered)
+                           FSLog.Info($"entity:{entity},state.IsTriggered:{state.IsTriggered}");
                         var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
-
-                     //   var fbx = Resources.Load("test_01/nomal_pot_01") as GameObject;
-
-
-                      //  volumeRenderMesh.mesh = fbx.GetComponent<MeshFilter>().sharedMesh;
-                        volumeRenderMesh.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
+                        volumeRenderMesh.material =
+                            state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
                         EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
-                       // return;
+                        // return;
                     }
 
                     if (!EntityManager.HasComponent<Presentation>(entity))
@@ -55,9 +51,7 @@ namespace FootStone.Kitchen
                     var renderers = presentationObject.GetComponentsInChildren<MeshRenderer>();
 
                     foreach (var renderer in renderers)
-                    {
                         renderer.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
-                    }
                 }).Run();
         }
     }
