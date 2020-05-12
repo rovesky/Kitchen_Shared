@@ -27,22 +27,11 @@ namespace FootStone.Kitchen
           //  FSLog.Info($"ItemAttachToOwner,Position:{transformPredictedState.Position}");
             entityManager.SetComponentData(item, transformPredictedState);
 
-
             var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(item);
             velocityPredictedState.Angular = float3.zero;
             velocityPredictedState.Linear = float3.zero;
             velocityPredictedState.MotionType = MotionType.Static;
             entityManager.SetComponentData(item, velocityPredictedState);
-
-
-            if (entityManager.HasComponent<ReplicatedEntityData>(owner))
-            {
-
-                var replicatedOwner = entityManager.GetComponentData<ReplicatedEntityData>(owner);
-                var replicatedEntityData = entityManager.GetComponentData<ReplicatedEntityData>(item);
-                replicatedEntityData.PredictingPlayerId = replicatedOwner.PredictingPlayerId;
-                entityManager.SetComponentData(item, replicatedEntityData);
-            }
         }
         
    
@@ -175,9 +164,6 @@ namespace FootStone.Kitchen
             velocityPredictedState.MotionType = MotionType.Dynamic;
             entityManager.SetComponentData(itemEntity, velocityPredictedState);
 
-            var replicatedEntityData = entityManager.GetComponentData<ReplicatedEntityData>(itemEntity);
-            replicatedEntityData.PredictingPlayerId = -1;
-            entityManager.SetComponentData(itemEntity, replicatedEntityData);
         }
 
     }

@@ -4,7 +4,7 @@ using Unity.Entities;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class ItemMoveToTableSystem : SystemBase
+    public class ItemAttachToTableSystem : SystemBase
     {
         protected override void OnUpdate()
         {
@@ -35,14 +35,14 @@ namespace FootStone.Kitchen
                 if (slot.FilledIn != Entity.Null)
                     return;
 
-                FSLog.Info("ItemMoveToTableSystem OnUpdate!");
-                var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggeredEntity);
+               // FSLog.Info("ItemMoveToTableSystem OnUpdate!");
+               // var slotSetting =  EntityManager.GetComponentData<SlotSetting>(triggeredEntity);
 
                 ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
                     entity, triggeredEntity,Entity.Null);
 
-                slot.FilledIn = entity;
-                EntityManager.SetComponentData(triggeredEntity,slot);
+                //slot.FilledIn = entity;
+                //EntityManager.SetComponentData(triggeredEntity,slot);
             
             }).Run();
         }

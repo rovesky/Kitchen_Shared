@@ -39,7 +39,7 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicedSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishSystemGroup>());
          
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemMoveToTableSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<ItemAttachToTableSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<FoodSlicedSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdatePotStateSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateExtinguisherStateSystem>());

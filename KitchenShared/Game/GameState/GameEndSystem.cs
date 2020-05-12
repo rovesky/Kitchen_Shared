@@ -1,14 +1,22 @@
 ﻿using FootStone.ECS;
-using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
     public class GameEndSystem : SystemBase
     {
+        private EntityQuery spawnPointQuery;
+
+        protected override void OnCreate()
+        {
+            spawnPointQuery = EntityManager.CreateEntityQuery(typeof(SpawnPoint));
+
+        }
+
         protected override void OnUpdate()
         {
             Entities
@@ -24,6 +32,7 @@ namespace FootStone.Kitchen
                     if(countdown.Value != 0)
                         return;
 
+                    //状态重置
                     gameState.State = GameState.Ending;
                     score.Value = 0;
                     countdown.SetValue(0);
@@ -61,6 +70,61 @@ namespace FootStone.Kitchen
                     }
                     slotEntities.Dispose();
 
+                    //清理sink
+                    var sinkQuery = GetEntityQuery(new EntityQueryDesc
+                    {
+                        All = new ComponentType[]
+                        {
+                            typeof(SinkPredictedState)
+                        }
+                    });
+                    var sinkEntities = sinkQuery.ToEntityArray(Allocator.TempJob);
+                    foreach (var sinEntity in sinkEntities)
+                    {
+                        var slot = EntityManager.GetComponentData<SinkPredictedState>(sinEntity);
+                        slot.Value.Clear();
+                        EntityManager.SetComponentData(sinEntity, slot);
+                    }
+                    sinkEntities.Dispose();
+
+                    
+                    //清理multiSlot
+                    var multiSlotQuery = GetEntityQuery(new EntityQueryDesc
+                    {
+                        All = new ComponentType[]
+                        {
+                            typeof(MultiSlotPredictedState)
+                        }
+                    });
+                    var multiSlotQueryEntities = multiSlotQuery.ToEntityArray(Allocator.TempJob);
+                    foreach (var multiSlotEntity in multiSlotQueryEntities)
+                    {
+                        var slot = EntityManager.GetComponentData<MultiSlotPredictedState>(multiSlotEntity);
+                        slot.Value.Clear();
+                        EntityManager.SetComponentData(multiSlotEntity, slot);
+                    }
+                    multiSlotQueryEntities.Dispose();
+
+                       
+                    //清理CatchFire
+                    var catchFireQuery = GetEntityQuery(new EntityQueryDesc
+                    {
+                        All = new ComponentType[]
+                        {
+                            typeof(CatchFirePredictedState)
+                        }
+                    });
+                    var catchFireEntities = catchFireQuery.ToEntityArray(Allocator.TempJob);
+                    foreach (var catchFireEntity in catchFireEntities)
+                    {
+                        var catchFire = EntityManager.GetComponentData<CatchFirePredictedState>(catchFireEntity);
+                        catchFire.CurCatchFireTick = 0;
+                        catchFire.CurExtinguishTick = 0;
+                        catchFire.IsCatchFire = false;
+                        EntityManager.SetComponentData(catchFireEntity, catchFire);
+                    }
+                    catchFireEntities.Dispose();
+
                     //清理item
                     var itemQuery = GetEntityQuery(new EntityQueryDesc
                     {
@@ -75,7 +139,6 @@ namespace FootStone.Kitchen
                         EntityManager.AddComponentData(item, new Despawn());
                     }
                     itemEntities.Dispose();
-                 
 
                     //character归位
                     var characterQuery = GetEntityQuery(new EntityQueryDesc
@@ -85,13 +148,18 @@ namespace FootStone.Kitchen
                             typeof(Character)
                         }
                     });
-
-                
+                    var spawnPoints = spawnPointQuery.ToEntityArray(Allocator.TempJob);
                     var characterEntities = characterQuery.ToEntityArray(Allocator.TempJob);
-                    foreach (var character in characterEntities)
+                   
+                    for ( var i = 0; i < characterEntities.Length; ++i)
                     {
+                        var character = characterEntities[i];
+                        var position = new float3(2, 1, -5);
+                        if (i < spawnPoints.Length)
+                            position = EntityManager.GetComponentData<LocalToWorld>(spawnPoints[i]).Position;
+                    
                         var transform = EntityManager.GetComponentData<TransformPredictedState>(character);
-                        transform.Position = new float3(2, 1, -5);
+                        transform.Position = position;
                         transform.Rotation = quaternion.identity;
                         EntityManager.SetComponentData(character,transform);
 
@@ -105,9 +173,27 @@ namespace FootStone.Kitchen
                         move.ImpulseVelocity = float3.zero;
                         move.ImpulseDuration = 0;
                         EntityManager.SetComponentData(character,move);
-                    }
-                    characterEntities.Dispose();
 
+                        var slot = EntityManager.GetComponentData<SlotPredictedState>(character);
+                        slot.FilledIn= Entity.Null;
+                        EntityManager.SetComponentData(character,slot);
+
+                        var trigger = EntityManager.GetComponentData<TriggerPredictedState>(character);
+                        trigger.TriggeredEntity = Entity.Null;
+                        EntityManager.SetComponentData(character,trigger);
+
+
+                        var slice = EntityManager.GetComponentData<SlicePredictedState>(character);
+                        slice.IsSlicing = false;
+                        EntityManager.SetComponentData(character,slice);
+
+                        var wash = EntityManager.GetComponentData<WashPredictedState>(character);
+                        wash.IsWashing= false;
+                        EntityManager.SetComponentData(character,wash);
+                    }
+                    spawnPoints.Dispose();
+                    characterEntities.Dispose();
+                  
                     FSLog.Info($"GameEnd!");
 
                 }).Run();

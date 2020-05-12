@@ -1,3 +1,4 @@
+using System;
 using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -127,9 +128,16 @@ namespace FootStone.Kitchen
                 return FilledIn1;
 
             return Entity.Null;
-        }
+        }
 
-        
+        public void Clear()
+          {
+              FilledIn1 = Entity.Null;
+              FilledIn2 = Entity.Null;
+              FilledIn3 = Entity.Null;
+              FilledIn4 = Entity.Null;
+          }
+
         private static bool IsSame(EntityManager entityManager,Entity entity, Entity entity1)
         {
             if (entity == Entity.Null)

@@ -52,6 +52,8 @@ namespace FootStone.Kitchen
                         return;
                     }
 
+                    cookedState.CurTick = 0;
+                    EntityManager.SetComponentData(slotState.FilledIn, cookedState);
 
                     if (!HasSingleton<SpawnItemArray>())
                         return;
@@ -61,6 +63,8 @@ namespace FootStone.Kitchen
                     {
                         Frame = 1
                     });
+                    potSlot.FilledIn = Entity.Null;
+                    EntityManager.SetComponentData(slotState.FilledIn,potSlot);
 
                            
                     //生成熟米饭
