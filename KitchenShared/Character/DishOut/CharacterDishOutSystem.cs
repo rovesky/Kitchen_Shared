@@ -85,7 +85,9 @@ namespace FootStone.Kitchen
                     if(menuTemplate == MenuTemplate.Null)
                         return;
 
-                    
+                    var worldTick = GetSingleton<WorldTime>().Tick;
+                    FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
+
                     //删除原来的道具
                     var count = plateSlotState.Value.Count();
                     for (var i = 0; i < count; ++i)

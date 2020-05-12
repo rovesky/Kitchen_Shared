@@ -74,12 +74,12 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new Item());
 
-            entityManager.AddComponentData(e, new ItemInterpolatedState
-            {
-                Position = newPosition,
-                Rotation = rotation.Value,
-                Owner = Entity.Null
-            });
+            //entityManager.AddComponentData(e, new ItemInterpolatedState
+            //{
+            //    Position = newPosition,
+            //    Rotation = rotation.Value,
+            //    Owner = Entity.Null
+            //});
 
             entityManager.AddComponentData(e, new TransformPredictedState
             {

@@ -35,9 +35,9 @@ namespace FootStone.Kitchen
                     var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
 
                     var pickupEntity = slotState.FilledIn;
-                    FSLog.Info($"worldTick:{worldTick},CharacterPickupTableSystem Update," +
-                               $"PickupedEntity:{pickupEntity}," +
-                               $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledIn}");
+                   // FSLog.Info($"worldTick:{worldTick},CharacterPickupTableSystem Update," +
+                           //    $"PickupedEntity:{pickupEntity}," +
+                            //   $"triggerEntity:{triggerEntity}，slot.FiltInEntity:{slot.FilledIn}");
 
                     if (pickupEntity == Entity.Null && slot.FilledIn != Entity.Null)
                     {

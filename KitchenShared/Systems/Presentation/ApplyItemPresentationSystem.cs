@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
 
 namespace FootStone.Kitchen
@@ -11,12 +12,28 @@ namespace FootStone.Kitchen
             Entities.WithStructuralChanges().ForEach((Entity entity,
                 ref Translation translation,
                 ref Rotation rotation,
-                in ItemInterpolatedState interpolatedData) =>
+                in TransformPredictedState transformState,
+                in VelocityPredictedState velocityState,
+                in OwnerPredictedState ownerState) =>
             {
-                translation.Value = interpolatedData.Position;
-                rotation.Value = interpolatedData.Rotation;
+                translation.Value = transformState.Position;
+                rotation.Value = transformState.Rotation;
 
-                if (interpolatedData.Owner != Entity.Null)
+                switch (velocityState.MotionType)
+                {
+                    case MotionType.Dynamic:
+                        EntityManager.AddComponentData(entity, new PhysicsVelocity
+                        {
+                            Linear = velocityState.Linear,
+                            Angular = velocityState.Angular
+                        });
+                        break;
+                    case MotionType.Static:
+                        EntityManager.RemoveComponent<PhysicsVelocity>(entity);
+                        break;
+                }
+
+                if (ownerState.Owner != Entity.Null)
                 {
                     if (!EntityManager.HasComponent<Parent>(entity))
                     {
@@ -26,37 +43,19 @@ namespace FootStone.Kitchen
 
                     var parent = EntityManager.GetComponentData<Parent>(entity);
                   //  FSLog.Info($" parent.Value:{ parent.Value},entity:{entity},translation.Value:{translation.Value}");
-                    if (parent.Value == interpolatedData.Owner)
+                    if (parent.Value == ownerState.Owner)
                        return;
-                    parent.Value = interpolatedData.Owner;
+                    parent.Value = ownerState.Owner;
                     EntityManager.SetComponentData(entity, parent);
-                    
-                   
-                    //var scale = EntityManager.GetComponentData<CompositeScale>(entity);
-                    //var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
-                    //var parentScale = EntityManager.GetComponentData<CompositeScale>(interpolatedData.Owner);
-                    //scale.Value.c0.x = scaleSetting.Scale.x/parentScale.Value.c0.x;
-                    //scale.Value.c1.y = scaleSetting.Scale.y/parentScale.Value.c1.y;
-                    //scale.Value.c2.z = scaleSetting.Scale.z/parentScale.Value.c2.z;
-                    //EntityManager.SetComponentData(entity, scale);
                 }
                 else
                 {
                     if (!EntityManager.HasComponent<Parent>(entity))
                         return;
-                    
-                   // var parent =  EntityManager.GetComponentData<Parent>(entity);
-                   // var parentScale = EntityManager.GetComponentData<CompositeScale>(parent.Value);
-                    //var scale = EntityManager.GetComponentData<CompositeScale>(entity);
-                    //var scaleSetting = EntityManager.GetComponentData<ScaleSetting>(entity);
-                    //scale.Value.c0.x = scaleSetting.Scale.x;
-                    //scale.Value.c1.y = scaleSetting.Scale.y;
-                    //scale.Value.c2.z = scaleSetting.Scale.z;
-                    //EntityManager.SetComponentData(entity, scale);
-
                     EntityManager.RemoveComponent<Parent>(entity);
                     EntityManager.RemoveComponent<LocalToParent>(entity);
                 }
+             
             }).Run();
         }
     }

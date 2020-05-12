@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(item);
             transformPredictedState.Position = pos;
             transformPredictedState.Rotation = rot;
-            FSLog.Info($"ItemAttachToOwner,Position:{transformPredictedState.Position}");
+          //  FSLog.Info($"ItemAttachToOwner,Position:{transformPredictedState.Position}");
             entityManager.SetComponentData(item, transformPredictedState);
 
 
