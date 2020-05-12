@@ -74,12 +74,6 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new Item());
 
-            //entityManager.AddComponentData(e, new ItemInterpolatedState
-            //{
-            //    Position = newPosition,
-            //    Rotation = rotation.Value,
-            //    Owner = Entity.Null
-            //});
 
             entityManager.AddComponentData(e, new TransformPredictedState
             {
@@ -98,6 +92,11 @@ namespace FootStone.Kitchen
             {
                 Owner = owner,
                 PreOwner = Entity.Null
+            });
+            entityManager.AddComponentData(e, new DespawnPredictedState
+            {
+               IsDespawn = true,
+               Tick = 0
             });
 
             entityManager.AddComponentData(e, new TriggerSetting

@@ -21,51 +21,58 @@ namespace FootStone.Kitchen
                     if (slotState.FilledIn == Entity.Null)
                         return;
 
+                    //灶上不是锅返回
                     if (!EntityManager.HasComponent<Pot>(slotState.FilledIn))
                         return;
 
-                    //已煮糊返回
-                    if(EntityManager.HasComponent<Burnt>(slotState.FilledIn))
+                    var potEntity = slotState.FilledIn;
+                    //锅已煮糊返回
+                    if(EntityManager.HasComponent<Burnt>(potEntity))
+                        return;
+                    
+                    //锅里没有米饭返回
+                    if (!EntityManager.HasComponent<SlotPredictedState>(potEntity))
                         return;
 
-                    if (!EntityManager.HasComponent<SlotPredictedState>(slotState.FilledIn))
-                        return;
-
-                    var potSlot = EntityManager.GetComponentData<SlotPredictedState>(slotState.FilledIn);
+                    var potSlot = EntityManager.GetComponentData<SlotPredictedState>(potEntity);
                     if (potSlot.FilledIn == Entity.Null)
                         return;
 
+                    //米饭已经煮熟返回
                     if(EntityManager.HasComponent<Cooked>(potSlot.FilledIn))
                         return;
 
-                    if(!EntityManager.HasComponent<FireAlertSetting>(slotState.FilledIn))
+
+                    if(!EntityManager.HasComponent<FireAlertPredictedState>(potEntity))
                         return;
 
-                    var cookedSetting = EntityManager.GetComponentData<ProgressSetting>(slotState.FilledIn);
-                    var cookedState = EntityManager.GetComponentData<ProgressPredictState>(slotState.FilledIn);
+                    var cookedSetting = EntityManager.GetComponentData<ProgressSetting>(potEntity);
+                    var cookedState = EntityManager.GetComponentData<ProgressPredictState>(potEntity);
 
                   //  FSLog.Info($"cookedState.CurSliceTick :{cookedState.CurSliceTick}");
                     if (cookedState.CurTick < cookedSetting.TotalTick)
                     {
                         cookedState.CurTick ++;
-                        EntityManager.SetComponentData(slotState.FilledIn, cookedState);
+                        EntityManager.SetComponentData(potEntity, cookedState);
                         return;
                     }
 
                     cookedState.CurTick = 0;
-                    EntityManager.SetComponentData(slotState.FilledIn, cookedState);
+                    EntityManager.SetComponentData(potEntity, cookedState);
 
                     if (!HasSingleton<SpawnItemArray>())
                         return;
 
-                    //删除生米饭
-                    EntityManager.AddComponentData(potSlot.FilledIn, new Despawn()
-                    {
-                        Frame = 1
-                    });
+                 
+                    //锅置空
                     potSlot.FilledIn = Entity.Null;
-                    EntityManager.SetComponentData(slotState.FilledIn,potSlot);
+                    EntityManager.SetComponentData(potEntity,potSlot);
 
+                    //删除生米饭
+                    var potDespawn = EntityManager.GetComponentData<DespawnPredictedState>(potEntity);
+                    potDespawn.IsDespawn = true;
+                    potDespawn.Tick = 1;
+                    EntityManager.SetComponentData(potEntity,potDespawn);
                            
                     //生成熟米饭
                     var spawnItemEntity = GetSingletonEntity<SpawnItemArray>();

@@ -10,6 +10,9 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateReplicatedOwnerFlag>());
+
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateDespawnFlag>());
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearTriggeredSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyCharPresentationSystem>());

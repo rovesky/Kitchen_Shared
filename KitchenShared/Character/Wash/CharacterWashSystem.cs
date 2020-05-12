@@ -141,7 +141,7 @@ namespace FootStone.Kitchen
                         //删除脏盘子
                         EntityManager.AddComponentData(plateDirty, new Despawn()
                         {
-                            Frame = 1
+                            Tick = 1
                         });
 
 
