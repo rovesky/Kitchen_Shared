@@ -75,9 +75,18 @@ namespace FootStone.Kitchen
                     if (plateSlotState.Value.IsDuplicate(EntityManager,pickupEntity))
                         return;
 
+                    //锅设置为空
+                    if (EntityManager.HasComponent<Pot>(preOwner))
+                    {
+                        var potState = EntityManager.GetComponentData<PotPredictedState>(preOwner);
+                        potState.State = PotState.Empty;
+                        EntityManager.SetComponentData(preOwner, potState);
+                    }
+
                     //放入盘子
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                         pickupEntity, plateEntity, preOwner);
+            
 
                     //未成品，直接返回
                     plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);

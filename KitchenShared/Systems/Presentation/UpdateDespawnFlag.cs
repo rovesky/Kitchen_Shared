@@ -5,23 +5,25 @@ using Unity.Entities;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class UpdateDespawnFlag : SystemBase
+    public class UpdateDespawnState : SystemBase
     {
         protected override void OnUpdate()
         {
             Entities
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                in DespawnPredictedState despawnState) =>
+                ref DespawnPredictedState despawnState) =>
             {
-
-                if (despawnState.IsDespawn)
-                    EntityManager.AddComponentData(entity, new Despawn()
-                    {
-                        Tick = despawnState.Tick
-                    });
-                else if (EntityManager.HasComponent<Despawn>(entity))
+                if (EntityManager.HasComponent<Despawn>(entity))
                     EntityManager.RemoveComponent<Despawn>(entity);
+               
+                if (!despawnState.IsDespawn) 
+                    return;
+
+                if (despawnState.Tick == 0)
+                    EntityManager.AddComponentData(entity, new Despawn());
+                else
+                    despawnState.Tick--;
 
             }).Run();
         }

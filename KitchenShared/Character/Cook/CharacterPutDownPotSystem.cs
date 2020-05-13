@@ -63,10 +63,14 @@ namespace FootStone.Kitchen
                     if (potSlotState.FilledIn != Entity.Null)
                         return;
 
+                    //锅设置为满
+                    var potState = EntityManager.GetComponentData<PotPredictedState>(potEntity);
+                    potState.State = PotState.Full;
+                    EntityManager.SetComponentData(potEntity,potState);
+
                     //放入锅里
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                         pickupEntity, potEntity, entity);
-                 
 
                 }).Run();
         }

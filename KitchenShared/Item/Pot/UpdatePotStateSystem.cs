@@ -16,9 +16,9 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     ref FireAlertPredictedState fireAlertState,
                     in OwnerPredictedState ownerState,
-                    in BurntPredictedState burntState) =>
+                    in PotPredictedState burntState) =>
                 {
-                    if (burntState.IsBurnt)
+                    if (burntState.State == PotState.Burnt)
                         EntityManager.AddComponentData(entity, new Burnt());
                     else
                         EntityManager.RemoveComponent<Burnt>(entity);

@@ -1,6 +1,5 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -38,10 +37,9 @@ namespace FootStone.Kitchen
                     if (potSlot.FilledIn == Entity.Null)
                         return;
 
-                    //米饭已经煮熟返回
-                    if(EntityManager.HasComponent<Cooked>(potSlot.FilledIn))
+                    var potState = EntityManager.GetComponentData<PotPredictedState>(potEntity);
+                    if(potState.State != PotState.Full)
                         return;
-
 
                     if(!EntityManager.HasComponent<FireAlertPredictedState>(potEntity))
                         return;
@@ -60,19 +58,25 @@ namespace FootStone.Kitchen
                     cookedState.CurTick = 0;
                     EntityManager.SetComponentData(potEntity, cookedState);
 
+                    //锅已煮好
+                  //  var potState = EntityManager.GetComponentData<PotPredictedState>(potEntity);
+                    potState.State = PotState.Cooked;
+                    EntityManager.SetComponentData(potEntity,potState);
+
                     if (!HasSingleton<SpawnItemArray>())
                         return;
 
-                 
+
+                    
+                    //删除生米饭
+                    var riceDespawn = EntityManager.GetComponentData<DespawnPredictedState>(potSlot.FilledIn);
+                    riceDespawn.IsDespawn = true;
+                    riceDespawn.Tick = 1;
+                    EntityManager.SetComponentData( potSlot.FilledIn,riceDespawn);
+
                     //锅置空
                     potSlot.FilledIn = Entity.Null;
                     EntityManager.SetComponentData(potEntity,potSlot);
-
-                    //删除生米饭
-                    var potDespawn = EntityManager.GetComponentData<DespawnPredictedState>(potEntity);
-                    potDespawn.IsDespawn = true;
-                    potDespawn.Tick = 1;
-                    EntityManager.SetComponentData(potEntity,potDespawn);
                            
                     //生成熟米饭
                     var spawnItemEntity = GetSingletonEntity<SpawnItemArray>();

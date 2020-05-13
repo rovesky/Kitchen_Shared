@@ -95,7 +95,7 @@ namespace FootStone.Kitchen
             });
             entityManager.AddComponentData(e, new DespawnPredictedState
             {
-               IsDespawn = true,
+               IsDespawn = false,
                Tick = 0
             });
 
@@ -180,7 +180,7 @@ namespace FootStone.Kitchen
                 entityManager.AddComponentData(e, new ProgressSetting()
                 {
                     Type = ProgressType.Cook,
-                    TotalTick = 150,
+                    TotalTick = 250,
                     OffPos = new float3(0, -1f, 0)
                 });
                 entityManager.AddComponentData(e, new ProgressPredictState()
@@ -190,16 +190,16 @@ namespace FootStone.Kitchen
                 
                 entityManager.AddComponentData(e, new FireAlertSetting()
                 {
-                    TotalTick = 150
+                    TotalTick = 250
                 });
                 entityManager.AddComponentData(e, new FireAlertPredictedState()
                 {
                    CurTick = 0
                 });
 
-                entityManager.AddComponentData(e, new BurntPredictedState()
+                entityManager.AddComponentData(e, new PotPredictedState()
                 {
-                    IsBurnt = false
+                    State = PotState.Empty
                 });
                 
             }

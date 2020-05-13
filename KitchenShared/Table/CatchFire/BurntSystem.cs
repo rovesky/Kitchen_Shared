@@ -61,17 +61,16 @@ namespace FootStone.Kitchen
 
                     fireAlertState.CurTick = 0;
                     EntityManager.SetComponentData(potEntity, fireAlertState);
-
-
+                    
                     //燃气灶着火
                     catchFireState.IsCatchFire = true;
                     catchFireState.CurCatchFireTick = 0;
                     catchFireState.CurExtinguishTick = 0;
               
                     //锅烧糊
-                    var burntState = EntityManager.GetComponentData<BurntPredictedState>(potEntity);
-                    burntState.IsBurnt = true;
-                    EntityManager.SetComponentData(potEntity,burntState);
+                    var potState = EntityManager.GetComponentData<PotPredictedState>(potEntity);
+                    potState.State = PotState.Burnt;
+                    EntityManager.SetComponentData(potEntity,potState);
             
                 }).Run();
         }

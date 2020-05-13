@@ -11,7 +11,7 @@ namespace FootStone.Kitchen
         {
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateReplicatedOwnerFlag>());
 
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateDespawnFlag>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateDespawnState>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearTriggeredSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharPresentationSystem>());

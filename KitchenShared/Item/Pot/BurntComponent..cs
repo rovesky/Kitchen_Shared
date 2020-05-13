@@ -7,32 +7,40 @@ namespace FootStone.Kitchen
     {
        
     }
+
+    public enum PotState
+    {
+        Empty,
+        Full,
+        Cooked,
+        Burnt
+    }
    
-    public struct BurntPredictedState : IComponentData, IPredictedState<BurntPredictedState>
+    public struct PotPredictedState : IComponentData, IPredictedState<PotPredictedState>
     {
      
-        public bool IsBurnt;
+        public PotState State;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
        
-            IsBurnt = reader.ReadBoolean();
+            State = (PotState)reader.ReadByte();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
            
-            writer.WriteBoolean("IsBurnt",IsBurnt);
+            writer.WriteByte("PotState",(byte)State);
         }
 
-        public bool VerifyPrediction(ref BurntPredictedState state)
+        public bool VerifyPrediction(ref PotPredictedState state)
         {
-            return  IsBurnt.Equals(state.IsBurnt);
+            return  State.Equals(state.State);
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()
         {
-            return new PredictedStateSerializerFactory<BurntPredictedState>();
+            return new PredictedStateSerializerFactory<PotPredictedState>();
         }
     }
 }

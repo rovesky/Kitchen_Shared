@@ -26,19 +26,25 @@ namespace FootStone.Kitchen
             Entities.WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    in OwnerPredictedState itemState,
+                    ref DespawnPredictedState despawnState,
+                    in  OwnerPredictedState ownerState,
                     in FoodSlicedRequest request,
                     in GameEntity food) =>
                 {
                     EntityManager.RemoveComponent<FoodSlicedRequest>(entity);
-                    EntityManager.AddComponentData(entity, new Despawn());
-                
-                    EntityManager.SetComponentData(itemState.Owner,new SlotPredictedState()
+                  
+                    //删除原来的食物
+                    despawnState.IsDespawn = true;
+                    despawnState.Tick = 0;
+                   
+                    EntityManager.SetComponentData(ownerState.Owner,new SlotPredictedState()
                     {
                         FilledIn = Entity.Null
                     });
 
-                    var slotSetting = EntityManager.GetComponentData<SlotSetting>(itemState.Owner);
+
+                    //生成切好的食物
+                    var slotSetting = EntityManager.GetComponentData<SlotSetting>(ownerState.Owner);
 
                     var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
                     var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
@@ -46,7 +52,7 @@ namespace FootStone.Kitchen
                     {
                         Type = FoodToSlice(food.Type),
                         OffPos = slotSetting.Pos,
-                        Owner = itemState.Owner,
+                        Owner = ownerState.Owner,
                         StartTick = GetSingleton<WorldTime>().Tick
                     });
 

@@ -136,7 +136,11 @@ namespace FootStone.Kitchen
                     var itemEntities = itemQuery.ToEntityArray(Allocator.TempJob);
                     foreach (var item in itemEntities)
                     {
-                        EntityManager.AddComponentData(item, new Despawn());
+                        EntityManager.SetComponentData(item,new DespawnPredictedState()
+                        {
+                            IsDespawn = true,
+                            Tick = 0
+                        });
                     }
                     itemEntities.Dispose();
 

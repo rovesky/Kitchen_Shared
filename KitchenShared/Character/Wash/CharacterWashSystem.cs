@@ -139,10 +139,10 @@ namespace FootStone.Kitchen
                     if (HasSingleton<SpawnItemArray>())
                     {
                         //删除脏盘子
-                        EntityManager.AddComponentData(plateDirty, new Despawn()
-                        {
-                            Tick = 1
-                        });
+                        var plateDirtyDespawn = EntityManager.GetComponentData<DespawnPredictedState>(plateDirty);
+                        plateDirtyDespawn.IsDespawn = true;
+                        plateDirtyDespawn.Tick = 0;
+                        EntityManager.SetComponentData(plateDirty,plateDirtyDespawn);
 
 
                         //生成干净盘子
