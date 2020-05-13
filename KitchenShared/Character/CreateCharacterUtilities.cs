@@ -15,15 +15,18 @@ namespace FootStone.Kitchen
             entityManager.SetComponentData(e, new Translation {Value = position});
             entityManager.SetComponentData(e, new Rotation {Value = rotation});
 
-            entityManager.AddComponentData(e, new Character
-            {
-                PresentationEntity = Entity.Null
-            });
+            entityManager.AddComponentData(e, new Character());
 
             entityManager.AddComponentData(e, new ReplicatedEntityData
             {
                 Id = -1,
                 PredictingPlayerId = -1
+            });
+
+            entityManager.AddComponentData(e, new DespawnPredictedState()
+            {
+                IsDespawn = false,
+                Tick = 0
             });
 
             entityManager.AddComponentData(e, new TransformPredictedState

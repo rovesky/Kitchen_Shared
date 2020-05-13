@@ -42,7 +42,11 @@ namespace FootStone.Kitchen
                     if (!EntityManager.HasComponent<Food>(pickupEntity))
                         return;
 
-                    EntityManager.AddComponentData(pickupEntity, new Despawn());
+                    var despawnState = EntityManager.GetComponentData<DespawnPredictedState>(pickupEntity);
+                    despawnState.IsDespawn = true;
+                    despawnState.Tick = 0;
+                    EntityManager.SetComponentData(pickupEntity,despawnState);
+
                     slotState.FilledIn = Entity.Null;
 
                 }).Run();

@@ -4,7 +4,7 @@ namespace FootStone.Kitchen
 {
     public struct Character : IComponentData
     {
-        public Entity PresentationEntity;
+     //   public Entity PresentationEntity;
     }
 
     

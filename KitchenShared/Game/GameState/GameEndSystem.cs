@@ -48,7 +48,11 @@ namespace FootStone.Kitchen
                     var menuEntities = menuQuery.ToEntityArray(Allocator.TempJob);
                     foreach (var menu in menuEntities)
                     {
-                        EntityManager.AddComponentData(menu, new Despawn());
+                        EntityManager.SetComponentData(menu,new DespawnPredictedState()
+                        {
+                            IsDespawn = true,
+                            Tick = 0
+                        });
                     }
 
                     menuEntities.Dispose();

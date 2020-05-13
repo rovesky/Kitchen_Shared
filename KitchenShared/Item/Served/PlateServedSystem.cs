@@ -46,10 +46,20 @@ namespace FootStone.Kitchen
             {
                 var fillIn = slotState.Value.TakeOut();
                 if (fillIn != Entity.Null)
-                    EntityManager.AddComponentData(fillIn, new Despawn());
+                {
+                    var despawnState = EntityManager.GetComponentData<DespawnPredictedState>(fillIn);
+                    despawnState.IsDespawn = true;
+                    despawnState.Tick = 0;
+                    EntityManager.SetComponentData(fillIn,despawnState);
+                }
+                   // EntityManager.AddComponentData(fillIn, new Despawn());
             }
             //Despawn
-            EntityManager.AddComponentData(entity, new Despawn());
+            var despawnState1 = EntityManager.GetComponentData<DespawnPredictedState>(entity);
+            despawnState1.IsDespawn = true;
+            despawnState1.Tick = 0;
+            EntityManager.SetComponentData(entity,despawnState1);
+           
 
         }
 
@@ -92,7 +102,13 @@ namespace FootStone.Kitchen
                 
                 if (IsMatch(menu,productType))
                 {
-                    EntityManager.AddComponentData(menuEntity, new Despawn());
+                  //  EntityManager.AddComponentData(menuEntity, new Despawn());
+                    EntityManager.SetComponentData(menuEntity,new DespawnPredictedState()
+                    {
+                        IsDespawn = true,
+                        Tick = 0
+                    });
+
                     score = (ushort) (menu.MaterialCount() * 50);
                     break;
                 }

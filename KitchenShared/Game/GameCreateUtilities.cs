@@ -53,6 +53,12 @@ namespace FootStone.Kitchen
             });
 
             entityManager.SetComponentData(e, new MenuItem());
+
+            entityManager.AddComponentData(e, new DespawnPredictedState()
+            {
+                IsDespawn = false,
+                Tick = 0
+            });
             return e;
         }
 

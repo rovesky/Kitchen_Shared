@@ -24,7 +24,7 @@ namespace FootStone.Kitchen
                     var now = DateTime.Now;
                     gameState.State = GameState.Playing;
                     gameState.StartTime = now.Ticks;
-                    countdown.SetValue(60);
+                    countdown.SetValue(180);
                  
                     FSLog.Info($"GameStart,countdown:{countdown.Value}!");
 
