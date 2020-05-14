@@ -102,13 +102,15 @@ namespace FootStone.Kitchen
                     for (var i = 0; i < count; ++i)
                     {
                         var fillIn = plateSlotState.Value.TakeOut();
-                        if (fillIn != Entity.Null)
-                        {
-                            var despawnState = EntityManager.GetComponentData<DespawnPredictedState>(fillIn);
-                            despawnState.IsDespawn = true;
-                            despawnState.Tick = 0;
-                            EntityManager.SetComponentData(fillIn,despawnState);
-                        }
+                        if (fillIn == Entity.Null) 
+                            continue;
+
+                        var despawnState = EntityManager.GetComponentData<DespawnPredictedState>(fillIn);
+                        despawnState.IsDespawn = true;
+                        despawnState.Tick = 0;
+                        EntityManager.SetComponentData(fillIn,despawnState);
+
+                        FSLog.Info($"despwan entity:{fillIn}");
                     }
 
                     EntityManager.SetComponentData(plateEntity,plateSlotState);
