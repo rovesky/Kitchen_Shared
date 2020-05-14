@@ -10,6 +10,7 @@ namespace FootStone.Kitchen
         public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
             Entity owner, Entity preOwner, float3 pos,quaternion rot)
         {
+            FSLog.Info($"ItemAttachToOwner,owner:{owner}");
             var triggerState = entityManager.GetComponentData<TriggerPredictedState>(item);
             triggerState.TriggeredEntity = Entity.Null;
             triggerState.IsAllowTrigger = false;
@@ -24,7 +25,7 @@ namespace FootStone.Kitchen
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(item);
             transformPredictedState.Position = pos;
             transformPredictedState.Rotation = rot;
-          //  FSLog.Info($"ItemAttachToOwner,Position:{transformPredictedState.Position}");
+           
             entityManager.SetComponentData(item, transformPredictedState);
 
             var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(item);

@@ -110,12 +110,12 @@ namespace FootStone.Kitchen
                         despawnState.Tick = 0;
                         EntityManager.SetComponentData(fillIn,despawnState);
 
-                        FSLog.Info($"despwan entity:{fillIn}");
+                        //FSLog.Info($"despwan entity:{fillIn}");
                     }
 
                     EntityManager.SetComponentData(plateEntity,plateSlotState);
 
-            
+                  
                     //生成新道具
                     var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
                     var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
@@ -128,7 +128,9 @@ namespace FootStone.Kitchen
                         Owner = plateEntity,
                         StartTick = GetSingleton<WorldTime>().Tick
                     });
+                    
 
+                
                 }).Run();
         }
     }
@@ -151,7 +153,10 @@ namespace FootStone.Kitchen
 
                     if (!EntityManager.HasComponent<Product>(slotState.Value.FilledIn1))
                         return;
+
+                  
                     plateState.Product = slotState.Value.FilledIn1;
+                //    FSLog.Info($"UpdatePlateProductSystem:{plateState.Product}");
 
                 }).Run();
         }
