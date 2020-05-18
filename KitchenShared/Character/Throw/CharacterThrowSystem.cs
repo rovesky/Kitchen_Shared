@@ -6,14 +6,15 @@ using UnityEngine;
 namespace FootStone.Kitchen
 {
     [DisableAutoCreation]
-    public class CharacterThrowSystem : SystemBase
+    public class CharacterThrowStartSystem : SystemBase
     {
         protected override void OnUpdate()
         {
             Entities.WithAll<ServerEntity>()
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                    in SlotPredictedState slotState,
+                    ref ThrowPredictState throwState,
+                    in  SlotPredictedState slotState,
                     in TransformPredictedState transformState,
                     in ThrowSetting setting,
                     in UserCommand command) =>
@@ -28,6 +29,41 @@ namespace FootStone.Kitchen
 
                     //非食物返回
                     if (!EntityManager.HasComponent<Food>(pickupedEntity))
+                        return;
+
+                    throwState.IsThrowed = true;
+                    throwState.CurTick = setting.DelayTick;
+
+                }).Run();
+        }
+    }
+
+
+    [DisableAutoCreation]
+    public class CharacterThrowEndSystem : SystemBase
+    {
+        protected override void OnUpdate()
+        {
+            Entities.WithAll<ServerEntity>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    ref ThrowPredictState throwState,
+                    in TransformPredictedState transformState,
+                    in ThrowSetting setting,
+                    in  SlotPredictedState slotState) =>
+                {
+                    if(!throwState.IsThrowed)
+                        return;
+
+                    if (throwState.CurTick > 0)
+                    {
+                        throwState.CurTick--;
+                        return;
+                    }
+
+                    throwState.IsThrowed = false ;
+                    var pickupedEntity = slotState.FilledIn;
+                    if (pickupedEntity == Entity.Null)
                         return;
 
                     Vector3 linear = math.mul(transformState.Rotation, Vector3.forward);

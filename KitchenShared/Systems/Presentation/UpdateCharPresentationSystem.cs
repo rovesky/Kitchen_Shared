@@ -5,6 +5,28 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
+    public class UpdateCharTriggeredSystem : SystemBase
+    {
+
+        protected override void OnUpdate()
+        {
+            Entities.WithAll<ServerEntity>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    in TriggerPredictedState triggerPredictedData
+                ) =>
+                {
+                    if (triggerPredictedData.TriggeredEntity == Entity.Null)
+                        return;
+                    var triggerEntity = triggerPredictedData.TriggeredEntity;
+                    var triggerState = EntityManager.GetComponentData<TriggeredState>(triggerEntity);
+                    triggerState.IsTriggered = true;
+                    EntityManager.SetComponentData(triggerEntity, triggerState);
+
+                }).Run();
+        }
+    }
+
     [DisableAutoCreation]
     public class UpdateCharPresentationSystem : SystemBase
     {
@@ -17,76 +39,70 @@ namespace FootStone.Kitchen
                     ref CharacterInterpolatedState interpolateData,
                     in TransformPredictedState transformPredictData,
                     in VelocityPredictedState velocityPredictData,
-                    in TriggerPredictedState triggerPredictedData,
+                    in ThrowPredictState throwState,
                     in SlicePredictedState slicePredictedState,
                     in WashPredictedState washPredictedState,
-                    in ReplicatedEntityData replicatedEntityData) =>
+                    in SlotPredictedState slotState) =>
                 {
 
                     if (HasSingleton<Server>())
                     {
-                        SetInterpolateData(ref interpolateData, transformPredictData, replicatedEntityData,
-                            slicePredictedState, washPredictedState, triggerPredictedData);
-                        
-                        SetInterpolateSqrMagnitude(ref interpolateData,velocityPredictData);
+                        SetInterpolateData(ref interpolateData, transformPredictData,
+                            slicePredictedState, washPredictedState, slotState, throwState);
+
+                        SetInterpolateSqrMagnitude(ref interpolateData, velocityPredictData);
                     }
                     else
                     {
                         if (EntityManager.HasComponent<LocalCharacter>(entity))
                         {
-                            SetInterpolateData(ref interpolateData, transformPredictData, replicatedEntityData,
-                                slicePredictedState, washPredictedState, triggerPredictedData);
+                            SetInterpolateData(ref interpolateData, transformPredictData,
+                                slicePredictedState, washPredictedState, slotState, throwState);
 
                             var dir = Vector3.SqrMagnitude(velocityPredictData.Linear) < 0.001f
                                 ? Vector3.zero
                                 : (Vector3) math.normalize(velocityPredictData.Linear);
-                            interpolateData.SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;
-                            
+                            interpolateData.Velocity = new Vector2(dir.x, dir.z).sqrMagnitude;
+
                         }
                         else
                         {
-                            SetInterpolateSqrMagnitude(ref interpolateData,velocityPredictData);
+                            SetInterpolateSqrMagnitude(ref interpolateData, velocityPredictData);
                         }
                     }
                 }).Run();
         }
 
-        private  void SetInterpolateSqrMagnitude(ref CharacterInterpolatedState interpolateData,
+        private void SetInterpolateSqrMagnitude(ref CharacterInterpolatedState interpolateData,
             VelocityPredictedState velocityPredictData)
         {
             if (velocityPredictData.SqrMagnitude > 0)
             {
-                interpolateData.SqrMagnitude = velocityPredictData.SqrMagnitude;
+                interpolateData.Velocity = velocityPredictData.SqrMagnitude;
             }
             else
             {
                 var dir = Vector3.SqrMagnitude(velocityPredictData.Linear) < 0.001f
                     ? Vector3.zero
                     : (Vector3) math.normalize(velocityPredictData.Linear);
-                interpolateData.SqrMagnitude = new Vector2(dir.x, dir.z).sqrMagnitude;
+                interpolateData.Velocity = new Vector2(dir.x, dir.z).sqrMagnitude;
             }
         }
 
         private void SetInterpolateData(ref CharacterInterpolatedState interpolateData,
-            TransformPredictedState transformPredictData, ReplicatedEntityData replicatedEntityData,
-            SlicePredictedState slicePredictedState, WashPredictedState washPredictedState,
-            TriggerPredictedState triggerPredictedData)
+            TransformPredictedState transformPredictData,
+            SlicePredictedState slicePredictedState,
+            WashPredictedState washPredictedState,
+            SlotPredictedState slotState,
+            ThrowPredictState throwState)
         {
             interpolateData.Position = transformPredictData.Position;
             interpolateData.Rotation = transformPredictData.Rotation;
+            interpolateData.IsTake = slotState.FilledIn != Entity.Null;
+            interpolateData.IsSlice = slicePredictedState.IsSlicing;
+            interpolateData.IsClean = washPredictedState.IsWashing;
+            interpolateData.IsThrow = throwState.IsThrowed;
 
-            interpolateData.MaterialId = (byte) (replicatedEntityData.Id % 4);
-
-            interpolateData.ActionId =
-                (byte) (slicePredictedState.IsSlicing || washPredictedState.IsWashing ? 1 : 0);
-
-            //setup trigger entity 
-            if (triggerPredictedData.TriggeredEntity == Entity.Null)
-                return;
-            var triggerEntity = triggerPredictedData.TriggeredEntity;
-            var triggerState = EntityManager.GetComponentData<TriggeredState>(triggerEntity);
-            triggerState.IsTriggered = true;
-            EntityManager.SetComponentData(triggerEntity, triggerState);
         }
     }
 }

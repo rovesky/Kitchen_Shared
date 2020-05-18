@@ -31,7 +31,10 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashSystemGroup>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowStartSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowEndSystem>());
+
+            
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterServeSystem>());
 

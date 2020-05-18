@@ -10,29 +10,35 @@ namespace FootStone.Kitchen
         public float3 Position;
         public quaternion Rotation;
    
-        public float SqrMagnitude;
-        public byte MaterialId;
-        public byte ActionId;
+        public float Velocity;
+        public bool IsTake;
+        public bool IsSlice;
+        public bool IsClean;
+        public bool IsThrow;
+
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             Position = reader.ReadVector3Q();
             Rotation = reader.ReadQuaternionQ();
-            SqrMagnitude = reader.ReadFloatQ();
-            MaterialId = reader.ReadByte();
-            ActionId = reader.ReadByte();
-           // FSLog.Info($"Deserialize,Position:{Position}");
+            Velocity = reader.ReadFloatQ();
+            IsTake = reader.ReadBoolean();
+            IsSlice = reader.ReadBoolean();
+            IsClean = reader.ReadBoolean();
+            IsThrow = reader.ReadBoolean();
+
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
             writer.WriteVector3Q("position", Position);
             writer.WriteQuaternionQ("rotation", Rotation);
-            writer.WriteFloatQ("sqrMagnitude", SqrMagnitude);
-            writer.WriteByte("materialId", MaterialId);
-            writer.WriteByte("ActionId", ActionId);
+            writer.WriteFloatQ("Velocity", Velocity);
+            writer.WriteBoolean("IsTake",IsTake);
+            writer.WriteBoolean("IsSlice",IsSlice);
+            writer.WriteBoolean("IsClean",IsClean);
+            writer.WriteBoolean("IsThrow",IsThrow);
 
-          //  FSLog.Info($"Serialize,Position:{Position}");
         }
 
         public void Interpolate(ref SerializeContext context, ref CharacterInterpolatedState prevState,
@@ -40,9 +46,11 @@ namespace FootStone.Kitchen
         {
             Position = Vector3.Lerp(prevState.Position, nextState.Position, interpVal);
             Rotation = Quaternion.Lerp(prevState.Rotation, nextState.Rotation, interpVal);
-            SqrMagnitude = math.lerp(prevState.SqrMagnitude, nextState.SqrMagnitude, interpVal);
-            MaterialId = prevState.MaterialId;
-            ActionId = prevState.ActionId;
+            Velocity = math.lerp(prevState.Velocity, nextState.Velocity, interpVal);
+            IsTake = prevState.IsTake;
+            IsSlice = prevState.IsSlice;  
+            IsClean = prevState.IsClean;
+            IsThrow = prevState.IsThrow;
         }
 
         public static IInterpolatedStateSerializerFactory CreateSerializerFactory()

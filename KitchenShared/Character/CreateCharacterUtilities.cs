@@ -94,7 +94,14 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ThrowSetting
             {
-                Velocity = 14.0f
+                Velocity = 14.0f,
+                DelayTick = 10
+            });
+            
+            entityManager.AddComponentData(e, new ThrowPredictState
+            {
+                IsThrowed = false,
+               CurTick = 0
             });
 
             entityManager.AddComponentData(e, new RushSetting

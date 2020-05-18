@@ -15,6 +15,7 @@ namespace FootStone.Kitchen
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearTriggeredSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharTriggeredSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyCharPresentationSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyItemPresentationSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateTriggeredColorSystem>());
