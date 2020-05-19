@@ -106,9 +106,15 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new RushSetting
             {
-                Velocity = 30.0f,
-                Duration = 6
+                Velocity = 28.0f,
+                DurationTick = 5,
+                CooldownTick = 30
             });
+            entityManager.AddComponentData(e, new RushPredictState
+            {
+                CurCooldownTick = 0
+            });
+            
 
             entityManager.AddComponentData(e, new SlicePredictedState()
             {

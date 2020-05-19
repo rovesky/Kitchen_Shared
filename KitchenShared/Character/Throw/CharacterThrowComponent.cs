@@ -13,6 +13,7 @@ namespace FootStone.Kitchen
     {
         public bool IsThrowed;
         public int CurTick;
+
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
             IsThrowed = reader.ReadBoolean();
@@ -21,14 +22,19 @@ namespace FootStone.Kitchen
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
         {
-            writer.WriteBoolean("IsThrowed",IsThrowed);
-           writer.WriteUInt16("CurTick",(ushort)CurTick);
+            writer.WriteBoolean("IsThrowed", IsThrowed);
+            writer.WriteUInt16("CurTick", (ushort) CurTick);
         }
 
         public bool VerifyPrediction(ref ThrowPredictState state)
         {
             return IsThrowed.Equals(state.IsThrowed)
-                   &&CurTick.Equals(state.CurTick);
+                   && CurTick.Equals(state.CurTick);
+        }
+
+        public static IPredictedStateSerializerFactory CreateSerializerFactory()
+        {
+            return new PredictedStateSerializerFactory<ThrowPredictState>();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace FootStone.Kitchen
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
                     ref ThrowPredictState throwState,
-                    in  SlotPredictedState slotState,
+                    in SlotPredictedState slotState,
                     in TransformPredictedState transformState,
                     in ThrowSetting setting,
                     in UserCommand command) =>

@@ -31,11 +31,14 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterDropLitterSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashSystemGroup>());
+
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowStartSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterThrowEndSystem>());
+            
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushStartSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushEndSystem>());
 
             
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterServeSystem>());
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterSlicingSystem>());
@@ -53,7 +56,6 @@ namespace FootStone.Kitchen
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BurntSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCatchFireFlagSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<FireSpreadSystem>());
-            
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
