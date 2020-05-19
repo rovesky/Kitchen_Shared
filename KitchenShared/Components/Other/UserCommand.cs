@@ -17,10 +17,10 @@ namespace FootStone.Kitchen
         public enum Button : uint
         {
             None = 0,
-            Pickup = 1 << 0,
-            Throw = 1 << 1,
-            Jump = 1 << 2,
-            Rush = 1 << 3,
+            Button1 = 1 << 0,
+            Button2 = 1 << 1,
+            Button3 = 1 << 2,
+            Jump = 1 << 3,
             Ability2 = 1 << 4,
             Ability3 = 1 << 5,
             Ability4 = 1 << 6,

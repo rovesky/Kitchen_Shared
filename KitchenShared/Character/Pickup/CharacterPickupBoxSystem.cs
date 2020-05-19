@@ -21,7 +21,7 @@ namespace FootStone.Kitchen
                     in UserCommand command) =>
                 {
 
-                    if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button1))
                         return;
 
                     var pickupedEntity = slotState.FilledIn;

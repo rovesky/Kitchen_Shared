@@ -19,7 +19,7 @@ namespace FootStone.Kitchen
                     in TriggerPredictedState triggerState,
                     in UserCommand command) =>
                 {
-                    if (!command.Buttons.IsSet(UserCommand.Button.Throw))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button2))
                         return;
 
                     if (washState.IsWashing)

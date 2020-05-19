@@ -66,7 +66,7 @@ namespace FootStone.Kitchen
                         return;
                     }
 
-                    if (!command.Buttons.IsSet(UserCommand.Button.Throw))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button2))
                         return;
 
                     FSLog.Info($"CharacterSetSliceSystem,sliceState.IsSlicing:{sliceState.IsSlicing}");

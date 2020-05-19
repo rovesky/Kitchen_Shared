@@ -18,7 +18,7 @@ namespace FootStone.Kitchen
               {
 
                 //  FSLog.Info($"CharacterPickupFlyingSystem,entity:{entity}");
-                if (command.Buttons.IsSet(UserCommand.Button.Throw))
+                if (command.Buttons.IsSet(UserCommand.Button.Button2))
                    return;
 
                 var pickupEntity = slotState.FilledIn;

@@ -22,7 +22,7 @@ namespace FootStone.Kitchen
                     in UserCommand command) =>
                 {
                     //未按键返回
-                    if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button1))
                         return;
 
                     //没有拾取返回

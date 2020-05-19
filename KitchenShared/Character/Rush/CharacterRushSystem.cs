@@ -19,7 +19,7 @@ namespace FootStone.Kitchen
                     in UserCommand command) =>
                 {
 
-                    if (!command.Buttons.IsSet(UserCommand.Button.Rush))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button3))
                         return;
 
                     if (rushState.CurCooldownTick > 0)
@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
 
                     rushState.IsRushed = true;
                     rushState.CurCooldownTick = setting.CooldownTick;
-                    FSLog.Info($"CharacterRushSystem, rushState.CurCooldownTick:{rushState.CurCooldownTick} ");
+                  //  FSLog.Info($"CharacterRushSystem, rushState.CurCooldownTick:{rushState.CurCooldownTick} ");
 
                 }).Run();
         }

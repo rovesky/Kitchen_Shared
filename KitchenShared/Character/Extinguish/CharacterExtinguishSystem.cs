@@ -15,7 +15,7 @@ namespace FootStone.Kitchen
                     in UserCommand command) =>
                 {
                     //  FSLog.Info("PickSystem Update");
-                    if (!command.Buttons.IsSet(UserCommand.Button.Throw))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button2))
                         return;
 
                     var pickupedEntity = slotState.FilledIn;
@@ -81,7 +81,7 @@ namespace FootStone.Kitchen
                     in SlotPredictedState slotState,
                     in UserCommand command) =>
                 {
-                    if (!command.Buttons.IsSet(UserCommand.Button.Throw))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button2))
                         return;
 
                     var pickupedEntity = slotState.FilledIn;

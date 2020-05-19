@@ -20,7 +20,7 @@ namespace FootStone.Kitchen
                     in TransformPredictedState transformState,
                     in VelocityPredictedState velocityState) =>
                 {
-                    if (!command.Buttons.IsSet(UserCommand.Button.Pickup))
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button1))
                         return;
 
                     var worldTick = GetSingleton<WorldTime>().Tick;

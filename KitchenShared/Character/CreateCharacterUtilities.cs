@@ -107,7 +107,7 @@ namespace FootStone.Kitchen
             entityManager.AddComponentData(e, new RushSetting
             {
                 Velocity = 28.0f,
-                DurationTick = 5,
+                DurationTick = 6,
                 CooldownTick = 30
             });
             entityManager.AddComponentData(e, new RushPredictState

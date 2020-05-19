@@ -74,22 +74,26 @@ namespace FootStone.Kitchen
     public struct PlateDirty : IComponentData
     {
     }
-
-    
     /// <summary>
     /// ¹ø±êÇ©
     /// </summary>
     public struct Pot : IComponentData
     {
     }
-
-
-      
+    
     /// <summary>
     /// Ãð»ðÆ÷±êÇ©
     /// </summary>
     public struct Extinguisher : IComponentData
     {
+    }
+
+    /// <summary>
+    /// µ¶±êÇ©
+    /// </summary>
+    public struct Knife : IComponentData
+    {
+        
     }
   
 
