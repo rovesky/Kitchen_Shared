@@ -8,7 +8,8 @@ namespace FootStone.Kitchen
     /// </summary>
     public struct TableSlice : IComponentData
     {
-     
+        public Entity Knife;
+
     }
 
 }
