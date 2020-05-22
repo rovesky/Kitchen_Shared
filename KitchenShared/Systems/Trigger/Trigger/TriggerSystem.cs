@@ -11,22 +11,23 @@ namespace FootStone.Kitchen
     public class TriggerSystem : SystemBase
     {
         private KitchenBuildPhysicsWorld m_BuildPhysicsWorldSystem;
-        private EntityQuery m_TriggerVolumeGroup;
+        private EntityQuery m_TriggeredGroup;
 
         protected override void OnCreate()
         {
             m_BuildPhysicsWorldSystem = World.GetExistingSystem<KitchenBuildPhysicsWorld>();
-            m_TriggerVolumeGroup = GetEntityQuery(typeof(TriggeredSetting));
+            m_TriggeredGroup = GetEntityQuery(typeof(TriggeredSetting));
         }
 
         protected override unsafe void OnUpdate()
         {
-            var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
+            var triggeredEntities = m_TriggeredGroup.ToEntityArray(Allocator.TempJob);
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
 
-            Entities
+            Dependency = Entities
                 .WithAll<ServerEntity>()
-                .WithReadOnly(volumeEntities)
+                .WithBurst()
+                .WithReadOnly(triggeredEntities)
                 .ForEach((Entity entity,
                     ref TriggerPredictedState triggerState,
                     in TriggerSetting setting,
@@ -52,14 +53,11 @@ namespace FootStone.Kitchen
 
                     var selfRigidBodyIndex = physicsWorld.GetRigidBodyIndex(entity);
                     physicsWorld.CalculateDistance(input, ref distanceHits);
-
-                    // if (volumeEntities.Length > 0)
-                    //FSLog.Info($"volumeEntities.Length:{volumeEntities.Length}");
-
-                    var triggerIndex = CheckTrigger(ref physicsWorld, ref volumeEntities,
+               
+                    var triggerIndex = CheckTrigger(ref physicsWorld, ref triggeredEntities,
                         selfRigidBodyIndex, ref distanceHits);
 
-                     triggerState.TriggeredEntity = triggerIndex < 0
+                    triggerState.TriggeredEntity = triggerIndex < 0
                         ? Entity.Null
                         : physicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
 
@@ -68,9 +66,9 @@ namespace FootStone.Kitchen
 
                     distanceHits.Dispose();
                 })
-                //   .WithDeallocateOnJobCompletion(volumeEntities)
-                .Run();
-            volumeEntities.Dispose();
+                .WithDeallocateOnJobCompletion(triggeredEntities)
+                .ScheduleParallel(Dependency);
+            CompleteDependency();
         }
 
         private static int CheckTrigger(ref PhysicsWorld world, ref NativeArray<Entity> volumeEntities,
