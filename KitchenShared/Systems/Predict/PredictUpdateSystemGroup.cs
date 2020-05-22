@@ -4,11 +4,23 @@ using Unity.Entities;
 
 namespace FootStone.Kitchen
 {
+    [UnityEngine.ExecuteAlways]
+    [DisableAutoCreation]
+    public class BeginPredictUpdateEntityCommandBufferSystem : EntityCommandBufferSystem {}
+
+
+    [UnityEngine.ExecuteAlways]
+    [DisableAutoCreation]
+    public class EndPredictUpdateEntityCommandBufferSystem : EntityCommandBufferSystem {}
+
+
     [DisableAutoCreation]
     public class PredictUpdateSystemGroup : NoSortComponentSystemGroup
     {
         protected override void OnCreate()
         {
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<BeginPredictUpdateEntityCommandBufferSystem>());
+
        
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenBuildPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenStepPhysicsWorld>());
@@ -59,6 +71,9 @@ namespace FootStone.Kitchen
 
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
+
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<EndPredictUpdateEntityCommandBufferSystem>());
+
         }
 
         protected override void OnUpdate()

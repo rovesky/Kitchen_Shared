@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
+    [DisableAutoCreation]
     public class UpdateCharTriggeredSystem : SystemBase
     {
 

@@ -1,5 +1,6 @@
 using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -8,10 +9,16 @@ namespace FootStone.Kitchen
         public float Distance;
     }
 
+    public struct AllowTrigger : IComponentData
+    {
+
+    }
+
     public struct TriggerPredictedState : IComponentData, IPredictedState<TriggerPredictedState>
     {
         public Entity TriggeredEntity;
         public bool IsAllowTrigger;
+        public float3 LastPos;
 
        // public Entity PreTriggeredEntity;
 

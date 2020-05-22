@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -24,8 +25,37 @@ namespace FootStone.Kitchen
             var triggeredEntities = m_TriggeredGroup.ToEntityArray(Allocator.TempJob);
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
 
+            Entities
+                .WithNone<AllowTrigger>() 
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    ref TriggerPredictedState triggerState,
+                 //   in TransformPredictedState transformState,
+                    in VelocityPredictedState velocityState)=>
+            {
+                if (triggerState.IsAllowTrigger && 
+                    !( Vector3.SqrMagnitude(velocityState.Linear) <0.001))
+                    EntityManager.AddComponent<AllowTrigger>(entity);
+               
+            }) .Run();
+
+            Entities
+                .WithAll<AllowTrigger>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    ref TriggerPredictedState triggerState,
+               //     in TransformPredictedState transformState,
+                    in VelocityPredictedState velocityState)=>
+                {
+                    if (!triggerState.IsAllowTrigger || 
+                        Vector3.SqrMagnitude(velocityState.Linear) <0.001)
+                        EntityManager.RemoveComponent<AllowTrigger>(entity);
+                   // triggerState.LastPos = transformState.Position;
+                }).Run();
+
             Dependency = Entities
-                .WithAll<ServerEntity>()
+                .WithAll<ServerEntity,AllowTrigger,PhysicsVelocity>()
+                .WithChangeFilter<TransformPredictedState>()
                 .WithBurst()
                 .WithReadOnly(triggeredEntities)
                 .ForEach((Entity entity,
@@ -34,6 +64,12 @@ namespace FootStone.Kitchen
                     in TransformPredictedState transformState,
                     in PhysicsCollider collider) =>
                 {
+                    //var i = 0;
+                    //if (!triggeredEntities.Contains(entity))
+                    //    i++;
+                        
+                    //return;
+                    FSLog.Info($"Trigger:entity{entity},pos:{transformState.Position}");
                     if (!triggerState.IsAllowTrigger)
                         return;
 
