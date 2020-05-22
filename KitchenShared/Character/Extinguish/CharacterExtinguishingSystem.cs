@@ -20,19 +20,12 @@ namespace FootStone.Kitchen
 
         protected override void OnUpdate()
         {
-            var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
-            if (volumeEntities.Length == 0)
-            {
-                volumeEntities.Dispose();
-                return;
-            }
 
-            var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
-
+         
             Entities
                 .WithAll<ServerEntity>()
                 .WithStructuralChanges()
-                .WithReadOnly(volumeEntities)
+            //    .WithReadOnly(volumeEntities)
                 .ForEach((in SlotPredictedState slotState,
                     in TransformPredictedState transformState) =>
                 {
@@ -59,9 +52,20 @@ namespace FootStone.Kitchen
                         Filter = CollisionFilter.Default
                     };
 
+                    ref var physicsWorld = ref m_BuildPhysicsWorldSystem.PhysicsWorld;
+
                     var raycastHits = new NativeList<RaycastHit>(Allocator.Temp);
                     if (!physicsWorld.CastRay(input, ref raycastHits))
                         return;
+
+
+                    var volumeEntities = m_TriggerVolumeGroup.ToEntityArray(Allocator.TempJob);
+                    if (volumeEntities.Length == 0)
+                    {
+                        volumeEntities.Dispose();
+                        return;
+                    }
+               
 
                     for (var i = 0; i < raycastHits.Length; i++)
                     {
@@ -85,12 +89,12 @@ namespace FootStone.Kitchen
 
                         EntityManager.SetComponentData(e, catchFireState);
                     }
-
+                    volumeEntities.Dispose();
                     raycastHits.Dispose();
                 })
                 //   .WithDeallocateOnJobCompletion(volumeEntities)
                 .Run();
-            volumeEntities.Dispose();
+            
         }
     }
 }

@@ -13,14 +13,21 @@ namespace FootStone.Kitchen
         {
             Entities.WithAll<ServerEntity>()
                 .WithStructuralChanges()
+                .WithNone<CatchFire>()
                 .ForEach((Entity entity,
                     in CatchFirePredictedState catchFireState) =>
                 {
                     if (catchFireState.IsCatchFire)
                         EntityManager.AddComponentData(entity, new CatchFire());
-                    else
+                }).Run();
+
+            Entities.WithAll<ServerEntity,CatchFire>()
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    in CatchFirePredictedState catchFireState) =>
+                {
+                    if (!catchFireState.IsCatchFire)
                         EntityManager.RemoveComponent<CatchFire>(entity);
-                    
 
                 }).Run();
         }
