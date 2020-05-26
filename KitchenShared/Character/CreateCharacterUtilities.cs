@@ -54,7 +54,7 @@ namespace FootStone.Kitchen
             {
                 Gravity = PhysicsStep.Default.Gravity,
                 SkinWidth = 0.02f,
-                Velocity = 8.0f,
+                Velocity = 9.0f,
                 MaxVelocity = 30.0f,
                 RotationVelocity = 22.5f,
                 JumpUpwardsVelocity = 4.0f,
@@ -94,7 +94,7 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new ThrowSetting
             {
-                Velocity = 14.0f,
+                Velocity = 17.0f,
                 DelayTick = 10
             });
             

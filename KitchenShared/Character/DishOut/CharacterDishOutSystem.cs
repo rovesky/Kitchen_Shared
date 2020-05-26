@@ -17,6 +17,7 @@ namespace FootStone.Kitchen
                 .WithName("CharacterDishOut")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
+                  //  ref PlatePredictedState plateState,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
                     in UserCommand command) =>
@@ -38,6 +39,16 @@ namespace FootStone.Kitchen
                         preOwner = pickupEntity;
                         pickupEntity = EntityManager.GetComponentData<SlotPredictedState>(pickupEntity).FilledIn;
                     }
+
+
+                    //拾取的道具是盘子，并且盘子只有一个道具，获取这个道具
+                    if (HasComponent<Plate>(pickupEntity))
+                    {
+                        preOwner = pickupEntity;
+                        var multiSlotState = GetComponent<MultiSlotPredictedState>(pickupEntity);
+                        pickupEntity = multiSlotState.Value.GetTail();
+                    }
+
 
                     if (pickupEntity == Entity.Null)
                          return;
@@ -71,6 +82,11 @@ namespace FootStone.Kitchen
                     if (plateSlotState.Value.IsFull())
                         return;
 
+                    var plateState = GetComponent<PlatePredictedState>(plateEntity);
+                    //已经生成product
+                    if(plateState.IsGenProduct)
+                       return;
+
                     //食材重复
                     if (plateSlotState.Value.IsDuplicate(EntityManager,pickupEntity))
                         return;
@@ -83,10 +99,16 @@ namespace FootStone.Kitchen
                         EntityManager.SetComponentData(preOwner, potState);
                     }
 
+                    //盘子取出道具
+                    if (EntityManager.HasComponent<Plate>(preOwner))
+                    {
+                        var multiSlotState = GetComponent<MultiSlotPredictedState>(preOwner);
+                        multiSlotState.Value.TakeOut();
+                    }
+
                     //放入盘子
                     ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                         pickupEntity, plateEntity, preOwner);
-            
 
                     //未成品，直接返回
                     plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
@@ -109,12 +131,10 @@ namespace FootStone.Kitchen
                         despawnState.IsDespawn = true;
                         despawnState.Tick = 0;
                         EntityManager.SetComponentData(fillIn,despawnState);
-
                         //FSLog.Info($"despwan entity:{fillIn}");
                     }
 
                     EntityManager.SetComponentData(plateEntity,plateSlotState);
-
                   
                     //生成新道具
                     var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
@@ -128,9 +148,9 @@ namespace FootStone.Kitchen
                         Owner = plateEntity,
                         StartTick = GetSingleton<WorldTime>().Tick
                     });
-                    
 
-                
+                    plateState.IsGenProduct = true;
+                    SetComponent(plateEntity,plateState);
                 }).Run();
         }
     }
@@ -139,7 +159,6 @@ namespace FootStone.Kitchen
     [DisableAutoCreation]
     public class UpdatePlateProductSystem : SystemBase
     {
-        
         protected override void OnUpdate()
         {
             Entities.WithAll<ServerEntity>()
@@ -147,16 +166,20 @@ namespace FootStone.Kitchen
                 .ForEach((ref PlatePredictedState plateState,
                     in MultiSlotPredictedState slotState) =>
                 {
-                  
                     if(slotState.Value.Count() != 1)
                         return;
 
                     if (!EntityManager.HasComponent<Product>(slotState.Value.FilledIn1))
                         return;
 
-                  
+                    if(plateState.Product != Entity.Null)
+                        return;
+
+                    if(!plateState.IsGenProduct)
+                        return;
+
                     plateState.Product = slotState.Value.FilledIn1;
-                //    FSLog.Info($"UpdatePlateProductSystem:{plateState.Product}");
+                   // FSLog.Info($"UpdatePlateProductSystem:{plateState.Product}");
 
                 }).Run();
         }

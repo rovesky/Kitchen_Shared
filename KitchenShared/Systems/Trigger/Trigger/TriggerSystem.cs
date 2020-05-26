@@ -69,7 +69,7 @@ namespace FootStone.Kitchen
                     //    i++;
                         
                     //return;
-                    FSLog.Info($"Trigger:entity{entity},pos:{transformState.Position}");
+                  //  FSLog.Info($"Trigger:entity{entity},pos:{transformState.Position}");
                     if (!triggerState.IsAllowTrigger)
                         return;
 

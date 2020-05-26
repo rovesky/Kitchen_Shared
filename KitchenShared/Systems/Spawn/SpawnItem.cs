@@ -17,6 +17,6 @@ namespace FootStone.Kitchen
 
     public struct SpawnItemArray : IComponentData
     {
-
+        public DynamicBuffer<SpawnItemRequest> requests;
     }
 }

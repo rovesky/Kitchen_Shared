@@ -53,11 +53,13 @@ namespace FootStone.Kitchen
             var translation = entityManager.GetComponentData<Translation>(e);
             var rotation = entityManager.GetComponentData<Rotation>(e);
             //   FSLog.Info($"CreateItemComponent，translation：{translation.Value}");
-            entityManager.AddComponentData(e, new OffsetSetting()
-            {
-                Pos = translation.Value,
-                Rot = rotation.Value
-            });
+
+            if(!entityManager.HasComponent<OffsetSetting>(e))
+                entityManager.AddComponentData(e, new OffsetSetting()
+                {
+                    Pos = translation.Value,
+                    Rot = rotation.Value
+                });
             var newPosition = (float3) position + translation.Value;
             entityManager.SetComponentData(e, new Translation {Value = newPosition});
             entityManager.SetComponentData(e, new Rotation {Value = rotation.Value});
@@ -153,7 +155,8 @@ namespace FootStone.Kitchen
                 entityManager.AddComponentData(e, new Plate());
                 entityManager.AddComponentData(e, new PlatePredictedState()
                 {
-                    Product = Entity.Null
+                    Product = Entity.Null,
+                    IsGenProduct = false
                 });
             }
 
