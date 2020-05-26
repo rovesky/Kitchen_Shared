@@ -17,7 +17,6 @@ namespace FootStone.Kitchen
                 .WithName("CharacterDishOut")
                 .WithStructuralChanges()
                 .ForEach((Entity entity,
-                  //  ref PlatePredictedState plateState,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
                     in UserCommand command) =>
@@ -31,30 +30,83 @@ namespace FootStone.Kitchen
                     if (pickupEntity == Entity.Null)
                         return;
 
+                    //拾取的道具不是盘子返回
+                    if (!HasComponent<Plate>(pickupEntity))
+                        return;
+
+                    //没有触发返回
+                    var triggerEntity = triggerState.TriggeredEntity;
+                    if (triggerEntity == Entity.Null)
+                        return;
+
+                    //触发的不是Table返回
+                    if (!HasComponent<Table>(triggerEntity))
+                        return;
+
+                    //Table上道具不能装盘返回
+                    var slot = GetComponent<SlotPredictedState>(triggerEntity);
+                    if (slot.FilledIn == Entity.Null)
+                        return;
+
+                    //Table上道具不能装盘
+                    if (!HasComponent<CanDishOut>(slot.FilledIn))
+                        return;
+
+                    var plateEntity = pickupEntity;
+                    var foodEntity = slot.FilledIn;
+                    var preOwner = triggerEntity;
+                    
+                    if(!DishOut(command,plateEntity,foodEntity,preOwner))
+                        return;
+
+                  //  ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+                     //   plateEntity, triggerEntity,entity);
+                }).Run();
+
+
+              Entities
+                .WithAll<ServerEntity>()
+                .WithName("CharacterDishOut1")
+                .WithStructuralChanges()
+                .ForEach((Entity entity,
+                    in TriggerPredictedState triggerState,
+                    in SlotPredictedState slotState,
+                    in UserCommand command) =>
+                {
+                    //未按键返回
+                    if (!command.Buttons.IsSet(UserCommand.Button.Button1))
+                        return;
+
+                    //没有拾取返回
+                    var pickupEntity = slotState.FilledIn;
+                    if (pickupEntity == Entity.Null)
+                        return;
+
+                    var foodEntity = pickupEntity;
+
                     var preOwner = entity;
                     //拾取的道具是锅，并且锅没有糊，获取锅里的道具
-                    if (EntityManager.HasComponent<Pot>(pickupEntity) && 
-                        !EntityManager.HasComponent<Burnt>(pickupEntity))
+                    if (HasComponent<Pot>(pickupEntity) && 
+                        !HasComponent<Burnt>(pickupEntity))
                     {
                         preOwner = pickupEntity;
-                        pickupEntity = EntityManager.GetComponentData<SlotPredictedState>(pickupEntity).FilledIn;
+                        foodEntity = GetComponent<SlotPredictedState>(pickupEntity).FilledIn;
                     }
 
 
-                    //拾取的道具是盘子，并且盘子只有一个道具，获取这个道具
+                    //拾取的道具是盘子，获取盘子的一个道具
                     if (HasComponent<Plate>(pickupEntity))
                     {
                         preOwner = pickupEntity;
                         var multiSlotState = GetComponent<MultiSlotPredictedState>(pickupEntity);
-                        pickupEntity = multiSlotState.Value.GetTail();
+                        foodEntity = multiSlotState.Value.GetTail();
                     }
 
-
-                    if (pickupEntity == Entity.Null)
+                    if (foodEntity == Entity.Null)
                          return;
                    
-                    //拾取的道具不能装盘返回
-                    if (!EntityManager.HasComponent<CanDishOut>(pickupEntity))
+                    //食物不能装盘返回
+                    if (!HasComponent<CanDishOut>(foodEntity))
                         return;
 
                     //没有触发返回
@@ -74,84 +126,84 @@ namespace FootStone.Kitchen
                     //Table上不是盘子返回
                     if (!EntityManager.HasComponent<Plate>(slot.FilledIn))
                         return;
-
-                    var plateEntity = slot.FilledIn;
-                    var plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
-
-                    //盘子已满
-                    if (plateSlotState.Value.IsFull())
-                        return;
-
-                    var plateState = GetComponent<PlatePredictedState>(plateEntity);
-                    //已经生成product
-                    if(plateState.IsGenProduct)
-                       return;
-
-                    //食材重复
-                    if (plateSlotState.Value.IsDuplicate(EntityManager,pickupEntity))
+                
+                    if(!DishOut(command,slot.FilledIn,foodEntity,preOwner))
                         return;
 
                     //锅设置为空
-                    if (EntityManager.HasComponent<Pot>(preOwner))
+                    if (HasComponent<Pot>(preOwner))
                     {
-                        var potState = EntityManager.GetComponentData<PotPredictedState>(preOwner);
+                        var potState = GetComponent<PotPredictedState>(preOwner);
                         potState.State = PotState.Empty;
-                        EntityManager.SetComponentData(preOwner, potState);
+                        SetComponent(preOwner, potState);
                     }
-
-                    //盘子取出道具
-                    if (EntityManager.HasComponent<Plate>(preOwner))
-                    {
-                        var multiSlotState = GetComponent<MultiSlotPredictedState>(preOwner);
-                        multiSlotState.Value.TakeOut();
-                    }
-
-                    //放入盘子
-                    ItemAttachUtilities.ItemAttachToOwner(EntityManager,
-                        pickupEntity, plateEntity, preOwner);
-
-                    //未成品，直接返回
-                    plateSlotState = EntityManager.GetComponentData<MultiSlotPredictedState>(plateEntity);
-                    var menuTemplate = MenuUtilities.MatchMenuTemplate(EntityManager, plateSlotState);
-                    if(menuTemplate == MenuTemplate.Null)
-                        return;
-
-                    var worldTick = GetSingleton<WorldTime>().Tick;
-                    FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
-
-                    //删除原来的道具
-                    var count = plateSlotState.Value.Count();
-                    for (var i = 0; i < count; ++i)
-                    {
-                        var fillIn = plateSlotState.Value.TakeOut();
-                        if (fillIn == Entity.Null) 
-                            continue;
-
-                        var despawnState = EntityManager.GetComponentData<DespawnPredictedState>(fillIn);
-                        despawnState.IsDespawn = true;
-                        despawnState.Tick = 0;
-                        EntityManager.SetComponentData(fillIn,despawnState);
-                        //FSLog.Info($"despwan entity:{fillIn}");
-                    }
-
-                    EntityManager.SetComponentData(plateEntity,plateSlotState);
                   
-                    //生成新道具
-                    var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
-                    var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
-                    
-                    buffer.Add(new SpawnItemRequest()
-                    {
-                        Type = menuTemplate.Product,
-                        DeferFrame = 0,
-                        OffPos = float3.zero,
-                        Owner = plateEntity,
-                        StartTick = GetSingleton<WorldTime>().Tick
-                    });
-
-                    plateState.IsGenProduct = true;
-                    SetComponent(plateEntity,plateState);
                 }).Run();
+        }
+
+        private bool DishOut(UserCommand command,Entity plateEntity, Entity foodEntity, Entity preOwner)
+        {
+            var plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);
+
+            //盘子已满
+            if (plateSlotState.Value.IsFull())
+                return false;
+
+            //食材重复
+            if (plateSlotState.Value.IsDuplicate(EntityManager, foodEntity))
+                return false;
+
+            //已经生成product
+            var plateState = GetComponent<PlatePredictedState>(plateEntity);
+            if (plateState.IsGenProduct)
+                return false;
+
+            //放入盘子
+            ItemAttachUtilities.ItemAttachToOwner(EntityManager,
+                foodEntity, plateEntity, preOwner);
+
+            //未成品，直接返回
+            plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);
+            var menuTemplate = MenuUtilities.MatchMenuTemplate(EntityManager, plateSlotState);
+            if (menuTemplate == MenuTemplate.Null)
+                return true;
+
+            var worldTick = GetSingleton<WorldTime>().Tick;
+            FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
+
+            //删除原来的道具
+            var count = plateSlotState.Value.Count();
+            for (var i = 0; i < count; ++i)
+            {
+                var fillIn = plateSlotState.Value.TakeOut();
+                if (fillIn == Entity.Null)
+                    continue;
+
+                var despawnState = GetComponent<DespawnPredictedState>(fillIn);
+                despawnState.IsDespawn = true;
+                despawnState.Tick = 0;
+                SetComponent(fillIn, despawnState);
+                //FSLog.Info($"despwan entity:{fillIn}");
+            }
+           
+            SetComponent(plateEntity, plateSlotState);
+
+            //生成新道具
+            var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
+            var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
+
+            buffer.Add(new SpawnItemRequest()
+            {
+                Type = menuTemplate.Product,
+                DeferFrame = 0,
+                OffPos = float3.zero,
+                Owner = plateEntity,
+                StartTick = GetSingleton<WorldTime>().Tick
+            });
+
+            plateState.IsGenProduct = true;
+            SetComponent(plateEntity, plateState);
+            return true;
         }
     }
 
