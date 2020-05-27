@@ -10,7 +10,7 @@ namespace FootStone.Kitchen
         public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
             Entity owner, Entity preOwner, float3 pos,quaternion rot)
         {
-            FSLog.Info($"ItemAttachToOwner,owner:{owner}");
+            FSLog.Info($"ItemAttachToOwner,owner:{owner},preOnwer:{preOwner}");
             var triggerState = entityManager.GetComponentData<TriggerPredictedState>(item);
             triggerState.TriggeredEntity = Entity.Null;
             triggerState.IsAllowTrigger = false;

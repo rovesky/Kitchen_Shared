@@ -12,6 +12,7 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
+            //食物在桌上
             Entities
                 .WithAll<ServerEntity>()
                 .WithName("CharacterDishOut")
@@ -57,13 +58,12 @@ namespace FootStone.Kitchen
                     var preOwner = triggerEntity;
                     
                     if(!DishOut(command,plateEntity,foodEntity,preOwner))
+                        // ReSharper disable once RedundantJumpStatement
                         return;
 
-                  //  ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
-                     //   plateEntity, triggerEntity,entity);
                 }).Run();
 
-
+              //食物在手上
               Entities
                 .WithAll<ServerEntity>()
                 .WithName("CharacterDishOut1")
@@ -83,9 +83,8 @@ namespace FootStone.Kitchen
                         return;
 
                     var foodEntity = pickupEntity;
-
                     var preOwner = entity;
-                    //拾取的道具是锅，并且锅没有糊，获取锅里的道具
+                    //拾取的道具是锅，并且锅没有糊，获取锅里的食物
                     if (HasComponent<Pot>(pickupEntity) && 
                         !HasComponent<Burnt>(pickupEntity))
                     {
@@ -94,7 +93,7 @@ namespace FootStone.Kitchen
                     }
 
 
-                    //拾取的道具是盘子，获取盘子的一个道具
+                    //拾取的道具是盘子，获取盘子里的最后一个食物
                     if (HasComponent<Plate>(pickupEntity))
                     {
                         preOwner = pickupEntity;
@@ -115,16 +114,16 @@ namespace FootStone.Kitchen
                         return;
 
                     //触发的不是Table返回
-                    if (!EntityManager.HasComponent<Table>(triggerEntity))
+                    if (!HasComponent<Table>(triggerEntity))
                         return;
 
                     //Table上没有道具返回
-                    var slot = EntityManager.GetComponentData<SlotPredictedState>(triggerEntity);
+                    var slot = GetComponent<SlotPredictedState>(triggerEntity);
                     if (slot.FilledIn == Entity.Null)
                         return;
 
                     //Table上不是盘子返回
-                    if (!EntityManager.HasComponent<Plate>(slot.FilledIn))
+                    if (!HasComponent<Plate>(slot.FilledIn))
                         return;
                 
                     if(!DishOut(command,slot.FilledIn,foodEntity,preOwner))
@@ -157,7 +156,7 @@ namespace FootStone.Kitchen
             var plateState = GetComponent<PlatePredictedState>(plateEntity);
             if (plateState.IsGenProduct)
                 return false;
-
+      
             //放入盘子
             ItemAttachUtilities.ItemAttachToOwner(EntityManager,
                 foodEntity, plateEntity, preOwner);
@@ -192,6 +191,8 @@ namespace FootStone.Kitchen
             var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
             var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
 
+          //  var spawnFoodArray = GetSingleton<SpawnItemArray>();
+
             buffer.Add(new SpawnItemRequest()
             {
                 Type = menuTemplate.Product,
@@ -221,7 +222,7 @@ namespace FootStone.Kitchen
                     if(slotState.Value.Count() != 1)
                         return;
 
-                    if (!EntityManager.HasComponent<Product>(slotState.Value.FilledIn1))
+                    if (!HasComponent<Product>(slotState.Value.FilledIn1))
                         return;
 
                     if(plateState.Product != Entity.Null)
