@@ -103,7 +103,7 @@ namespace FootStone.Kitchen
 
             entityManager.AddComponentData(e, new TriggerSetting
             {
-                Distance = 0.1f
+                Distance = 0.01f
             });
 
             entityManager.AddComponentData(e, new TriggerPredictedState

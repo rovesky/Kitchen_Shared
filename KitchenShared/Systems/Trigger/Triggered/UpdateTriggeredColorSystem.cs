@@ -16,7 +16,7 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     ref TriggeredState state) =>
                 {
-                    state.IsTriggered = false;
+                    state.TriggerEntity= Entity.Null;
                 }).Run();
         }
     }
@@ -33,13 +33,15 @@ namespace FootStone.Kitchen
                     in TriggeredState state,
                     in TriggeredSetting setting) =>
                 {
+
+                    var isRenderTriggered = state.TriggerEntity != Entity.Null &&
+                        HasComponent<LocalCharacter>(state.TriggerEntity);
+
                     if (EntityManager.HasComponent<RenderMesh>(entity))
                     {
-                      //  if(state.IsTriggered)
-                        //   FSLog.Info($"entity:{entity},state.IsTriggered:{state.IsTriggered}");
-                        var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
+                       var volumeRenderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
                         volumeRenderMesh.material =
-                            state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
+                            isRenderTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
                         EntityManager.SetSharedComponentData(entity, volumeRenderMesh);
                         // return;
                     }
@@ -51,7 +53,7 @@ namespace FootStone.Kitchen
                     var renderers = presentationObject.GetComponentsInChildren<MeshRenderer>();
 
                     foreach (var renderer in renderers)
-                        renderer.material = state.IsTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
+                        renderer.material = isRenderTriggered ? setting.TriggeredMaterial : setting.OriginMaterial;
                 }).Run();
         }
     }

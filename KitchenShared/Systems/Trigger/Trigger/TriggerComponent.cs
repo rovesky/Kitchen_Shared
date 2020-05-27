@@ -1,6 +1,5 @@
 using FootStone.ECS;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -18,9 +17,6 @@ namespace FootStone.Kitchen
     {
         public Entity TriggeredEntity;
         public bool IsAllowTrigger;
-        public float3 LastPos;
-
-       // public Entity PreTriggeredEntity;
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {

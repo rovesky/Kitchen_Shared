@@ -21,7 +21,8 @@ namespace FootStone.Kitchen
                         return;
                     var triggerEntity = triggerPredictedData.TriggeredEntity;
                     var triggerState = EntityManager.GetComponentData<TriggeredState>(triggerEntity);
-                    triggerState.IsTriggered = true;
+                  //  triggerState.IsTriggered = true;
+                    triggerState.TriggerEntity = entity;
                     EntityManager.SetComponentData(triggerEntity, triggerState);
 
                 }).Run();
