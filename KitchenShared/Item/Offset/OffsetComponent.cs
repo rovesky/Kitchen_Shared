@@ -3,9 +3,9 @@ using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
-    public struct OffsetSetting : IComponentData
-    {
-        public float3 Pos;
-        public quaternion Rot;
-    }
+    //public struct OffsetSetting : IComponentData
+    //{
+    //    public float3 Pos;
+    //    public quaternion Rot;
+    //}
 }

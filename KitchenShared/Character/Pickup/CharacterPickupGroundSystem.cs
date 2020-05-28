@@ -46,12 +46,12 @@ namespace FootStone.Kitchen
                         FSLog.Info(
                             $"PutDownItem,tick:{command.RenderTick},worldTick:{worldTick},velocityState.Linear:{velocityState.Linear}");
                         var ownerSlot = EntityManager.GetComponentData<SlotSetting>(entity);
-                        var offset = EntityManager.GetComponentData<OffsetSetting>(pickupedEntity);
+                      //  var offset = EntityManager.GetComponentData<OffsetSetting>(pickupedEntity);
 
                         ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
                             pickupedEntity,
                             entity,
-                            transformState.Position + math.mul(transformState.Rotation,ownerSlot.Pos + offset.Pos)  ,
+                            transformState.Position + math.mul(transformState.Rotation,ownerSlot.Pos )  ,
                             transformState.Rotation,
                             velocityState.Linear);
 

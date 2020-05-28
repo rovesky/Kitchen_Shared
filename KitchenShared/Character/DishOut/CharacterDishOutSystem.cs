@@ -20,6 +20,7 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
+                    in TransformPredictedState transformState,
                     in UserCommand command) =>
                 {
                     //未按键返回
@@ -57,7 +58,7 @@ namespace FootStone.Kitchen
                     var foodEntity = slot.FilledIn;
                     var preOwner = triggerEntity;
                     
-                    if(!DishOut(command,plateEntity,foodEntity,preOwner))
+                    if(!DishOut(command,plateEntity,foodEntity,preOwner,transformState.Rotation))
                         // ReSharper disable once RedundantJumpStatement
                         return;
 
@@ -71,6 +72,7 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
+                    in TransformPredictedState transformState,
                     in UserCommand command) =>
                 {
                     //未按键返回
@@ -126,7 +128,7 @@ namespace FootStone.Kitchen
                     if (!HasComponent<Plate>(slot.FilledIn))
                         return;
                 
-                    if(!DishOut(command,slot.FilledIn,foodEntity,preOwner))
+                    if(!DishOut(command,slot.FilledIn,foodEntity,preOwner,transformState.Rotation))
                         return;
 
                     //锅设置为空
@@ -140,7 +142,8 @@ namespace FootStone.Kitchen
                 }).Run();
         }
 
-        private bool DishOut(UserCommand command,Entity plateEntity, Entity foodEntity, Entity preOwner)
+        private bool DishOut(UserCommand command,Entity plateEntity, 
+            Entity foodEntity, Entity preOwner,quaternion rotation)
         {
             var plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);
 
@@ -159,7 +162,7 @@ namespace FootStone.Kitchen
       
             //放入盘子
             ItemAttachUtilities.ItemAttachToOwner(EntityManager,
-                foodEntity, plateEntity, preOwner);
+                foodEntity, plateEntity, preOwner,float3.zero,rotation );
 
             //未成品，直接返回
             plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);

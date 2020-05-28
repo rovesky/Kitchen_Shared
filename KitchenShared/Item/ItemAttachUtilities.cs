@@ -1,13 +1,15 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
+
 
 namespace FootStone.Kitchen
 {
 
     public static class ItemAttachUtilities
     {
-        public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
+        public static void ItemAttachToOwner1(EntityManager entityManager, Entity item,
             Entity owner, Entity preOwner, float3 pos,quaternion rot)
         {
             FSLog.Info($"ItemAttachToOwner,owner:{owner},preOnwer:{preOwner}");
@@ -34,11 +36,16 @@ namespace FootStone.Kitchen
             velocityPredictedState.MotionType = MotionType.Static;
             entityManager.SetComponentData(item, velocityPredictedState);
         }
-        
-   
 
         public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
             Entity owner, Entity preOwner)
+        {
+            ItemAttachToOwner(entityManager,item,owner,preOwner,float3.zero, quaternion.identity);
+        }
+
+
+        public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
+            Entity owner, Entity preOwner, float3 initPos, quaternion initRot)
         {
 
             if (preOwner != Entity.Null)
@@ -94,24 +101,28 @@ namespace FootStone.Kitchen
             }
 
             var ownerSlot = entityManager.GetComponentData<SlotSetting>(owner);
-            var offset = entityManager.GetComponentData<OffsetSetting>(item);
 
-            float3 pos;
+
+            var ownerRotation = entityManager.HasComponent<LocalToWorld>(owner)
+                ? entityManager.GetComponentData<LocalToWorld>(owner).Rotation
+                : quaternion.identity;
+
+            float3 pos ;
             if (entityManager.HasComponent<MultiSlotPredictedState>(owner))
             {
                 var slotState = entityManager.GetComponentData<MultiSlotPredictedState>(owner);
 
-                pos = ownerSlot.Pos + ownerSlot.Offset * slotState.Value.Count() + offset.Pos;
+                pos = ownerSlot.Pos + ownerSlot.Offset * slotState.Value.Count();//+ offset.Pos;
             }
             else
             {
-                pos = ownerSlot.Pos + math.mul(ownerSlot.Rot,offset.Pos);
-
+                pos = ownerSlot.Pos;
             }
+           
+            pos = initPos.Equals(float3.zero) ? pos : initPos;
+            var rot = initRot.Equals(quaternion.identity) ? ownerSlot.Rot: math.mul(initRot, math.inverse(ownerRotation));
 
-            var rot = math.mul(offset.Rot, ownerSlot.Rot);
-
-            ItemAttachToOwner(entityManager, item, owner, preOwner,pos,rot);
+            ItemAttachToOwner1(entityManager, item, owner, preOwner, pos, rot);
         }
 
 
@@ -154,10 +165,11 @@ namespace FootStone.Kitchen
             itemPredictedState.Owner = Entity.Null;
             entityManager.SetComponentData(itemEntity, itemPredictedState);
 
-            var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
+         //   var offset = entityManager.GetComponentData<OffsetSetting>(itemEntity);
             var transformPredictedState = entityManager.GetComponentData<TransformPredictedState>(itemEntity);
             transformPredictedState.Position = pos;//+ offset.Pos;
-            transformPredictedState.Rotation = math.mul(offset.Rot,rot);
+       //     transformPredictedState.Rotation = math.mul(offset.Rot,rot);
+             transformPredictedState.Rotation = rot;
             entityManager.SetComponentData(itemEntity, transformPredictedState);
 
             var velocityPredictedState = entityManager.GetComponentData<VelocityPredictedState>(itemEntity);

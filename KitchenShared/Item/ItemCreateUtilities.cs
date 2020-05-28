@@ -54,12 +54,12 @@ namespace FootStone.Kitchen
             var rotation = entityManager.GetComponentData<Rotation>(e);
             //   FSLog.Info($"CreateItemComponent，translation：{translation.Value}");
 
-            if(!entityManager.HasComponent<OffsetSetting>(e))
-                entityManager.AddComponentData(e, new OffsetSetting()
-                {
-                    Pos = translation.Value,
-                    Rot = rotation.Value
-                });
+            //if(!entityManager.HasComponent<OffsetSetting>(e))
+            //    entityManager.AddComponentData(e, new OffsetSetting()
+            //    {
+            //        Pos = translation.Value,
+            //        Rot = rotation.Value
+            //    });
             var newPosition = (float3) position + translation.Value;
             entityManager.SetComponentData(e, new Translation {Value = newPosition});
             entityManager.SetComponentData(e, new Rotation {Value = rotation.Value});

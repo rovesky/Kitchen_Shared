@@ -83,7 +83,7 @@ namespace FootStone.Kitchen
             var index = sinkState.Value.Count() - 1;
 
             var sinkSetting = EntityManager.GetComponentData<TableSink>(sink);
-            ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
+            ItemAttachUtilities.ItemAttachToOwner1(EntityManager, 
                 plateDirty, sink, preOwner,
                 sinkSetting.SlotWashing+new float3(0f,-0.1f,0f) + new float3(0f,0.1f,0f)*index,
                 quaternion.Euler(math.radians(new float3(0,0,-25- 15*index))));

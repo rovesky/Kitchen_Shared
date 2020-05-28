@@ -18,9 +18,6 @@ namespace FootStone.Kitchen
          
             var material = new Material(meshRenderer.sharedMaterial);
             material.shader = Shader.Find("Custom/Outline");
-     //       material.shader = Shader.Find("Wegames/Self-Illumin/Diffuse");
-          //  var brightness = material.GetFloat("_Brightness");
-            material.SetFloat("_Brightness", 1.4f);
             dstManager.AddComponentData(entity, new TriggeredSetting
             {
                 OriginMaterial = meshRenderer.sharedMaterial,

@@ -1,5 +1,6 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace FootStone.Kitchen
 {
@@ -16,6 +17,7 @@ namespace FootStone.Kitchen
                 .ForEach((Entity entity,
                     in TriggerPredictedState triggerState,
                     in SlotPredictedState slotState,
+                    in TransformPredictedState transformState,
                     in UserCommand command) =>
                 {
                     //未按键返回
@@ -59,7 +61,7 @@ namespace FootStone.Kitchen
                     else if (pickupEntity != Entity.Null && slot.FilledIn == Entity.Null)
                     {
                         ItemAttachUtilities.ItemAttachToOwner(EntityManager, 
-                            pickupEntity, triggerEntity,entity);
+                            pickupEntity, triggerEntity,entity,float3.zero,transformState.Rotation );
                     }
 
                 }).Run();
