@@ -72,8 +72,7 @@ namespace FootStone.Kitchen
                     linear *= setting.Velocity;
 
                     var ownerSlot = EntityManager.GetComponentData<SlotSetting>(entity);
-                  //  var offset = EntityManager.GetComponentData<OffsetSetting>(pickupedEntity);
-
+           
                     ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
                         pickupedEntity,
                         entity,
