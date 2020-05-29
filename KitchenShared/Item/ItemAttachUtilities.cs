@@ -35,6 +35,13 @@ namespace FootStone.Kitchen
             velocityPredictedState.Linear = float3.zero;
             velocityPredictedState.MotionType = MotionType.Static;
             entityManager.SetComponentData(item, velocityPredictedState);
+
+            if (entityManager.HasComponent<FlyingPredictedState>(item))
+            {
+                var flyingPredictedState = entityManager.GetComponentData<FlyingPredictedState>(item);
+                flyingPredictedState.IsFlying = false;
+                entityManager.SetComponentData(item, flyingPredictedState);
+            }
         }
 
         public static void ItemAttachToOwner(EntityManager entityManager, Entity item,
