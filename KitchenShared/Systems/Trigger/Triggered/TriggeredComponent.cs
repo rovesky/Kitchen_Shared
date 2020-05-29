@@ -10,8 +10,7 @@ namespace FootStone.Kitchen
 
     public struct TriggeredState : IComponentData
     {
-    //    public Entity TriggerEntity;
-     
+        public Entity TriggerEntity;
     }
    
 }

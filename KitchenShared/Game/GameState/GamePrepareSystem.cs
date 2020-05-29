@@ -30,7 +30,7 @@ namespace FootStone.Kitchen
 
                     gameState.State = GameState.Preparing;
                     gameState.IsSceneReady = false;
-                    countdown.SetValue(10);
+                    countdown.SetValue(5);
                  
                     
                     FSLog.Info($"Game Prepare");

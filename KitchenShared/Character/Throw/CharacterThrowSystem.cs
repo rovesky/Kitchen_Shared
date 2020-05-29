@@ -72,6 +72,16 @@ namespace FootStone.Kitchen
                     linear *= setting.Velocity;
 
                     var ownerSlot = EntityManager.GetComponentData<SlotSetting>(entity);
+
+                    if(HasComponent<FlyingPredictedState>(pickupedEntity))
+                    {
+                      
+                        var flyingState = GetComponent<FlyingPredictedState>(pickupedEntity);
+                        flyingState.IsFlying = true;
+                        SetComponent(pickupedEntity,flyingState);
+
+                        FSLog.Info($"flyingState.IsFlying = true,entity:{pickupedEntity}");
+                    }
            
                     ItemAttachUtilities.ItemDetachFromOwner(EntityManager,
                         pickupedEntity,

@@ -64,9 +64,11 @@ namespace FootStone.Kitchen
             
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CookSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BurntSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCatchFireFlagSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<FireSpreadSystem>());
 
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateFlyingStateSystem>());
+            
+            
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyPredictedStateSystemGroup>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenEndFramePhysicsSystem>());
 

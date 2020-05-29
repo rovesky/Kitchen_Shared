@@ -117,7 +117,14 @@ namespace FootStone.Kitchen
             entityManager.RemoveComponent<PhysicsVelocity>(e);
 
             if (IsFood(type))
+            {
                 entityManager.AddComponentData(e, new Food());
+                entityManager.AddComponentData(e, new FlyingPredictedState()
+                {
+                    IsFlying = false
+                });
+                
+            }
 
             if (IsUnsliced(type))
             {

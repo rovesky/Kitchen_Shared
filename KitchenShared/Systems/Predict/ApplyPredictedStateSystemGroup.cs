@@ -62,6 +62,8 @@ namespace FootStone.Kitchen
         {
          //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyTransformPredictedStateSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyVelocityPredictedStateSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateFlyingFlagSystem>());
+            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCatchFireFlagSystem>());
          //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearSpawnRequestsSystem>());
         }
     }
