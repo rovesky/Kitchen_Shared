@@ -21,6 +21,8 @@ namespace FootStone.Kitchen
         protected override unsafe void OnUpdate()
         {
             var physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
+           
+            /*
             Entities
                 .WithAll<AllowTrigger>()
                 .WithStructuralChanges()
@@ -45,23 +47,28 @@ namespace FootStone.Kitchen
                         return;
 
                     if (Vector3.SqrMagnitude(velocityState.Linear) > 0.001
-                        || triggerState.TriggeredEntity == Entity.Null)
+                     //   || triggerState.TriggeredEntity == Entity.Null
+                       )
                         EntityManager.AddComponent<AllowTrigger>(entity);
 
                 }).Run();
-
+                */
 
             Dependency = Entities
-                .WithAll<ServerEntity, AllowTrigger, PhysicsVelocity>()
-                //  .WithChangeFilter<TransformPredictedState>()
+                .WithAll<ServerEntity,/*AllowTrigger,*/ PhysicsVelocity>()
                 .WithBurst()
                 .ForEach((Entity entity,
                     ref TriggerPredictedState triggerState,
                     in TriggerSetting setting,
                     in TransformPredictedState transformState,
+                    in VelocityPredictedState velocityState,
                     in PhysicsCollider collider) =>
                 {
                     if (!triggerState.IsAllowTrigger)
+                        return;
+
+                    if(!setting.IsMotionLess &&
+                       Vector3.SqrMagnitude(velocityState.Linear) < 0.001)
                         return;
 
                     var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
@@ -106,44 +113,16 @@ namespace FootStone.Kitchen
                             triggerIndex = i;
                     }
 
+                    triggerState.PreTriggeredEntity = triggerState.TriggeredEntity;
                     triggerState.TriggeredEntity = triggerIndex < 0
                         ? Entity.Null
                         : physicsWorld.Bodies[distanceHits[triggerIndex].RigidBodyIndex].Entity;
 
                     distanceHits.Dispose();
                 })
-           //     .WithDeallocateOnJobCompletion(triggeredEntities)
-                // .Run();
-                // triggeredEntities.Dispose();
                 .ScheduleParallel(Dependency);
             CompleteDependency();
+
         }
-
-        //private  int CheckTrigger(ref PhysicsWorld world, ref NativeArray<Entity> volumeEntities,
-        //   Entity selfEntity, int selfRigidBodyIndex, ref NativeList<DistanceHit> distanceHits)
-        //{
-        //    var triggerIndex = -1;
-        //    for (var i = 0; i < distanceHits.Length; i++)
-        //    {
-        //        var hit = distanceHits[i];
-        //        if (hit.RigidBodyIndex == selfRigidBodyIndex)
-        //            continue;
-
-        //        var e = world.Bodies[hit.RigidBodyIndex].Entity;
-                
-        //        if(HasComponent<Item>(e) && HasComponent<Item>(selfEntity))
-        //            continue;
-
-        //        if (!volumeEntities.Contains(e))
-        //            continue;
-
-        //        if (triggerIndex < 0)
-        //            triggerIndex = i;
-        //        else if (distanceHits[triggerIndex].Distance > hit.Distance)
-        //            triggerIndex = i;
-        //    }
-
-        //    return triggerIndex;
-        //}
     }
 }

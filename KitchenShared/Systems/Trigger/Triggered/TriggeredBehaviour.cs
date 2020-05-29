@@ -27,7 +27,7 @@ namespace FootStone.Kitchen
             dstManager.AddComponentData(entity, new TriggeredState()
             {
            //     IsTriggered = false,
-                TriggerEntity = Entity.Null
+           //     TriggerEntity = Entity.Null
             });
         }
     }

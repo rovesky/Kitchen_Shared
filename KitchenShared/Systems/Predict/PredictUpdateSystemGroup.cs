@@ -20,8 +20,7 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             m_systemsToUpdate.Add(World.GetOrCreateSystem<BeginPredictUpdateEntityCommandBufferSystem>());
-
-       
+            
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenBuildPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenStepPhysicsWorld>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<KitchenExportPhysicsWorld>());
@@ -49,7 +48,6 @@ namespace FootStone.Kitchen
             
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushStartSystem>());
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterRushEndSystem>());
-
             
             m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterServeSystem>());
 

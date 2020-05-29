@@ -5,29 +5,6 @@ using UnityEngine;
 
 namespace FootStone.Kitchen
 {
-    [DisableAutoCreation]
-    public class UpdateCharTriggeredSystem : SystemBase
-    {
-
-        protected override void OnUpdate()
-        {
-            Entities.WithAll<ServerEntity>()
-                .WithStructuralChanges()
-                .ForEach((Entity entity,
-                    in TriggerPredictedState triggerPredictedData
-                ) =>
-                {
-                    if (triggerPredictedData.TriggeredEntity == Entity.Null)
-                        return;
-                    var triggerEntity = triggerPredictedData.TriggeredEntity;
-                    var triggerState = EntityManager.GetComponentData<TriggeredState>(triggerEntity);
-                  //  triggerState.IsTriggered = true;
-                    triggerState.TriggerEntity = entity;
-                    EntityManager.SetComponentData(triggerEntity, triggerState);
-
-                }).Run();
-        }
-    }
 
     [DisableAutoCreation]
     public class UpdateCharPresentationSystem : SystemBase
