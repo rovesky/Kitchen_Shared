@@ -27,30 +27,30 @@ namespace FootStone.Kitchen
     {
         protected override void OnUpdate()
         {
-            Entities
-                .WithNone<PhysicsVelocity>()
-                .WithStructuralChanges()
-                .ForEach((Entity entity,
-                    ref VelocityPredictedState velocityPredictedState) =>
+            Entities.WithStructuralChanges().ForEach((Entity entity,
+                ref VelocityPredictedState velocityPredictedState) =>
+            {
+                switch (velocityPredictedState.MotionType)
                 {
-                    if (velocityPredictedState.MotionType == MotionType.Dynamic)
+                    case MotionType.Dynamic:
                         EntityManager.AddComponentData(entity, new PhysicsVelocity
                         {
                             Linear = velocityPredictedState.Linear,
                             Angular = velocityPredictedState.Angular
                         });
-
-                }).Run();
-
-            Entities
-                .WithAll<PhysicsVelocity>()
-                .WithStructuralChanges()
-                .ForEach((Entity entity,
-                    ref VelocityPredictedState velocityPredictedState) =>
-                {
-                    if (velocityPredictedState.MotionType == MotionType.Static)
+                        break;
+                    case MotionType.Static:
                         EntityManager.RemoveComponent<PhysicsVelocity>(entity);
-                }).Run();
+                        break;
+                    case MotionType.Kinematic:
+                        //EntityManager.SetComponentData(entity, new PhysicsVelocity()
+                        //{
+                        //    Linear = velocityPredictedState.Linear,
+                        //    Angular = velocityPredictedState.Angular
+                        //});
+                        break;
+                }
+            }).Run();
         }
     }
 
