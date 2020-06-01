@@ -67,8 +67,7 @@ namespace FootStone.Kitchen
                     if (!triggerState.IsAllowTrigger)
                         return;
 
-                    if(!setting.IsMotionLess &&
-                       Vector3.SqrMagnitude(velocityState.Linear) < 0.001)
+                    if(!setting.IsMotionLess && Vector3.SqrMagnitude(velocityState.Linear) < 0.001)
                         return;
 
                     var distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
@@ -101,13 +100,15 @@ namespace FootStone.Kitchen
 
                         var e = physicsWorld.Bodies[hit.RigidBodyIndex].Entity;
 
-                        if(!HasComponent<TriggeredState>(e))
+                        if (!HasComponent<TriggeredState>(e))
                             continue;
 
                         if (HasComponent<Item>(e) && HasComponent<Item>(entity))
                             continue;
 
                         if (triggerIndex < 0)
+                            triggerIndex = i;
+                        else if (HasComponent<Flying>(e))
                             triggerIndex = i;
                         else if (distanceHits[triggerIndex].Distance > hit.Distance)
                             triggerIndex = i;

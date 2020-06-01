@@ -26,7 +26,7 @@ namespace FootStone.Kitchen
                     gameState.StartTime = now.Ticks;
                     countdown.SetValue(180);
                  
-                    FSLog.Info($"GameStart,countdown:{countdown.Value}!");
+                   // FSLog.Info($"GameStart,countdown:{countdown.Value}!");
 
                 }).Run();
         }

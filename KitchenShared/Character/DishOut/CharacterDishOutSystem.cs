@@ -58,7 +58,7 @@ namespace FootStone.Kitchen
                     var foodEntity = slot.FilledIn;
                     var preOwner = triggerEntity;
                     
-                    if(!DishOut(command,plateEntity,foodEntity,preOwner,transformState.Rotation))
+                    if(!DishOut(plateEntity,foodEntity,preOwner,transformState.Rotation))
                         // ReSharper disable once RedundantJumpStatement
                         return;
 
@@ -128,7 +128,7 @@ namespace FootStone.Kitchen
                     if (!HasComponent<Plate>(slot.FilledIn))
                         return;
                 
-                    if(!DishOut(command,slot.FilledIn,foodEntity,preOwner,transformState.Rotation))
+                    if(!DishOut(slot.FilledIn,foodEntity,preOwner,transformState.Rotation))
                         return;
 
                     //锅设置为空
@@ -142,7 +142,7 @@ namespace FootStone.Kitchen
                 }).Run();
         }
 
-        private bool DishOut(UserCommand command,Entity plateEntity, 
+        public bool DishOut(/*UserCommand command,*/Entity plateEntity, 
             Entity foodEntity, Entity preOwner,quaternion rotation)
         {
             var plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);
@@ -170,8 +170,8 @@ namespace FootStone.Kitchen
             if (menuTemplate == MenuTemplate.Null)
                 return true;
 
-            var worldTick = GetSingleton<WorldTime>().Tick;
-            FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
+           // var worldTick = GetSingleton<WorldTime>().Tick;
+           // FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
 
             //删除原来的道具
             var count = plateSlotState.Value.Count();
