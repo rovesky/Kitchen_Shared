@@ -9,16 +9,16 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateReplicatedOwnerFlag>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<UpdateReplicatedOwnerFlag>());
 
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateDespawnState>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<UpdateDespawnState>());
 
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearTriggeredSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharTriggeredSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyCharPresentationSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyItemPresentationSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateTriggeredColorSystem>());
+         //   AddSystemToUpdateList(World.GetOrCreateSystem<ClearTriggeredSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
+         //   AddSystemToUpdateList(World.GetOrCreateSystem<UpdateCharTriggeredSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<ApplyCharPresentationSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<ApplyItemPresentationSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<UpdateTriggeredColorSystem>());
         }
     }
 

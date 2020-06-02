@@ -110,10 +110,10 @@ namespace FootStone.Kitchen
         protected override void OnCreate()
         {
             
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishStartSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishGrowSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishingSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterExtinguishStopSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterExtinguishStartSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterExtinguishGrowSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterExtinguishingSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterExtinguishStopSystem>());
      
         }
     }

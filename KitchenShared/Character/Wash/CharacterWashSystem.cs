@@ -166,9 +166,9 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashStartSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashInterruptSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CharacterWashingSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterWashStartSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterWashInterruptSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CharacterWashingSystem>());
      
         }
     }

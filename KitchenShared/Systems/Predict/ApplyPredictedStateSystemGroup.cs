@@ -60,11 +60,11 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyTransformPredictedStateSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ApplyVelocityPredictedStateSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateFlyingFlagSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCatchFireFlagSystem>());
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<ClearSpawnRequestsSystem>());
+         //   AddSystemToUpdateList(World.GetOrCreateSystem<ApplyTransformPredictedStateSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<ApplyVelocityPredictedStateSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<UpdateFlyingFlagSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<UpdateCatchFireFlagSystem>());
+         //   AddSystemToUpdateList(World.GetOrCreateSystem<ClearSpawnRequestsSystem>());
         }
     }
 

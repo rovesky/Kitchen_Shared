@@ -8,16 +8,16 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<ServeSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<PlateServedSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<PlateRecycleSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<ServeSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<PlateServedSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<PlateRecycleSystem>());
 
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<CountdownSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<MenuSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<GameStartSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<GameEndSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<GamePrepareSystem>());
-         //   m_systemsToUpdate.Add(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<CountdownSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<MenuSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<GameStartSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<GameEndSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<GamePrepareSystem>());
+         //   AddSystemToUpdateList(World.GetOrCreateSystem<UpdateCharPresentationSystem>());
       
         }
     }

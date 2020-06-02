@@ -9,9 +9,9 @@ namespace FootStone.Kitchen
     {
         protected override void OnCreate()
         {
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<SpawnGameSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<SpawnMenuSystem>());
-            m_systemsToUpdate.Add(World.GetOrCreateSystem<SpawnItemsSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<SpawnGameSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<SpawnMenuSystem>());
+            AddSystemToUpdateList(World.GetOrCreateSystem<SpawnItemsSystem>());
        
         }
     }
