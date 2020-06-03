@@ -26,7 +26,7 @@ namespace FootStone.Kitchen
 
                     if (HasSingleton<Server>())
                     {
-                        SetInterpolateData(ref interpolateData, transformPredictData,
+                        SetInterpolateData(ref interpolateData,entity, transformPredictData,
                             slicePredictedState, washPredictedState, slotState, throwState);
 
                         SetInterpolateSqrMagnitude(ref interpolateData, velocityPredictData);
@@ -35,7 +35,7 @@ namespace FootStone.Kitchen
                     {
                         if (EntityManager.HasComponent<LocalCharacter>(entity))
                         {
-                            SetInterpolateData(ref interpolateData, transformPredictData,
+                            SetInterpolateData(ref interpolateData,entity, transformPredictData,
                                 slicePredictedState, washPredictedState, slotState, throwState);
 
                             var dir = Vector3.SqrMagnitude(velocityPredictData.Linear) < 0.001f
@@ -69,12 +69,16 @@ namespace FootStone.Kitchen
         }
 
         private void SetInterpolateData(ref CharacterInterpolatedState interpolateData,
+            Entity entity,
             TransformPredictedState transformPredictData,
             SlicePredictedState slicePredictedState,
             WashPredictedState washPredictedState,
             SlotPredictedState slotState,
             ThrowPredictState throwState)
         {
+            var replicatedEntityData = GetComponent<ReplicatedEntityData>(entity);
+            interpolateData.MaterialId = replicatedEntityData.PredictingPlayerId;
+         //   FSLog.Info($"replicatedEntityData.PredictingPlayerId:{replicatedEntityData.PredictingPlayerId}");
             interpolateData.Position = transformPredictData.Position;
             interpolateData.Rotation = transformPredictData.Rotation;
             interpolateData.IsTake = slotState.FilledIn != Entity.Null;

@@ -16,6 +16,8 @@ namespace FootStone.Kitchen
         public bool IsClean;
         public bool IsThrow;
 
+        public int MaterialId;  
+
 
         public void Deserialize(ref SerializeContext context, ref NetworkReader reader)
         {
@@ -26,7 +28,7 @@ namespace FootStone.Kitchen
             IsSlice = reader.ReadBoolean();
             IsClean = reader.ReadBoolean();
             IsThrow = reader.ReadBoolean();
-
+            MaterialId = reader.ReadUInt16();
         }
 
         public void Serialize(ref SerializeContext context, ref NetworkWriter writer)
@@ -38,6 +40,7 @@ namespace FootStone.Kitchen
             writer.WriteBoolean("IsSlice",IsSlice);
             writer.WriteBoolean("IsClean",IsClean);
             writer.WriteBoolean("IsThrow",IsThrow);
+            writer.WriteUInt16("MaterialId",(ushort)MaterialId);
 
         }
 
@@ -51,6 +54,7 @@ namespace FootStone.Kitchen
             IsSlice = prevState.IsSlice;  
             IsClean = prevState.IsClean;
             IsThrow = prevState.IsThrow;
+            MaterialId = prevState.MaterialId;
         }
 
         public static IInterpolatedStateSerializerFactory CreateSerializerFactory()
