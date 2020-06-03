@@ -14,17 +14,17 @@ namespace FootStone.Kitchen
 
         private EntityType[] menuList = new EntityType[]
         {
-            EntityType.ShrimpProduct,
+            EntityType.ShrimpSlice,
             EntityType.Sushi,
-            EntityType.ShrimpProduct,
+            EntityType.ShrimpSlice,
             EntityType.Sushi,
-            EntityType.ShrimpProduct,
+            EntityType.ShrimpSlice,
             EntityType.Sushi,
-            EntityType.ShrimpProduct,
+            EntityType.ShrimpSlice,
             EntityType.Sushi,
-            EntityType.ShrimpProduct,
+            EntityType.ShrimpSlice,
             EntityType.Sushi,
-            EntityType.ShrimpProduct,
+            EntityType.ShrimpSlice,
             EntityType.Sushi
         };
 

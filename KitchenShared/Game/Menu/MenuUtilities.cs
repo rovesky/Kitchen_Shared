@@ -91,7 +91,8 @@ namespace FootStone.Kitchen
 
         public  static void Init()
         {
-            RegisterMenu(EntityType.ShrimpProduct,   EntityType.ShrimpSlice);
+         //   RegisterMenu(EntityType.ShrimpProduct,   EntityType.ShrimpSlice);
+            RegisterMenu(EntityType.ShrimpSlice,   EntityType.ShrimpSlice);
             RegisterMenu(EntityType.Sushi,   EntityType.KelpSlice,
                 EntityType.RiceCooked,  EntityType.CucumberSlice);
 

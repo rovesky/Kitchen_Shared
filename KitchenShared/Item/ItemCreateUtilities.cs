@@ -26,7 +26,7 @@ namespace FootStone.Kitchen
         {
             RegisterPrefabs(EntityType.Shrimp, "Shrimp");
             RegisterPrefabs(EntityType.ShrimpSlice, "ShrimpSlice");
-            RegisterPrefabs(EntityType.ShrimpProduct, "ShrimpSlice");
+          //  RegisterPrefabs(EntityType.ShrimpProduct, "ShrimpSlice");
             RegisterPrefabs(EntityType.KelpSlice, "KelpSlice");
             RegisterPrefabs(EntityType.Rice, "Rice");
             RegisterPrefabs(EntityType.RiceCooked, "RiceCooked");

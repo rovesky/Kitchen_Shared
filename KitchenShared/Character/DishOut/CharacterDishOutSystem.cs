@@ -57,15 +57,15 @@ namespace FootStone.Kitchen
                     var plateEntity = pickupEntity;
                     var foodEntity = slot.FilledIn;
                     var preOwner = triggerEntity;
-                    
-                    if(!DishOut(plateEntity,foodEntity,preOwner,transformState.Rotation))
+
+                    if (!DishOut(plateEntity, foodEntity, preOwner, transformState.Rotation))
                         // ReSharper disable once RedundantJumpStatement
                         return;
 
                 }).Run();
 
-              //食物在手上
-              Entities
+            //食物在手上
+            Entities
                 .WithAll<ServerEntity>()
                 .WithName("CharacterDishOut1")
                 .WithStructuralChanges()
@@ -87,7 +87,7 @@ namespace FootStone.Kitchen
                     var foodEntity = pickupEntity;
                     var preOwner = entity;
                     //拾取的道具是锅，并且锅没有糊，获取锅里的食物
-                    if (HasComponent<Pot>(pickupEntity) && 
+                    if (HasComponent<Pot>(pickupEntity) &&
                         !HasComponent<Burnt>(pickupEntity))
                     {
                         preOwner = pickupEntity;
@@ -104,8 +104,8 @@ namespace FootStone.Kitchen
                     }
 
                     if (foodEntity == Entity.Null)
-                         return;
-                   
+                        return;
+
                     //食物不能装盘返回
                     if (!HasComponent<CanDishOut>(foodEntity))
                         return;
@@ -127,8 +127,8 @@ namespace FootStone.Kitchen
                     //Table上不是盘子返回
                     if (!HasComponent<Plate>(slot.FilledIn))
                         return;
-                
-                    if(!DishOut(slot.FilledIn,foodEntity,preOwner,transformState.Rotation))
+
+                    if (!DishOut(slot.FilledIn, foodEntity, preOwner, transformState.Rotation))
                         return;
 
                     //锅设置为空
@@ -138,12 +138,12 @@ namespace FootStone.Kitchen
                         potState.State = PotState.Empty;
                         SetComponent(preOwner, potState);
                     }
-                  
+
                 }).Run();
         }
 
-        public bool DishOut(/*UserCommand command,*/Entity plateEntity, 
-            Entity foodEntity, Entity preOwner,quaternion rotation)
+        public bool DishOut( /*UserCommand command,*/ Entity plateEntity,
+            Entity foodEntity, Entity preOwner, quaternion rotation)
         {
             var plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);
 
@@ -159,10 +159,10 @@ namespace FootStone.Kitchen
             var plateState = GetComponent<PlatePredictedState>(plateEntity);
             if (plateState.IsGenProduct)
                 return false;
-      
+
             //放入盘子
             ItemAttachUtilities.ItemAttachToOwner(EntityManager,
-                foodEntity, plateEntity, preOwner,float3.zero,rotation );
+                foodEntity, plateEntity, preOwner, float3.zero, rotation);
 
             //未成品，直接返回
             plateSlotState = GetComponent<MultiSlotPredictedState>(plateEntity);
@@ -170,40 +170,46 @@ namespace FootStone.Kitchen
             if (menuTemplate == MenuTemplate.Null)
                 return true;
 
-           // var worldTick = GetSingleton<WorldTime>().Tick;
-           // FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
-
-            //删除原来的道具
-            var count = plateSlotState.Value.Count();
-            for (var i = 0; i < count; ++i)
+            // var worldTick = GetSingleton<WorldTime>().Tick;
+            // FSLog.Info($"CharacterDishOut,command tick:{command.RenderTick},worldTick:{worldTick}");
+            if (menuTemplate.MaterialCount() > 1)
             {
-                var fillIn = plateSlotState.Value.TakeOut();
-                if (fillIn == Entity.Null)
-                    continue;
+                //删除原来的道具
+                var count = plateSlotState.Value.Count();
+                for (var i = 0; i < count; ++i)
+                {
+                    var fillIn = plateSlotState.Value.TakeOut();
+                    if (fillIn == Entity.Null)
+                        continue;
 
-                var despawnState = GetComponent<DespawnPredictedState>(fillIn);
-                despawnState.IsDespawn = true;
-                despawnState.Tick = 0;
-                SetComponent(fillIn, despawnState);
-                //FSLog.Info($"despwan entity:{fillIn}");
+                    var despawnState = GetComponent<DespawnPredictedState>(fillIn);
+                    despawnState.IsDespawn = true;
+                    despawnState.Tick = 0;
+                    SetComponent(fillIn, despawnState);
+                    //FSLog.Info($"despwan entity:{fillIn}");
+                }
+
+                SetComponent(plateEntity, plateSlotState);
+
+                //生成新道具
+                var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
+                var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
+                //  var spawnFoodArray = GetSingleton<SpawnItemArray>();
+
+                buffer.Add(new SpawnItemRequest()
+                {
+                    Type = menuTemplate.Product,
+                    DeferFrame = 0,
+                    OffPos = float3.zero,
+                    Owner = plateEntity,
+                    StartTick = GetSingleton<WorldTime>().Tick
+                });
             }
-           
-            SetComponent(plateEntity, plateSlotState);
-
-            //生成新道具
-            var spawnFoodEntity = GetSingletonEntity<SpawnItemArray>();
-            var buffer = EntityManager.GetBuffer<SpawnItemRequest>(spawnFoodEntity);
-
-          //  var spawnFoodArray = GetSingleton<SpawnItemArray>();
-
-            buffer.Add(new SpawnItemRequest()
+            else
             {
-                Type = menuTemplate.Product,
-                DeferFrame = 0,
-                OffPos = float3.zero,
-                Owner = plateEntity,
-                StartTick = GetSingleton<WorldTime>().Tick
-            });
+                EntityManager.AddComponentData(plateSlotState.Value.FilledIn1, new Product());
+
+            }
 
             plateState.IsGenProduct = true;
             SetComponent(plateEntity, plateState);
@@ -235,7 +241,7 @@ namespace FootStone.Kitchen
                         return;
 
                     plateState.Product = slotState.Value.FilledIn1;
-                   // FSLog.Info($"UpdatePlateProductSystem:{plateState.Product}");
+                    FSLog.Info($"UpdatePlateProductSystem:{plateState.Product}");
 
                 }).Run();
         }
