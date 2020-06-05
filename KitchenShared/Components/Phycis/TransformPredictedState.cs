@@ -1,6 +1,7 @@
 using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -27,8 +28,8 @@ namespace FootStone.Kitchen
 
         public bool VerifyPrediction(ref TransformPredictedState state)
         {
-            return Position.Equals(state.Position) &&
-                   Rotation.Equals(state.Rotation);
+            return Vector3.SqrMagnitude(Position - state.Position) < 0.001f &&
+                   Quaternion.Angle(Rotation,state.Rotation) < 5;
         }
 
         public static IPredictedStateSerializerFactory CreateSerializerFactory()

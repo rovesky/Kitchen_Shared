@@ -1,6 +1,7 @@
 ﻿using FootStone.ECS;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace FootStone.Kitchen
 {
@@ -49,8 +50,8 @@ namespace FootStone.Kitchen
 
         public bool VerifyPrediction(ref CharacterMovePredictedState state)
         {
-            return UnsupportedVelocity.Equals(state.UnsupportedVelocity) &&
-                   ImpulseVelocity.Equals(state.ImpulseVelocity) &&
+            return Vector3.SqrMagnitude(UnsupportedVelocity - state.UnsupportedVelocity) < 0.001f &&
+                   Vector3.SqrMagnitude(ImpulseVelocity - state.ImpulseVelocity) < 0.001f &&
                    ImpulseDuration.Equals(state.ImpulseDuration);
         }
 
