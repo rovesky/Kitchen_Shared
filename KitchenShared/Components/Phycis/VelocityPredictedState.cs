@@ -44,8 +44,8 @@ namespace FootStone.Kitchen
 
         public bool VerifyPrediction(ref VelocityPredictedState state)
         {
-            return Vector3.SqrMagnitude(Linear - state.Linear) < 0.001f &&
-                   Vector3.SqrMagnitude(Angular - state.Angular) < 0.001f &&
+            return Vector3.SqrMagnitude(Linear - state.Linear) < 0.025f &&
+                   Vector3.SqrMagnitude(Angular - state.Angular) < 0.025f &&
                    MotionType.Equals(state.MotionType);
         }
 
